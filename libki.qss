@@ -1,0 +1,7 @@
+QLabel#headerLabel {
+	font: bold 20pt;
+}
+
+QLabel#messageLabel {
+	font: bold 10pt;
+}
