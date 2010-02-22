@@ -44,7 +44,7 @@ class LoginWindow : public QMainWindow, public Ui::LoginWindow {
   protected slots:
 	void attemptLogin();
     void attemptLoginFailure( int loginError );
-    void attemptLoginSuccess();
+    void attemptLoginSuccess( QString username, QString password, int minutes );
 
 	void resetLoginScreen();
 

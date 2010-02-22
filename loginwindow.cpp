@@ -81,7 +81,7 @@ void LoginWindow::attemptLoginFailure( int loginError ) {
   usernameField->selectAll();
 }
 
-void LoginWindow::attemptLoginSuccess( minutes ) {
+void LoginWindow::attemptLoginSuccess( QString username, QString password, int minutes ) {
   resetLoginScreen();
   emit loginSucceeded( username, password, minutes );
   this->hide();

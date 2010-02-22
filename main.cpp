@@ -21,6 +21,7 @@
 #include <QFile>
 
 #include "loginwindow.h"
+#include "timerwindow.h"
 
 int main(int argc, char *argv[]) {
   QApplication app(argc, argv);
@@ -39,7 +40,8 @@ int main(int argc, char *argv[]) {
   TimerWindow timerWindow;
 
   connect( loginWindow, SIGNAL( loginSucceeded( const QString& username, const QString& password, const int& minutes ) ), 
-           timerWindow, SLOT( startTimer( const QString& username, const QString& password, const int& minutes ) );
+           timerWindow, SLOT( startTimer( const QString& username, const QString& password, const int& minutes ) )
+  );
 
   loginWindow.show();
                         
