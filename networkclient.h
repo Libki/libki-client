@@ -17,30 +17,20 @@
 * along with Libki. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef LOGINWINDOW_H
-#define LOGINWINDOW_H
+#ifndef NETWORKACCESS_H
+#define NETWORKACCESS_H
 
-#include <QMainWindow>
-#include "ui_loginwindow.h"
-
-class LoginWindow : public QMainWindow, public Ui::LoginWindow {
+class NetworkAccess {
 
   Q_OBJECT
 
+  typedef QHash<QString, QString> NetworkMessage;
+
   public:
-    LoginWindow(QWidget *parent = 0);
-    ~LoginWindow();
+    NetworkAccess();
+    ~NetworkAccess();
 
-  protected:
-    void setupActions();
-
-    void getSettings();
-
-  protected slots:
-	void attemptLogin();
-	void resetLoginScreen();
-
-  private:
+	NetworkMessage TryLogin( QString username, QString password );
 
 };
 

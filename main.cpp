@@ -18,15 +18,23 @@
 */
 
 #include <QApplication>
-#include "mainwindow.h"
+#include <QFile>
 
-int main(int argc, char *argv[])
-{
+#include "loginwindow.h"
+
+int main(int argc, char *argv[]) {
   QApplication app(argc, argv);
-    
+
+  /* Apply the stylesheet */
+  QFile qss("libki.qss");
+  qss.open(QFile::ReadOnly);
+  app.setStyleSheet(qss.readAll());
+  qss.close();
+
   QCoreApplication::setOrganizationName("MillRunTech");
   QCoreApplication::setOrganizationDomain("MillRunTech.com");
   QCoreApplication::setApplicationName("Libki Kiosk Management System");
+
   LoginWindow loginWindow;
   loginWindow.show();
                         

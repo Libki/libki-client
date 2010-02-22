@@ -17,47 +17,16 @@
 * along with Koha Offline Circulation.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <QtGui>
+#include "networkaccess.h"
 
-#include "loginwindow.h"
-
-LoginWindow::LoginWindow(QWidget *parent) : QMainWindow(parent) {
-  setupUi(this);
-  setupActions();
-
-  this->showMaximized();
-  this->showFullScreen();
-
-  usernameField->setFocus();
+NetworkAccess::NetworkAccess() {
+ 
 }
 
-LoginWindow::~LoginWindow() {
+NetworkAccess::~NetworkAccess() {
 }
 
-void LoginWindow::setupActions() {
-
-  connect(usernameField, SIGNAL(returnPressed()),
-          passwordField, SLOT(setFocus()));
-
-  connect(loginButton, SIGNAL(clicked()),
-          this, SLOT(attemptLogin()));
-
-  connect(cancelButton, SIGNAL(clicked()),
-          this, SLOT(resetLoginScreen()));
+NetworkMessage NetworkAccess::TryLogin( QString username, QString password ) {
+	if ( username == "kyle" && password
 
 }
-
-void LoginWindow::getSettings() {
-}
-
-/* Protected Slots */
-void LoginWindow::attemptLogin() {
-}
-
-void LoginWindow::resetLoginScreen() {
-  usernameField->clear();
-  passwordField->clear();
-  usernameField->setFocus();
-}
-
-
