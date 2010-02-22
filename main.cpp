@@ -36,6 +36,11 @@ int main(int argc, char *argv[]) {
   QCoreApplication::setApplicationName("Libki Kiosk Management System");
 
   LoginWindow loginWindow;
+  TimerWindow timerWindow;
+
+  connect( loginWindow, SIGNAL( loginSucceeded( const QString& username, const QString& password, const int& minutes ) ), 
+           timerWindow, SLOT( startTimer( const QString& username, const QString& password, const int& minutes ) );
+
   loginWindow.show();
                         
   return app.exec();

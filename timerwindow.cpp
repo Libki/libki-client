@@ -14,31 +14,30 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with Libki. If not, see <http://www.gnu.org/licenses/>.
+* along with Libki.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef NETWORKCLIENT_H
-#define NETWORKCLIENT_H
+#include <QtGui>
 
-#include <QObject>
-#include <QHash>
+#include "timerwindow.h"
 
-namespace NetworkError {
-  enum Enum {
-    SERVER_GONE,
-    BAD_LOGIN,
-    NO_TIME
-  };
+TimerWindow::TimerWindow(QWidget *parent) : QMainWindow(parent) {
+  setupUi(this);
+  setupActions();
+  this->hide();
 }
 
+LoginWindow::~LoginWindow() {
+}
 
-class NetworkClient : public QObject {
-  Q_OBJECT
+void LoginWindow::startTimer( QString username, QString password, int minutes ) {
+  this->show();
+}
 
-  public:
-    NetworkClient();
+void LoginWindow::setupActions() {
 
-    int attemptLogin( QString username, QString password, int & error );
-};
+}
 
-#endif // NETWORKCLIENT_H
+void LoginWindow::getSettings() {
+}
+

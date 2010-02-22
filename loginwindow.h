@@ -33,8 +33,8 @@ class LoginWindow : public QMainWindow, public Ui::LoginWindow {
     LoginWindow(QWidget *parent = 0);
     ~LoginWindow();
 
-//  signals:
-//    void loginSucceeded ( const QString& username, const QString& password, const int& minutes );
+  signals:
+    void loginSucceeded( const QString& username, const QString& password, const int& minutes );
 
   protected:
     void setupActions();

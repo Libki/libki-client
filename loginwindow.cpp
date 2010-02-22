@@ -53,16 +53,15 @@ void LoginWindow::getSettings() {
 
 /* Protected Slots */
 void LoginWindow::attemptLogin() {
-//  errorLabel->setText("This is a test.");
   int loginError;
 
   QString username = usernameField->text();
   QString password = passwordField->text();
 
-  bool success = net.attemptLogin( username, password, loginError );
+  int minutes = net.attemptLogin( username, password, loginError );
 
-  if ( success ) {
-    attemptLoginSuccess();
+  if ( minutes ) {
+    attemptLoginSuccess( username, password, minutes );
   } else {
 	attemptLoginFailure( loginError );
   }
@@ -82,8 +81,10 @@ void LoginWindow::attemptLoginFailure( int loginError ) {
   usernameField->selectAll();
 }
 
-void LoginWindow::attemptLoginSuccess() {
-  errorLabel->setText("Login Succeeded.");
+void LoginWindow::attemptLoginSuccess( minutes ) {
+  resetLoginScreen();
+  emit loginSucceeded( username, password, minutes );
+  this->hide();
 }
 
 void LoginWindow::resetLoginScreen() {

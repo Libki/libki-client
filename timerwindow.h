@@ -17,28 +17,35 @@
 * along with Libki. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef NETWORKCLIENT_H
-#define NETWORKCLIENT_H
+#ifndef TIMERWINDOW_H
+#define LOGINWINDOW_H
 
-#include <QObject>
-#include <QHash>
+#include <QMainWindow>
+#include "ui_timerwindow.h"
 
-namespace NetworkError {
-  enum Enum {
-    SERVER_GONE,
-    BAD_LOGIN,
-    NO_TIME
-  };
-}
+#include "networkclient.h"
 
+class TimerWindow : public QMainWindow, public Ui::TimerWindow {
 
-class NetworkClient : public QObject {
   Q_OBJECT
 
   public:
-    NetworkClient();
+    TimerWindow(QWidget *parent = 0);
+    ~TimerWindow();
 
-    int attemptLogin( QString username, QString password, int & error );
+  public slots:
+    void startTimer( const QString& username, const QString& password, const int& minutes );
+
+  protected:
+    void setupActions();
+
+    void getSettings();
+
+  protected slots:
+
+  private:
+	NetworkClient net;
+
 };
 
-#endif // NETWORKCLIENT_H
+#endif // LOGINWINDOW_H
