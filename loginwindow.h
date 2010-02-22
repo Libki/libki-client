@@ -23,6 +23,8 @@
 #include <QMainWindow>
 #include "ui_loginwindow.h"
 
+#include "networkclient.h"
+
 class LoginWindow : public QMainWindow, public Ui::LoginWindow {
 
   Q_OBJECT
@@ -31,6 +33,9 @@ class LoginWindow : public QMainWindow, public Ui::LoginWindow {
     LoginWindow(QWidget *parent = 0);
     ~LoginWindow();
 
+//  signals:
+//    void loginSucceeded ( const QString& username, const QString& password, const int& minutes );
+
   protected:
     void setupActions();
 
@@ -38,9 +43,14 @@ class LoginWindow : public QMainWindow, public Ui::LoginWindow {
 
   protected slots:
 	void attemptLogin();
+    void attemptLoginFailure( int loginError );
+    void attemptLoginSuccess();
+
 	void resetLoginScreen();
 
   private:
+	QString defaultMessage;
+	NetworkClient net;
 
 };
 

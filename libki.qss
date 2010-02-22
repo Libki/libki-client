@@ -5,3 +5,8 @@ QLabel#headerLabel {
 QLabel#messageLabel {
 	font: bold 10pt;
 }
+
+QLabel#errorLabel {
+	font: bold 14pt;
+	color: red;
+}

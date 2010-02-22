@@ -17,21 +17,28 @@
 * along with Libki. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef NETWORKACCESS_H
-#define NETWORKACCESS_H
+#ifndef NETWORKCLIENT_H
+#define NETWORKCLIENT_H
 
-class NetworkAccess {
+#include <QObject>
+#include <QHash>
 
+namespace NetworkError {
+  enum Enum {
+    SERVER_GONE,
+    BAD_LOGIN,
+    NO_TIME
+  };
+}
+
+
+class NetworkClient : public QObject {
   Q_OBJECT
 
-  typedef QHash<QString, QString> NetworkMessage;
-
   public:
-    NetworkAccess();
-    ~NetworkAccess();
+    NetworkClient();
 
-	NetworkMessage TryLogin( QString username, QString password );
-
+    bool attemptLogin( QString username, QString password, int & error );
 };
 
-#endif // LOGINWINDOW_H
+#endif // NETWORKCLIENT_H
