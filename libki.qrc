@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="images" >
+    <file>images/padlock.svg</file>
     <file>images/libki.svg</file>
   </qresource>
   <qresource prefix="icons" >

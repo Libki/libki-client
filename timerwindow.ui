@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>687</width>
-    <height>220</height>
+    <width>690</width>
+    <height>216</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -65,7 +65,7 @@
       <item>
        <widget class="QProgressBar" name="progressBar">
         <property name="value">
-         <number>0</number>
+         <number>100</number>
         </property>
         <property name="invertedAppearance">
          <bool>false</bool>
@@ -135,7 +135,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>687</width>
+     <width>690</width>
      <height>25</height>
     </rect>
    </property>

@@ -18,11 +18,23 @@
 */
 
 #include <QtGui>
+#include <QtDebug>
 
 #include "loginwindow.h"
+#include "keypresseater.h"
 
 LoginWindow::LoginWindow(QWidget *parent) : QMainWindow(parent) {
   setupUi(this);
+
+  setWindowFlags( (windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint); // Remove the maximize window button
+  setWindowFlags( (windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowSystemMenuHint); // Remove the close window button
+  setWindowFlags( (windowFlags() | Qt::CustomizeWindowHint) & Qt::WindowStaysOnTopHint); 
+  setWindowFlags( (windowFlags() | Qt::CustomizeWindowHint) & Qt::X11BypassWindowManagerHint);
+  setWindowFlags( (windowFlags() | Qt::CustomizeWindowHint) & Qt::FramelessWindowHint);
+
+//  KeyPressEater* keyPressEater = new KeyPressEater(this);
+//  this->installEventFilter(keyPressEater);
+
   setupActions();
 
   defaultMessage = messageLabel->text();
@@ -30,12 +42,18 @@ LoginWindow::LoginWindow(QWidget *parent) : QMainWindow(parent) {
 
   this->showMaximized();
   this->showFullScreen();
+  setFixedSize(width(), height()); // Prevent the window from being resized
 
   usernameField->setFocus();
 
 }
 
 LoginWindow::~LoginWindow() {
+}
+
+/* Reimplemented closeEvent to prevent application from being closed. */
+void LoginWindow::closeEvent(QCloseEvent *event) {
+  event->ignore();
 }
 
 void LoginWindow::setupActions() {
@@ -81,9 +99,12 @@ void LoginWindow::attemptLoginFailure( int loginError ) {
   usernameField->selectAll();
 }
 
-void LoginWindow::attemptLoginSuccess( QString username, QString password, int minutes ) {
+void LoginWindow::attemptLoginSuccess( QString& username, QString& password, int minutes ) {
   resetLoginScreen();
-  emit loginSucceeded( username, password, minutes );
+
+  qDebug() << "LoginWindow::attemptLoginSuccess :: Minutes: " << minutes;
+
+  emit loginSucceeded( /*const QString& username, const QString& password, */ minutes );
   this->hide();
 }
 
@@ -93,5 +114,3 @@ void LoginWindow::resetLoginScreen() {
   errorLabel->setText("");
   usernameField->setFocus();
 }
-
-

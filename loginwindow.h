@@ -33,8 +33,10 @@ class LoginWindow : public QMainWindow, public Ui::LoginWindow {
     LoginWindow(QWidget *parent = 0);
     ~LoginWindow();
 
+	void closeEvent(QCloseEvent *event);
+
   signals:
-    void loginSucceeded( const QString& username, const QString& password, const int& minutes );
+    void loginSucceeded( /*const QString& username, const QString& password,*/ const int& minutes );
 
   protected:
     void setupActions();
@@ -44,7 +46,7 @@ class LoginWindow : public QMainWindow, public Ui::LoginWindow {
   protected slots:
 	void attemptLogin();
     void attemptLoginFailure( int loginError );
-    void attemptLoginSuccess( QString username, QString password, int minutes );
+    void attemptLoginSuccess( QString& username, QString& password, int minutes );
 
 	void resetLoginScreen();
 

@@ -17,24 +17,20 @@
 * along with Libki.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "networkclient.h"
+#ifndef KEYPRESSEATER_H
+#define KEYPRESSEATER_H
 
-NetworkClient::NetworkClient() : QObject() {
+#include <QObject>
 
-}
+class KeyPressEater : public QObject {
+  Q_OBJECT
 
-int NetworkClient::attemptLogin( QString username, QString password, int & error ) {
+  public:
+    KeyPressEater(QObject *parent = 0);
+    ~KeyPressEater();
 
-  if ( username == "kyle" && password == "test" ) {
-    return 90;
-  } else {
-    error = NetworkError::NO_TIME;
-    return false;
-  }
+  protected:
+    bool eventFilter(QObject *obj, QEvent *event);
+};
 
-  int minutes = 30;
-
-  return minutes;
-
-}
-
+#endif // KEYPRESSEATER_H

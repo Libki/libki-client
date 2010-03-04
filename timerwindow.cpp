@@ -18,26 +18,66 @@
 */
 
 #include <QtGui>
+#include <QtDebug>
 
 #include "timerwindow.h"
 
 TimerWindow::TimerWindow(QWidget *parent) : QMainWindow(parent) {
   setupUi(this);
+
+  setFixedSize(width(), height()); // Prevent the window from being resized
+  setWindowFlags( (windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint); // Remove the maximize window button
+  setWindowFlags( (windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowSystemMenuHint); // Remove the close window button
+
   setupActions();
   this->hide();
 }
 
-LoginWindow::~LoginWindow() {
+TimerWindow::~TimerWindow() {
 }
 
-void LoginWindow::startTimer( QString username, QString password, int minutes ) {
+/* Reimplemented closeEvent to prevent application from being closed. */
+void TimerWindow::closeEvent(QCloseEvent *event) {
+  event->ignore();
+}
+
+void TimerWindow::startTimer( /*const QString& username, const QString& password, */ int minutes ) {
+  qDebug() << "TimerWindow::startTimer :: Minutes: " << minutes;
+
   this->show();
+
+  minutesRemaining = minutesAtStart = minutes;
+
+  updateClock();
+
+  /* Start The Countdown */
+  decrementMinutesTimer = new QTimer(this);
+  connect(decrementMinutesTimer, SIGNAL(timeout()), this, SLOT(decrementMinutes()));
+  decrementMinutesTimer->start( 1000 ); // Run once per minute ( 60000 milliseconds )
 }
 
-void LoginWindow::setupActions() {
-
+void TimerWindow::setupActions() {
 }
 
-void LoginWindow::getSettings() {
+void TimerWindow::getSettings() {
+}
+
+void TimerWindow::updateClock() {
+  /* Convert minutes remaining into Hours::Minutes */
+  int hours = minutesRemaining / 60;
+  int minutes = minutesRemaining % 60;
+
+  QString time = QString::number(hours) + ":" + QString::number(minutes).rightJustified(2, '0');
+
+  lcdNumber->display( time );
+  
+  /* Update the progress bar */
+  progressBar->setRange( 0, minutesAtStart );
+  progressBar->setValue( minutesRemaining );
+}
+
+void TimerWindow::decrementMinutes() {
+  minutesRemaining--;
+  updateClock();
 }
 

@@ -36,14 +36,14 @@ int main(int argc, char *argv[]) {
   QCoreApplication::setOrganizationDomain("MillRunTech.com");
   QCoreApplication::setApplicationName("Libki Kiosk Management System");
 
-  LoginWindow loginWindow;
-  TimerWindow timerWindow;
+  LoginWindow* loginWindow = new LoginWindow();
+  TimerWindow* timerWindow = new TimerWindow();
 
-  connect( loginWindow, SIGNAL( loginSucceeded( const QString& username, const QString& password, const int& minutes ) ), 
-           timerWindow, SLOT( startTimer( const QString& username, const QString& password, const int& minutes ) )
+  QObject::connect( loginWindow, SIGNAL( loginSucceeded( /*const QString& username, const QString& password,*/ int  ) ), 
+           timerWindow, SLOT( startTimer( /*const QString& username, const QString& password,*/ int  ) )
   );
 
-  loginWindow.show();
+  loginWindow->show();
                         
   return app.exec();
 }

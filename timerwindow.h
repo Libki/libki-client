@@ -21,6 +21,7 @@
 #define LOGINWINDOW_H
 
 #include <QMainWindow>
+#include <QTimer>
 #include "ui_timerwindow.h"
 
 #include "networkclient.h"
@@ -33,18 +34,27 @@ class TimerWindow : public QMainWindow, public Ui::TimerWindow {
     TimerWindow(QWidget *parent = 0);
     ~TimerWindow();
 
+	void closeEvent(QCloseEvent *event);
+
   public slots:
-    void startTimer( const QString& username, const QString& password, const int& minutes );
+    void startTimer( /*const QString& username, const QString& password,*/ int minutes );
 
   protected:
     void setupActions();
 
     void getSettings();
 
+    void updateClock();
+
   protected slots:
+	void decrementMinutes();
 
   private:
 	NetworkClient net;
+
+    QTimer* decrementMinutesTimer;
+    int minutesRemaining;
+    int minutesAtStart;
 
 };
 

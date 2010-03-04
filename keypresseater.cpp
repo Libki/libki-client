@@ -17,24 +17,22 @@
 * along with Libki.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "networkclient.h"
+#include <QObject>
+#include <QKeyEvent>
 
-NetworkClient::NetworkClient() : QObject() {
+#include "keypresseater.h"
 
-}
+KeyPressEater::KeyPressEater(QObject *parent) : QObject(parent) {}
 
-int NetworkClient::attemptLogin( QString username, QString password, int & error ) {
+KeyPressEater::~KeyPressEater() {}
 
-  if ( username == "kyle" && password == "test" ) {
-    return 90;
+bool KeyPressEater::eventFilter(QObject *obj, QEvent *event) {
+  if (event->type() == QEvent::KeyPress) {
+    QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+    qDebug("Ate key press %d", keyEvent->key());
+    return true;
   } else {
-    error = NetworkError::NO_TIME;
-    return false;
+    // standard event processing
+    return QObject::eventFilter(obj, event);
   }
-
-  int minutes = 30;
-
-  return minutes;
-
 }
-
