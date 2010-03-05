@@ -26,7 +26,7 @@ NetworkClient::NetworkClient() : QObject() {
 int NetworkClient::attemptLogin( QString username, QString password, int & error ) {
 
   if ( username == "kyle" && password == "test" ) {
-    return 90;
+    return 5;
   } else {
     error = NetworkError::NO_TIME;
     return false;

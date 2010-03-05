@@ -38,6 +38,9 @@ class LoginWindow : public QMainWindow, public Ui::LoginWindow {
   signals:
     void loginSucceeded( /*const QString& username, const QString& password,*/ const int& minutes );
 
+  public slots:
+    void displayLoginWindow();
+
   protected:
     void setupActions();
 
@@ -51,6 +54,8 @@ class LoginWindow : public QMainWindow, public Ui::LoginWindow {
 	void resetLoginScreen();
 
   private:
+    void showMe();
+
 	QString defaultMessage;
 	NetworkClient net;
 

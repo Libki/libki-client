@@ -29,6 +29,8 @@ TimerWindow::TimerWindow(QWidget *parent) : QMainWindow(parent) {
   setWindowFlags( (windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint); // Remove the maximize window button
   setWindowFlags( (windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowSystemMenuHint); // Remove the close window button
 
+  decrementMinutesTimer = new QTimer(this);
+
   setupActions();
   this->hide();
 }
@@ -51,12 +53,18 @@ void TimerWindow::startTimer( /*const QString& username, const QString& password
   updateClock();
 
   /* Start The Countdown */
-  decrementMinutesTimer = new QTimer(this);
-  connect(decrementMinutesTimer, SIGNAL(timeout()), this, SLOT(decrementMinutes()));
   decrementMinutesTimer->start( 1000 ); // Run once per minute ( 60000 milliseconds )
 }
 
+void TimerWindow::stopTimer() {
+  decrementMinutesTimer->stop();
+  this->hide();
+  emit sessionEnded();
+}
+
 void TimerWindow::setupActions() {
+
+  connect(decrementMinutesTimer, SIGNAL(timeout()), this, SLOT(decrementMinutes()));
 }
 
 void TimerWindow::getSettings() {
@@ -79,5 +87,9 @@ void TimerWindow::updateClock() {
 void TimerWindow::decrementMinutes() {
   minutesRemaining--;
   updateClock();
+
+  if ( minutesRemaining <= 0 ) {
+    stopTimer();
+  }
 }
 

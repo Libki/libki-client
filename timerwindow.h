@@ -36,8 +36,12 @@ class TimerWindow : public QMainWindow, public Ui::TimerWindow {
 
 	void closeEvent(QCloseEvent *event);
 
+  signals:
+    void sessionEnded();
+
   public slots:
     void startTimer( /*const QString& username, const QString& password,*/ int minutes );
+    void stopTimer();
 
   protected:
     void setupActions();

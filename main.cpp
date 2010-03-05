@@ -43,6 +43,8 @@ int main(int argc, char *argv[]) {
            timerWindow, SLOT( startTimer( /*const QString& username, const QString& password,*/ int  ) )
   );
 
+  QObject::connect( timerWindow, SIGNAL( sessionEnded() ), loginWindow, SLOT( displayLoginWindow() ) );
+
   loginWindow->show();
                         
   return app.exec();

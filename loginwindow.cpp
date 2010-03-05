@@ -32,20 +32,14 @@ LoginWindow::LoginWindow(QWidget *parent) : QMainWindow(parent) {
   setWindowFlags( (windowFlags() | Qt::CustomizeWindowHint) & Qt::X11BypassWindowManagerHint);
   setWindowFlags( (windowFlags() | Qt::CustomizeWindowHint) & Qt::FramelessWindowHint);
 
-//  KeyPressEater* keyPressEater = new KeyPressEater(this);
-//  this->installEventFilter(keyPressEater);
+  defaultMessage = messageLabel->text();
+
+  //KeyPressEater* keyPressEater = new KeyPressEater(this);
+  //this->installEventFilter(keyPressEater);
 
   setupActions();
 
-  defaultMessage = messageLabel->text();
-  errorLabel->setText("");
-
-  this->showMaximized();
-  this->showFullScreen();
-  setFixedSize(width(), height()); // Prevent the window from being resized
-
-  usernameField->setFocus();
-
+  showMe();
 }
 
 LoginWindow::~LoginWindow() {
@@ -54,6 +48,10 @@ LoginWindow::~LoginWindow() {
 /* Reimplemented closeEvent to prevent application from being closed. */
 void LoginWindow::closeEvent(QCloseEvent *event) {
   event->ignore();
+}
+
+void LoginWindow::displayLoginWindow() {
+  showMe();
 }
 
 void LoginWindow::setupActions() {
@@ -109,8 +107,20 @@ void LoginWindow::attemptLoginSuccess( QString& username, QString& password, int
 }
 
 void LoginWindow::resetLoginScreen() {
+  qDebug() << "LoginWindow::resetLoginScreen()";
+  messageLabel->setText( defaultMessage );
   usernameField->clear();
   passwordField->clear();
   errorLabel->setText("");
   usernameField->setFocus();
+}
+
+void LoginWindow::showMe() {
+  qDebug() << "LoginWindow::showMe()";
+  this->show();
+  this->showMaximized();
+  this->showFullScreen();
+  /* FIXME: For some reason, setFixedSize is preventing the window from being fullscreen. Why? */
+  //setFixedSize(width(), height()); // Prevent the window from being resized
+  resetLoginScreen();
 }
