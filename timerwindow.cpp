@@ -43,8 +43,8 @@ void TimerWindow::closeEvent(QCloseEvent *event) {
   event->ignore();
 }
 
-void TimerWindow::startTimer( /*const QString& username, const QString& password, */ int minutes ) {
-  qDebug() << "TimerWindow::startTimer :: Minutes: " << minutes;
+void TimerWindow::startTimer( const QString& username, const QString& password, int minutes ) {
+  qDebug() << "TimerWindow::startTimer( " << username << ", " << password << ", " << minutes << " )";
 
   this->show();
 

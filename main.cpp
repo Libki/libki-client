@@ -39,8 +39,8 @@ int main(int argc, char *argv[]) {
   LoginWindow* loginWindow = new LoginWindow();
   TimerWindow* timerWindow = new TimerWindow();
 
-  QObject::connect( loginWindow, SIGNAL( loginSucceeded( /*const QString& username, const QString& password,*/ int  ) ), 
-           timerWindow, SLOT( startTimer( /*const QString& username, const QString& password,*/ int  ) )
+  QObject::connect( loginWindow, SIGNAL( loginSucceeded( const QString& , const QString& , int  ) ), 
+           timerWindow, SLOT( startTimer( const QString& , const QString& , int  ) )
   );
 
   QObject::connect( timerWindow, SIGNAL( sessionEnded() ), loginWindow, SLOT( displayLoginWindow() ) );

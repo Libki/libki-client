@@ -36,7 +36,7 @@ class LoginWindow : public QMainWindow, public Ui::LoginWindow {
 	void closeEvent(QCloseEvent *event);
 
   signals:
-    void loginSucceeded( /*const QString& username, const QString& password,*/ const int& minutes );
+    void loginSucceeded( const QString& username, const QString& password, const int& minutes );
 
   public slots:
     void displayLoginWindow();

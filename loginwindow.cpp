@@ -102,7 +102,7 @@ void LoginWindow::attemptLoginSuccess( QString& username, QString& password, int
 
   qDebug() << "LoginWindow::attemptLoginSuccess :: Minutes: " << minutes;
 
-  emit loginSucceeded( /*const QString& username, const QString& password, */ minutes );
+  emit loginSucceeded( username, password, minutes );
   this->hide();
 }
 

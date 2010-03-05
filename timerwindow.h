@@ -40,7 +40,7 @@ class TimerWindow : public QMainWindow, public Ui::TimerWindow {
     void sessionEnded();
 
   public slots:
-    void startTimer( /*const QString& username, const QString& password,*/ int minutes );
+    void startTimer( const QString& username, const QString& password, int minutes );
     void stopTimer();
 
   protected:
