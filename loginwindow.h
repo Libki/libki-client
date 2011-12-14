@@ -21,44 +21,45 @@
 #define LOGINWINDOW_H
 
 #include <QMainWindow>
+#include <QtGui>
+#include <QtDebug>
+#include <QSettings>
+
 #include "ui_loginwindow.h"
 
 #include "networkclient.h"
 
 class LoginWindow : public QMainWindow, public Ui::LoginWindow {
 
-  Q_OBJECT
+    Q_OBJECT
 
-  public:
+public:
     LoginWindow(QWidget *parent = 0);
     ~LoginWindow();
 
-	void closeEvent(QCloseEvent *event);
+    void closeEvent(QCloseEvent *event);
 
-  signals:
+signals:
     void loginSucceeded( const QString& username, const QString& password, const int& minutes );
+    void attemptLogin( const QString& username, const QString& password );
 
-  public slots:
+public slots:
+    void setAllowClose( bool );
     void displayLoginWindow();
+    void attemptLogin();
+    void attemptLoginFailure( QString loginError );
+    void attemptLoginSuccess( QString username, QString password, int minutes );
 
-  protected:
+private slots:
+    void resetLoginScreen();
+
+private:
+    QIcon libkiIcon;
+    bool allowClose;
+
     void setupActions();
-
     void getSettings();
-
-  protected slots:
-	void attemptLogin();
-    void attemptLoginFailure( int loginError );
-    void attemptLoginSuccess( QString& username, QString& password, int minutes );
-
-	void resetLoginScreen();
-
-  private:
     void showMe();
-
-	QString defaultMessage;
-	NetworkClient net;
-
 };
 
 #endif // LOGINWINDOW_H

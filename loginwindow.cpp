@@ -17,50 +17,45 @@
 * along with Libki.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <QtGui>
-#include <QtDebug>
-
 #include "loginwindow.h"
-#include "keypresseater.h"
 
 LoginWindow::LoginWindow(QWidget *parent) : QMainWindow(parent) {
-  setupUi(this);
+    qDebug("LoginWindow::LoginWindow");
 
-  setWindowFlags( (windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint); // Remove the maximize window button
-  setWindowFlags( (windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowSystemMenuHint); // Remove the close window button
-  setWindowFlags( (windowFlags() | Qt::CustomizeWindowHint) & Qt::WindowStaysOnTopHint); 
-  setWindowFlags( (windowFlags() | Qt::CustomizeWindowHint) & Qt::X11BypassWindowManagerHint);
-  setWindowFlags( (windowFlags() | Qt::CustomizeWindowHint) & Qt::FramelessWindowHint);
+    setAllowClose( false );
 
-  defaultMessage = messageLabel->text();
+    setupUi(this);
 
-  //KeyPressEater* keyPressEater = new KeyPressEater(this);
-  //this->installEventFilter(keyPressEater);
+    libkiIcon = QIcon(":images/padlock.svg");
+    this->setWindowIcon(libkiIcon);
 
-  setupActions();
+    setWindowFlags( (windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint); // Remove the maximize window button
+    setWindowFlags( (windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowSystemMenuHint); // Remove the close window button
+    setWindowFlags( (windowFlags() | Qt::CustomizeWindowHint) & Qt::WindowStaysOnTopHint);
+    setWindowFlags( (windowFlags() | Qt::CustomizeWindowHint) & Qt::X11BypassWindowManagerHint);
+    setWindowFlags( (windowFlags() | Qt::CustomizeWindowHint) & Qt::FramelessWindowHint);
 
-  showMe();
+    setupActions();
+
+    showMe();
 }
 
 LoginWindow::~LoginWindow() {
 }
 
-/* Reimplemented closeEvent to prevent application from being closed. */
-void LoginWindow::closeEvent(QCloseEvent *event) {
-  event->ignore();
-}
-
 void LoginWindow::displayLoginWindow() {
-  showMe();
+    qDebug("LoginWindow::displayLoginWindow");
+    showMe();
 }
 
 void LoginWindow::setupActions() {
+    qDebug("LoginWindow::setupActions");
 
-  connect(loginButton, SIGNAL(clicked()),
-          this, SLOT(attemptLogin()));
+    connect(loginButton, SIGNAL(clicked()),
+            this, SLOT(attemptLogin()));
 
-  connect(cancelButton, SIGNAL(clicked()),
-          this, SLOT(resetLoginScreen()));
+    connect(cancelButton, SIGNAL(clicked()),
+            this, SLOT(resetLoginScreen()));
 
 }
 
@@ -69,58 +64,70 @@ void LoginWindow::getSettings() {
 
 /* Protected Slots */
 void LoginWindow::attemptLogin() {
-  int loginError;
+    qDebug("LoginWindow::attemptLogin");
+    QString username = usernameField->text();
+    QString password = passwordField->text();
 
-  QString username = usernameField->text();
-  QString password = passwordField->text();
-
-  int minutes = net.attemptLogin( username, password, loginError );
-
-  if ( minutes ) {
-    attemptLoginSuccess( username, password, minutes );
-  } else {
-	attemptLoginFailure( loginError );
-  }
+    emit attemptLogin( username, password );
 }
 
-void LoginWindow::attemptLoginFailure( int loginError ) {
-  if ( loginError == NetworkError::BAD_LOGIN ) {
-    errorLabel->setText( tr("Login Failed: Username & Password Do Not Match") );
-  } else if ( loginError == NetworkError::NO_TIME ) {
-    errorLabel->setText( tr("Login Failed: No Time Left") );
-  } else if ( loginError == NetworkError::SERVER_GONE ) {
-    errorLabel->setText( tr("Login Failed: Unable To Connect To Server") );
-  }
+void LoginWindow::attemptLoginFailure( QString loginError ) {
+    qDebug() << "LoginWindow::attemptLoginFailure(" + loginError + ")";
 
-  passwordField->clear();
-  usernameField->setFocus();
-  usernameField->selectAll();
+    if ( loginError == "BAD_LOGIN" ) {
+        errorLabel->setText( tr("Login Failed: Username & Password Do Not Match") );
+    } else if ( loginError == "NO_TIME" ) {
+        errorLabel->setText( tr("Login Failed: No Time Left") );
+    } else if ( loginError == "SERVER_GONE" ) {
+        errorLabel->setText( tr("Login Failed: Unable To Connect To Server") );
+    } else if ( loginError == "ACCOUNT_IN_USE" ) {
+        errorLabel->setText( tr("Login Failed: Account Is Currently In Use") );
+    } else if ( loginError == "ACCOUNT_DISABLED" ) {
+        errorLabel->setText( tr("Login Failed: Account Is Disabled") );
+    }
+
+    passwordField->clear();
+    usernameField->setFocus();
+    usernameField->selectAll();
 }
 
-void LoginWindow::attemptLoginSuccess( QString& username, QString& password, int minutes ) {
-  resetLoginScreen();
+void LoginWindow::attemptLoginSuccess( QString username, QString password, int minutes ) {
+    qDebug("LoginWindow::attemptLoginSuccess");
+    resetLoginScreen();
 
-  qDebug() << "LoginWindow::attemptLoginSuccess :: Minutes: " << minutes;
-
-  emit loginSucceeded( username, password, minutes );
-  this->hide();
+    emit loginSucceeded( username, password, minutes );
+    this->hide();
 }
 
 void LoginWindow::resetLoginScreen() {
-  qDebug() << "LoginWindow::resetLoginScreen()";
-  messageLabel->setText( defaultMessage );
-  usernameField->clear();
-  passwordField->clear();
-  errorLabel->setText("");
-  usernameField->setFocus();
+    qDebug() << "LoginWindow::resetLoginScreen()";
+    usernameField->clear();
+    passwordField->clear();
+    errorLabel->setText("");
+    usernameField->setFocus();
 }
 
 void LoginWindow::showMe() {
-  qDebug() << "LoginWindow::showMe()";
-  this->show();
-  this->showMaximized();
-  this->showFullScreen();
-  /* FIXME: For some reason, setFixedSize is preventing the window from being fullscreen. Why? */
-  //setFixedSize(width(), height()); // Prevent the window from being resized
-  resetLoginScreen();
+    qDebug() << "LoginWindow::showMe()";
+
+    this->show();
+    this->showMaximized();
+    this->showFullScreen();
+    /* FIXME: For some reason, setFixedSize is preventing the window from being fullscreen. Why? */
+    //setFixedSize(width(), height()); // Prevent the window from being resized
+    resetLoginScreen();
+}
+
+void LoginWindow::setAllowClose( bool close ){
+    qDebug("LoginWindow::setAllowClose");
+    allowClose = close;
+}
+
+/* Reimplemented closeEvent to prevent application from being closed. */
+void LoginWindow::closeEvent(QCloseEvent *event) {
+    if ( allowClose ){
+        event->accept();
+    } else {
+        event->ignore();
+    }
 }

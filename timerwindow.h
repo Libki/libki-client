@@ -22,44 +22,62 @@
 
 #include <QMainWindow>
 #include <QTimer>
+#include <QSystemTrayIcon>
+#include <QtGui>
+#include <QtDebug>
+#include <QMessageBox>
+#include <QSettings>
+
+
 #include "ui_timerwindow.h"
 
 #include "networkclient.h"
 
 class TimerWindow : public QMainWindow, public Ui::TimerWindow {
 
-  Q_OBJECT
+    Q_OBJECT
 
-  public:
+public:
     TimerWindow(QWidget *parent = 0);
     ~TimerWindow();
+    void closeEvent(QCloseEvent *event);
 
-	void closeEvent(QCloseEvent *event);
+signals:
+    void requestLogout();
+    void timerStopped();
+    void serverAccountMinutesRequest();
 
-  signals:
-    void sessionEnded();
-
-  public slots:
+public slots:
+    void setAllowClose( bool );
     void startTimer( const QString& username, const QString& password, int minutes );
     void stopTimer();
+    void updateTimeLeft( int minutes );
+    void showMessage( QString message );
 
-  protected:
+private slots:
+    void doLogoutDialog();
+    void restoreTimerWindow();
+    void iconActivated(QSystemTrayIcon::ActivationReason);
+    void showSystemTrayIconTimeLeftMessage();
+
+private:
+    bool allowClose;
+
+    QIcon libkiIcon;
+    QSystemTrayIcon *trayIcon;
+    QMenu *trayIconMenu;
+
+    QTimer* trayIconPopupTimer;
+    int minutesRemaining;
+    int minutesAtStart;
+
     void setupActions();
+
+    void setupTrayIcon();
 
     void getSettings();
 
     void updateClock();
-
-  protected slots:
-	void decrementMinutes();
-
-  private:
-	NetworkClient net;
-
-    QTimer* decrementMinutesTimer;
-    int minutesRemaining;
-    int minutesAtStart;
-
 };
 
 #endif // LOGINWINDOW_H

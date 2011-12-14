@@ -20,25 +20,74 @@
 #ifndef NETWORKCLIENT_H
 #define NETWORKCLIENT_H
 
+#include <QApplication>
 #include <QObject>
 #include <QHash>
+#include <QTimer>
+#include <QUrl>
+#include <QEventLoop>
+#include <QtNetwork/QNetworkAccessManager>
+#include <QtNetwork/QNetworkRequest>
+#include <QtNetwork/QNetworkReply>
+#include <QtScript/QScriptValue>
+#include <QtScript/QScriptEngine>
+#include <QDebug>
+#include <QProcess>
+#include <QSettings>
 
-namespace NetworkError {
-  enum Enum {
-    SERVER_GONE,
-    BAD_LOGIN,
-    NO_TIME
-  };
+namespace LogoutAction {
+    enum Enum {
+        Logout,
+        Reboot,
+        NoAction
+    };
 }
 
-
 class NetworkClient : public QObject {
-  Q_OBJECT
+    Q_OBJECT
 
-  public:
+public:
     NetworkClient();
 
-    int attemptLogin( QString username, QString password, int & error );
+signals:
+    void loginSucceeded( const QString& username, const QString& password, const int& minutes );
+    void loginFailed( QString errorCode );
+    void timeUpdatedFromServer( int minutes );
+    void logoutSucceeded();
+    void logoutFailed();
+    void messageRecieved( QString message );
+    void allowClose( bool );
+
+public slots:
+    void attemptLogin( QString username, QString password );
+    void attemptLogout();
+
+private slots:
+    void registerNode();
+    void processRegisterNodeReply( QNetworkReply* reply );
+
+    void getUserDataUpdate();
+    void processGetUserDataUpdateReply( QNetworkReply* reply );
+
+    void clearMessage();
+    void processClearMessageReply( QNetworkReply* reply );
+
+    void processAttemptLogoutReply( QNetworkReply* reply );
+
+private:
+    QTimer* registerNodeTimer;
+    QTimer* updateUserDataTimer;
+
+    QUrl serviceURL;
+
+    QString nodeName;
+    LogoutAction::Enum actionOnLogout;
+
+    QString username;
+    QString password;
+
+    void doLoginTasks( int units );
+    void doLogoutTasks();
 };
 
 #endif // NETWORKCLIENT_H

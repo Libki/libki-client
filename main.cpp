@@ -19,33 +19,77 @@
 
 #include <QApplication>
 #include <QFile>
+#include <QProcess>
 
 #include "loginwindow.h"
 #include "timerwindow.h"
+#include "networkclient.h"
+
 
 int main(int argc, char *argv[]) {
-  QApplication app(argc, argv);
+    QApplication app(argc, argv);
 
-  /* Apply the stylesheet */
-  QFile qss("libki.qss");
-  qss.open(QFile::ReadOnly);
-  app.setStyleSheet(qss.readAll());
-  qss.close();
+#ifdef Q_WS_WIN
+    // If this is an MS Windows platform, use the keylocker programs to limit mischief.
+    QProcess::startDetached("windows/on_startup.exe");
+#endif
 
-  QCoreApplication::setOrganizationName("MillRunTech");
-  QCoreApplication::setOrganizationDomain("MillRunTech.com");
-  QCoreApplication::setApplicationName("Libki Kiosk Management System");
+    /* Apply the stylesheet */
+    QFile qss("libki.qss");
+    qss.open(QFile::ReadOnly);
+    app.setStyleSheet(qss.readAll());
+    qss.close();
 
-  LoginWindow* loginWindow = new LoginWindow();
-  TimerWindow* timerWindow = new TimerWindow();
+    QCoreApplication::setOrganizationName("MillRunTech");
+    QCoreApplication::setOrganizationDomain("MillRunTech.com");
+    QCoreApplication::setApplicationName("Libki Kiosk Management System");
+    QSettings::setDefaultFormat(QSettings::IniFormat);
 
-  QObject::connect( loginWindow, SIGNAL( loginSucceeded( const QString& , const QString& , int  ) ), 
-           timerWindow, SLOT( startTimer( const QString& , const QString& , int  ) )
-  );
+    LoginWindow* loginWindow = new LoginWindow();
+    TimerWindow* timerWindow = new TimerWindow();
+    NetworkClient* networkClient = new NetworkClient();
 
-  QObject::connect( timerWindow, SIGNAL( sessionEnded() ), loginWindow, SLOT( displayLoginWindow() ) );
+    QObject::connect(
+                loginWindow,
+                SIGNAL( loginSucceeded( const QString& , const QString& , int  ) ),
+                timerWindow,
+                SLOT( startTimer( const QString& , const QString& , int  ) )
+                );
 
-  loginWindow->show();
-                        
-  return app.exec();
+    QObject::connect( timerWindow, SIGNAL(requestLogout()), networkClient, SLOT(attemptLogout()));
+    QObject::connect( networkClient, SIGNAL(logoutSucceeded()), timerWindow, SLOT(stopTimer()));
+
+    QObject::connect( timerWindow, SIGNAL( timerStopped() ), loginWindow, SLOT( displayLoginWindow() ) );
+
+    QObject::connect(
+                loginWindow,
+                SIGNAL( attemptLogin( const QString&, const QString& ) ),
+                networkClient,
+                SLOT( attemptLogin( const QString&, const QString& ) )
+                );
+
+    QObject::connect(
+                networkClient,
+                SIGNAL(loginSucceeded(QString,QString,int)),
+                loginWindow,
+                SLOT(attemptLoginSuccess(QString,QString,int))
+                );
+
+    QObject::connect(
+                networkClient,
+                SIGNAL(loginFailed(QString)),
+                loginWindow,
+                SLOT(attemptLoginFailure(QString))
+                );
+
+    QObject::connect( networkClient, SIGNAL(timeUpdatedFromServer(int)), timerWindow, SLOT(updateTimeLeft(int)));
+
+    QObject::connect( networkClient, SIGNAL(messageRecieved(QString)), timerWindow, SLOT(showMessage(QString)));
+
+    QObject::connect( networkClient, SIGNAL(allowClose(bool)), loginWindow, SLOT(setAllowClose(bool)));
+    QObject::connect( networkClient, SIGNAL(allowClose(bool)), timerWindow, SLOT(setAllowClose(bool)));
+
+    loginWindow->show();
+
+    return app.exec();
 }

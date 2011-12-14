@@ -71,6 +71,13 @@
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
        <widget class="QLabel" name="headerLabel">
+        <property name="font">
+         <font>
+          <pointsize>18</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
         <property name="text">
          <string>Internet Kiosk</string>
         </property>
@@ -114,11 +121,18 @@
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
            <widget class="QLabel" name="errorLabel">
+            <property name="font">
+             <font>
+              <pointsize>14</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
             </property>
             <property name="text">
-             <string>Lorum Ipsum</string>
+             <string/>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -272,7 +286,7 @@
      <x>0</x>
      <y>0</y>
      <width>857</width>
-     <height>25</height>
+     <height>18</height>
     </rect>
    </property>
   </widget>

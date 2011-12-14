@@ -7,15 +7,18 @@ TARGET =
 DEPENDPATH += .
 INCLUDEPATH += .
 
+QT += network
+QT += script
+
 # Input
-HEADERS += keypresseater.h loginwindow.h networkclient.h timerwindow.h
+HEADERS += loginwindow.h networkclient.h timerwindow.h
 FORMS += loginwindow.ui timerwindow.ui
-SOURCES += keypresseater.cpp \
-           loginwindow.cpp \
+SOURCES += loginwindow.cpp \
            main.cpp \
            networkclient.cpp \
            timerwindow.cpp
 RESOURCES += libki.qrc
 
-CONFIG += debug
+#CONFIG += debug
 #CONFIG += console
+

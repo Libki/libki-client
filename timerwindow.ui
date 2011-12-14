@@ -27,7 +27,7 @@
        <string notr="true"/>
       </property>
       <property name="pixmap">
-       <pixmap resource="../../../../home/kyle/qt4/Libki/libki.qrc">:/images/images/libki.svg</pixmap>
+       <pixmap resource="libki.qrc">:/images/images/libki.svg</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
@@ -98,8 +98,8 @@
          <string>Log Out</string>
         </property>
         <property name="icon">
-         <iconset resource="../../../../home/kyle/qt4/Libki/libki.qrc">
-          <normaloff>:/icons/images/icons/system_log_out.svg</normaloff>:/icons/images/icons/system_log_out.svg</iconset>
+         <iconset resource="libki.qrc">
+          <normaloff>:/icons/system_log_out.svg</normaloff>:/icons/system_log_out.svg</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -109,13 +109,16 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
+      <item row="2" column="0">
        <widget class="QPushButton" name="pauseButton">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="text">
          <string>Lock System</string>
         </property>
         <property name="icon">
-         <iconset resource="../../../../home/kyle/qt4/Libki/libki.qrc">
+         <iconset resource="libki.qrc">
           <normaloff>:/icons/images/icons/lock.svg</normaloff>:/icons/images/icons/lock.svg</iconset>
         </property>
         <property name="iconSize">
@@ -125,6 +128,19 @@
          </size>
         </property>
        </widget>
+      </item>
+      <item row="1" column="0">
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
       </item>
      </layout>
     </item>
@@ -136,14 +152,14 @@
      <x>0</x>
      <y>0</y>
      <width>690</width>
-     <height>25</height>
+     <height>18</height>
     </rect>
    </property>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <resources>
-  <include location="../../../../home/kyle/qt4/Libki/libki.qrc"/>
+  <include location="libki.qrc"/>
  </resources>
  <connections/>
 </ui>
