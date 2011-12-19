@@ -63,6 +63,7 @@ void TimerWindow::startTimer( const QString& username, const QString& password, 
 
 void TimerWindow::stopTimer() {
     qDebug("TimerWindow::stopTimer");
+    trayIconPopupTimer->stop();
     trayIcon->hide();
     this->hide();
 
