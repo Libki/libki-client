@@ -18,7 +18,6 @@
 */
 
 #include <QApplication>
-#include <QFile>
 #include <QProcess>
 
 #include "loginwindow.h"
@@ -40,8 +39,8 @@ int main(int argc, char *argv[]) {
     app.setStyleSheet(qss.readAll());
     qss.close();
 
-    QCoreApplication::setOrganizationName("MillRunTech");
-    QCoreApplication::setOrganizationDomain("MillRunTech.com");
+    QCoreApplication::setOrganizationName("Libki");
+    QCoreApplication::setOrganizationDomain("KyleHall.info");
     QCoreApplication::setApplicationName("Libki Kiosk Management System");
     QSettings::setDefaultFormat(QSettings::IniFormat);
 

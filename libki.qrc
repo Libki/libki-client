@@ -1,12 +1,16 @@
 <RCC>
-  <qresource prefix="images" >
-    <file alias="padlock.svg">images/padlock.svg</file>
-    <file>images/libki.svg</file>
-  </qresource>
-  <qresource prefix="icons" >
-    <file>images/icons/lock.svg</file>
-    <file alias="system_log_out.svg">images/icons/system_log_out.svg</file>
-    <file>images/icons/button_cancel.svg</file>
-    <file>images/icons/button_ok.svg</file>
-  </qresource>
+    <qresource prefix="/images">
+        <file>images/libki.png</file>
+        <file alias="padlock.png">images/padlock.png</file>
+    </qresource>
+    <qresource prefix="/icons">
+        <file>images/icons/lock.svg</file>
+        <file alias="system_log_out.svg">images/icons/system_log_out.svg</file>
+        <file>images/icons/button_cancel.svg</file>
+        <file>images/icons/button_ok.svg</file>
+        <file alias="system_log_out.png">images/icons/system_log_out.png</file>
+        <file>images/icons/button_cancel.png</file>
+        <file>images/icons/button_ok.png</file>
+        <file>images/icons/lock.png</file>
+    </qresource>
 </RCC>

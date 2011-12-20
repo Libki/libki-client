@@ -26,7 +26,7 @@ TimerWindow::TimerWindow(QWidget *parent) : QMainWindow(parent) {
 
     setupUi(this);
 
-    libkiIcon = QIcon(":images/padlock.svg");
+    libkiIcon = QIcon(":images/padlock.png");
 
     this->setWindowIcon(libkiIcon);
 
@@ -133,7 +133,7 @@ void TimerWindow::setupTrayIcon(){
 
     trayIconMenu = new QMenu(this);
 
-    QAction* logoutAction = new QAction(QIcon(":icons/system_log_out.svg"), tr("Log Out"), this);
+    QAction* logoutAction = new QAction(QIcon(":icons/system_log_out.png"), tr("Log Out"), this);
     connect(logoutAction, SIGNAL(triggered()), this, SLOT(doLogoutDialog()));
     trayIconMenu->addAction(logoutAction);
 

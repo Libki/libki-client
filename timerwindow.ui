@@ -27,7 +27,7 @@
        <string notr="true"/>
       </property>
       <property name="pixmap">
-       <pixmap resource="libki.qrc">:/images/images/libki.svg</pixmap>
+       <pixmap resource="libki.qrc">:/images/images/libki.png</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
@@ -99,7 +99,7 @@
         </property>
         <property name="icon">
          <iconset resource="libki.qrc">
-          <normaloff>:/icons/system_log_out.svg</normaloff>:/icons/system_log_out.svg</iconset>
+          <normaloff>:/icons/system_log_out.png</normaloff>:/icons/system_log_out.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -119,7 +119,7 @@
         </property>
         <property name="icon">
          <iconset resource="libki.qrc">
-          <normaloff>:/icons/images/icons/lock.svg</normaloff>:/icons/images/icons/lock.svg</iconset>
+          <normaloff>:/icons/images/icons/lock.png</normaloff>:/icons/images/icons/lock.png</iconset>
         </property>
         <property name="iconSize">
          <size>

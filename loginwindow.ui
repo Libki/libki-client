@@ -92,7 +92,7 @@
          <string/>
         </property>
         <property name="pixmap">
-         <pixmap resource="libki.qrc">:/images/images/libki.svg</pixmap>
+         <pixmap resource="libki.qrc">:/images/images/libki.png</pixmap>
         </property>
         <property name="scaledContents">
          <bool>false</bool>
