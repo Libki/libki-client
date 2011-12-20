@@ -31,12 +31,12 @@ ShowDesktopIcons(){
 }
 
 GetSetting( key ){
-	IniRead, OutputVar, C:\Documents and Settings\Administrator\Application Data\MillRunTech\Libki Kiosk Management System.ini, windows, %key%
+	IniRead, OutputVar, C:\Documents and Settings\Administrator\Application Data\Libki\Libki Kiosk Management System.ini, windows, %key%
 	return OutputVar
 }
 
 TryUnlock(){
-	FileRead, UnlockPwd, C:\Documents and Settings\Administrator\Application Data\MillRunTech\keylock
+	FileRead, UnlockPwd, C:\Documents and Settings\Administrator\Application Data\Libki\keylock
 	if ( UnlockPwd ) {
 		DisableTaskBar()
 		InputBox, UserInput, Enter Password, Enter Password, hide

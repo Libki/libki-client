@@ -22,7 +22,7 @@ DisableCtrlAltDel()
 !TAB::
 
 ;FIXME - Removed, DisableTaskBar makes this uneccessary
-Disable Windows Key
+;Disable Windows Key
 LWin::
 RWin::
 #::
