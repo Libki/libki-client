@@ -15,7 +15,9 @@
 SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
-InputBox, UserInput, Enter Password, Enter Password, hide 
+Envget, vAPPDATA, APPDATA
+
+InputBox, UserInput, Create Libki Unlocker Password, Enter Password, hide 
 UserHash := HashPassword( UserInput )
-FileDelete, keylock
-FileAppend, %UserHash%, keylock
+FileDelete, %vAPPDATA%\Libki\keylock
+FileAppend, %UserHash%, %vAPPDATA%\Libki\keylock
