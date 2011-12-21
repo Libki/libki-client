@@ -72,6 +72,7 @@ private slots:
     void clearMessage();
     void processClearMessageReply( QNetworkReply* reply );
 
+    void processAttemptLoginReply( QNetworkReply* reply );
     void processAttemptLogoutReply( QNetworkReply* reply );
 
 private:

@@ -64,15 +64,15 @@ void NetworkClient::attemptLogin( QString aUsername, QString aPassword ) {
     qDebug() << "LOGIN URL: " << loginURL.toString();
     qDebug() << "NetworkClient::attemptLogin";
 
-    QNetworkAccessManager *networkMgr = new QNetworkAccessManager(this);
-    QNetworkReply *reply = networkMgr->get( QNetworkRequest( loginURL ) );
+    QNetworkAccessManager* nam;
+    nam = new QNetworkAccessManager(this);
+    QObject::connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(processAttemptLoginReply(QNetworkReply*)));
 
-    QEventLoop loop;
-    QObject::connect(reply, SIGNAL(readyRead()), &loop, SLOT(quit()));
+    QNetworkReply* reply = nam->get(QNetworkRequest(loginURL));
+}
 
-    // Execute the event loop here, now we will wait here until readyRead() signal is emitted
-    // which in turn will trigger event loop quit.
-    loop.exec();
+void NetworkClient::processAttemptLoginReply( QNetworkReply* reply ) {
+    qDebug("NetworkClient::processAttemptLogoutReply");
 
     QByteArray result;
     result = reply->readAll();
@@ -93,6 +93,9 @@ void NetworkClient::attemptLogin( QString aUsername, QString aPassword ) {
         qDebug() << "Error Code: " << errorCode;
         emit loginFailed( errorCode );
     }
+
+    reply->deleteLater();
+
 }
 
 void NetworkClient::attemptLogout(){
