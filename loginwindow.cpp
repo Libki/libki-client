@@ -68,6 +68,8 @@ void LoginWindow::attemptLogin() {
     QString username = usernameField->text();
     QString password = passwordField->text();
 
+    errorLabel->setText( tr("Please Wait...") );
+
     emit attemptLogin( username, password );
 }
 
