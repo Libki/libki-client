@@ -15,3 +15,7 @@ SOURCES += loginwindow.cpp \
            main.cpp \
            networkclient.cpp \
            timerwindow.cpp
+
+#win32 {
+#    LIBS += -luser32 -lshell32 -lgdi32
+#}

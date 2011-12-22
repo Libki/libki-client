@@ -24,6 +24,10 @@
 #include "timerwindow.h"
 #include "networkclient.h"
 
+//#ifdef Q_WS_WIN
+//    #include "qt_windows.h"
+//#endif
+
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
