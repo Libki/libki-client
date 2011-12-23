@@ -82,8 +82,6 @@ void LoginWindow::attemptLoginFailure( QString loginError ) {
         errorLabel->setText( tr("Login Failed: Username & Password Do Not Match") );
     } else if ( loginError == "NO_TIME" ) {
         errorLabel->setText( tr("Login Failed: No Time Left") );
-    } else if ( loginError == "SERVER_GONE" ) {
-        errorLabel->setText( tr("Login Failed: Unable To Connect To Server") );
     } else if ( loginError == "ACCOUNT_IN_USE" ) {
         errorLabel->setText( tr("Login Failed: Account Is Currently In Use") );
     } else if ( loginError == "ACCOUNT_DISABLED" ) {
