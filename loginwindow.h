@@ -60,6 +60,7 @@ private:
     void setupActions();
     void getSettings();
     void showMe();
+    void setButtonsEnabled( bool );
 };
 
 #endif // LOGINWINDOW_H

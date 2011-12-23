@@ -68,6 +68,8 @@ void LoginWindow::attemptLogin() {
     QString username = usernameField->text();
     QString password = passwordField->text();
 
+    this->setButtonsEnabled( false );
+
     errorLabel->setText( tr("Please Wait...") );
 
     emit attemptLogin( username, password );
@@ -86,7 +88,11 @@ void LoginWindow::attemptLoginFailure( QString loginError ) {
         errorLabel->setText( tr("Login Failed: Account Is Currently In Use") );
     } else if ( loginError == "ACCOUNT_DISABLED" ) {
         errorLabel->setText( tr("Login Failed: Account Is Disabled") );
+    } else {
+        errorLabel->setText( tr("Login Failed: Unable To Connect To Server"));
     }
+
+    this->setButtonsEnabled( true );
 
     passwordField->clear();
     usernameField->setFocus();
@@ -103,6 +109,8 @@ void LoginWindow::attemptLoginSuccess( QString username, QString password, int m
 
 void LoginWindow::resetLoginScreen() {
     qDebug() << "LoginWindow::resetLoginScreen()";
+
+    this->setButtonsEnabled( true );
     usernameField->clear();
     passwordField->clear();
     errorLabel->setText("");
@@ -118,6 +126,13 @@ void LoginWindow::showMe() {
     /* FIXME: For some reason, setFixedSize is preventing the window from being fullscreen. Why? */
     //setFixedSize(width(), height()); // Prevent the window from being resized
     resetLoginScreen();
+}
+
+void LoginWindow::setButtonsEnabled( bool b ){
+    usernameField->setEnabled( b );
+    passwordField->setEnabled( b );
+    cancelButton->setEnabled( b );
+    loginButton->setEnabled( b );
 }
 
 void LoginWindow::setAllowClose( bool close ){
