@@ -7,19 +7,19 @@ EnableCtrlAltDel(){
 }
 
 DisableStartButton(){
-	Control, Disable, , Button1, ahk_class Shell_TrayWnd
+	WinHide,Start ahk_class Button
 }
 
 EnableStartButton(){
-	Control, Enable, , Button1, ahk_class Shell_TrayWnd
+	WinShow,Start ahk_class Button
 }
 
 DisableTaskBar(){
-	WinHide ahk_class Shell_TrayWnd
+	WinHide,ahk_class Shell_TrayWnd
 }
 
 EnableTaskBar(){
-	WinShow ahk_class Shell_TrayWnd
+	WinShow,ahk_class Shell_TrayWnd
 }
 
 HideDesktopIcons(){
