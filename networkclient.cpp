@@ -259,5 +259,23 @@ void NetworkClient::doLogoutTasks(){
     }
 #endif
 
+#ifdef Q_WS_X11
+    if ( actionOnLogout == LogoutAction::Logout ) {
+        emit allowClose( true );
+        // Restart KDE 4
+        QProcess::startDetached("qdbus org.kde.ksmserver /KSMServer org.kde.KSMServerInterface.logout -0 -1 -1");
+        // Restart Gnome
+        QProcess::startDetached("gnome-session-save --kill --silent");
+        // Restart XFCE 4
+        QProcess::startDetached("/usr/bin/xfce4-session-logout");
+    } else if ( actionOnLogout == LogoutAction::Reboot ) {
+        emit allowClose( true );
+        // For this to work, sudo must be installed and the line
+        // %shutdown ALL=(root) NOPASSWD: /sbin/reboot
+        // needs to be added to /etc/sudoers
+        QProcess::startDetached("sudo reboot");
+    }
+#endif
+
     emit logoutSucceeded();
 }
