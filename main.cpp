@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
     qss.close();
 
     QCoreApplication::setOrganizationName("Libki");
-    QCoreApplication::setOrganizationDomain("KyleHall.info");
+    QCoreApplication::setOrganizationDomain("libki.org");
     QCoreApplication::setApplicationName("Libki Kiosk Management System");
     QSettings::setDefaultFormat(QSettings::IniFormat);
 

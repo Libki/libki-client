@@ -57,7 +57,7 @@ void NetworkClient::attemptLogin( QString aUsername, QString aPassword ) {
     serviceURL.addQueryItem( "username", username );
     serviceURL.addQueryItem( "password", password );
 
-    QUrl loginURL = QUrl::QUrl( serviceURL );
+    QUrl loginURL = QUrl( serviceURL );
     loginURL.addQueryItem("action", "login");
     loginURL.addQueryItem("node", nodeName );
 
@@ -105,7 +105,7 @@ void NetworkClient::attemptLogout(){
     nam = new QNetworkAccessManager(this);
     QObject::connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(processAttemptLogoutReply(QNetworkReply*)));
 
-    QUrl logoutURL = QUrl::QUrl( serviceURL );
+    QUrl logoutURL = QUrl( serviceURL );
     logoutURL.addQueryItem("action", "logout");
 
     QNetworkReply* reply = nam->get(QNetworkRequest(logoutURL));
@@ -137,7 +137,7 @@ void NetworkClient::getUserDataUpdate(){
     QNetworkAccessManager* nam = new QNetworkAccessManager(this);
     QObject::connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(processGetUserDataUpdateReply(QNetworkReply*)));
 
-    QUrl userDataUrl = QUrl::QUrl( serviceURL );
+    QUrl userDataUrl = QUrl( serviceURL );
     userDataUrl.addQueryItem("action", "get_user_data");
 
     QNetworkReply* reply = nam->get(QNetworkRequest(userDataUrl));
@@ -187,7 +187,7 @@ void NetworkClient::registerNode(){
     nam = new QNetworkAccessManager(this);
     QObject::connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(processRegisterNodeReply(QNetworkReply*)));
 
-    QUrl registerUrl = QUrl::QUrl( serviceURL );
+    QUrl registerUrl = QUrl( serviceURL );
     registerUrl.addQueryItem("action", "register_node");
     registerUrl.addQueryItem("node_name", nodeName );
 
@@ -218,7 +218,7 @@ void NetworkClient::clearMessage(){
     qDebug("NetworkClient::clearMessage");
     QNetworkAccessManager* nam = new QNetworkAccessManager(this);
     QObject::connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(processRegisterNodeReply(QNetworkReply*)));
-    QUrl registerUrl = QUrl::QUrl( serviceURL );
+    QUrl registerUrl = QUrl( serviceURL );
     registerUrl.addQueryItem("action", "clear_message");
     nam->get(QNetworkRequest(registerUrl));
 }
