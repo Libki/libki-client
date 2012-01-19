@@ -44,6 +44,8 @@ TimerWindow::TimerWindow(QWidget *parent) : QMainWindow(parent) {
     // Disable unused features
     pauseButton->hide();
 
+    this->move(QApplication::desktop()->screen()->rect().center()-this->rect().center());
+
     this->hide();
 }
 
