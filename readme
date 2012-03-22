@@ -1,0 +1,15 @@
+Libki Kiosk Management System Client
+
+[ Linux ]
+Installation: 
+  1) Copy the libki client /usr/local/bin
+  2) Install the required packages:
+    * Ubuntu/Debian: libqtcore4 libqt4-script libqtgui4 libqt4-network
+  3) Create the Libki ini file and put it somewhere it can be read.
+    * This archive includes an example.ini file. Edit it and place it in one of
+the following areas:
+      * $HOME/.config/Libki/Libki Kiosk Management System.ini 
+      * $HOME/.config/Libki.ini
+      * /etc/xdg/Libki/Libki Kiosk Management System.ini
+      * /etc/xdg/Libki.ini
+  5) set the program to run on login. This usually involves creating a .desktop file for the program in the autostart directory ($HOME/.config/autostart)

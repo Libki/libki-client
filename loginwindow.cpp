@@ -37,6 +37,8 @@ LoginWindow::LoginWindow(QWidget *parent) : QMainWindow(parent) {
 
     setupActions();
 
+    getSettings();
+
     showMe();
 }
 
@@ -60,6 +62,24 @@ void LoginWindow::setupActions() {
 }
 
 void LoginWindow::getSettings() {
+
+    /* Set Labels */
+    QSettings settings;
+
+    if ( ! settings.value("labels/username").toString().isEmpty() ) {
+        usernameLabel->setText(settings.value("labels/username").toString() );
+    }
+
+    if ( ! settings.value("labels/password").toString().isEmpty() ) {
+        passwordLabel->setText(settings.value("labels/password").toString() );
+    }
+
+    /* Hide Password Field */
+
+    if ( settings.value("node/hide_password").toString().toInt() ) {
+        passwordLabel->hide();
+        passwordField->hide();
+    }
 }
 
 /* Protected Slots */
