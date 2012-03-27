@@ -107,7 +107,7 @@ void NetworkClient::attemptLogout(){
 
     QUrl logoutURL = QUrl( serviceURL );
     logoutURL.addQueryItem("action", "logout");
-
+    logoutURL.addQueryItem("node", nodeName );
     QNetworkReply* reply = nam->get(QNetworkRequest(logoutURL));
 }
 
