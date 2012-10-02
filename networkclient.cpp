@@ -268,6 +268,8 @@ void NetworkClient::doLogoutTasks(){
         QProcess::startDetached("gnome-session-save --kill --silent");
         // Restart XFCE 4
         QProcess::startDetached("/usr/bin/xfce4-session-logout");
+        // Restart Mate
+        QProcess::startDetached("mate-session-save --force-logout");
     } else if ( actionOnLogout == LogoutAction::Reboot ) {
         emit allowClose( true );
         // For this to work, sudo must be installed and the line
