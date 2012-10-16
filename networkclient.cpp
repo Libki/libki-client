@@ -94,8 +94,9 @@ void NetworkClient::processAttemptLoginReply( QNetworkReply* reply ) {
         emit loginFailed( errorCode );
     }
 
+    reply->abort();
     reply->deleteLater();
-
+    reply->manager()->deleteLater();
 }
 
 void NetworkClient::attemptLogout(){
@@ -127,8 +128,9 @@ void NetworkClient::processAttemptLogoutReply( QNetworkReply* reply ) {
         emit logoutFailed();
     }
 
+    reply->abort();
     reply->deleteLater();
-
+    reply->manager()->deleteLater();
 }
 
 void NetworkClient::getUserDataUpdate(){
@@ -177,8 +179,9 @@ void NetworkClient::processGetUserDataUpdateReply(QNetworkReply* reply) {
         doLogoutTasks();
     }
 
+    reply->abort();
     reply->deleteLater();
-}
+    reply->manager()->deleteLater();}
 
 void NetworkClient::registerNode(){
     qDebug("NetworkClient::registerNode");
@@ -210,7 +213,9 @@ void NetworkClient::processRegisterNodeReply( QNetworkReply* reply ) {
         qDebug("Node Registration FAILED");
     }
 
+    reply->abort();
     reply->deleteLater();
+    reply->manager()->deleteLater();
 
 }
 
@@ -225,7 +230,10 @@ void NetworkClient::clearMessage(){
 
 void NetworkClient::processClearMessageReply( QNetworkReply* reply ){
     qDebug("NetworkClient::processClearMessageReply");
+
+    reply->abort();
     reply->deleteLater();
+    reply->manager()->deleteLater();
 }
 
 void NetworkClient::doLoginTasks( int units ){
