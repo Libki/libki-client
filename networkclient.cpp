@@ -25,6 +25,7 @@ NetworkClient::NetworkClient() : QObject() {
     QSettings settings;
 
     nodeName = settings.value("node/name").toString();
+    nodeLocation = settings.value("node/location").toString();
 
     QString action = settings.value("node/logoutAction").toString();
     if ( action == "logout") {
@@ -41,6 +42,7 @@ NetworkClient::NetworkClient() : QObject() {
     serviceURL.setPath("/api/client/v1_0");
 
     serviceURL.addQueryItem("node", nodeName );
+    serviceURL.addQueryItem("location", nodeLocation );
 
     registerNode();
     registerNodeTimer = new QTimer(this);

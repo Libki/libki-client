@@ -82,6 +82,8 @@ private:
     QUrl serviceURL;
 
     QString nodeName;
+    QString nodeLocation;
+
     LogoutAction::Enum actionOnLogout;
 
     QString username;
