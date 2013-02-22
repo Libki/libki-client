@@ -39,6 +39,8 @@ LoginWindow::LoginWindow(QWidget *parent) : QMainWindow(parent) {
 
     getSettings();
 
+    reservedLabel->hide();
+
     showMe();
 }
 
@@ -106,8 +108,12 @@ void LoginWindow::attemptLoginFailure( QString loginError ) {
         errorLabel->setText( tr("Login Failed: Account Is Currently In Use") );
     } else if ( loginError == "ACCOUNT_DISABLED" ) {
         errorLabel->setText( tr("Login Failed: Account Is Disabled") );
+    } else if ( loginError == "RESERVED_FOR_OTHER" ) {
+        errorLabel->setText( tr("Login Failed: This Kiosk Is Reserved For Someone Else") );
+    } else if ( loginError == "RESERVATION_REQUIRED" ) {
+        errorLabel->setText( tr("Login Failed: Reservation Required") );
     } else {
-        errorLabel->setText( tr("Login Failed: Unable To Connect To Server"));
+        errorLabel->setText( tr("Login Failed: Unable To Connect To Server") );
     }
 
     this->setButtonsEnabled( true );
@@ -123,6 +129,8 @@ void LoginWindow::attemptLoginSuccess( QString username, QString password, int m
 
     emit loginSucceeded( username, password, minutes );
     this->hide();
+
+    isHidden = true;
 }
 
 void LoginWindow::resetLoginScreen() {
@@ -144,6 +152,12 @@ void LoginWindow::showMe() {
     /* FIXME: For some reason, setFixedSize is preventing the window from being fullscreen. Why? */
     //setFixedSize(width(), height()); // Prevent the window from being resized
     resetLoginScreen();
+
+    isHidden = false;
+
+    if ( !reservedFor.isEmpty() ) {
+        handleReservationStatus(reservedFor);
+    }
 }
 
 void LoginWindow::setButtonsEnabled( bool b ){
@@ -165,4 +179,26 @@ void LoginWindow::closeEvent(QCloseEvent *event) {
     } else {
         event->ignore();
     }
+}
+
+void LoginWindow::handleReservationStatus(QString reserved_for){
+    qDebug("LoginWindow::handleReservationStatus");
+
+    if ( reserved_for.isEmpty() ) {
+        reservedLabel->hide();
+    } else {
+        QSettings settings;
+        if ( settings.value("session/ReservationShowUsername").toBool() ) {
+            reservedLabel->setText( tr("Reserved for ") + reserved_for );
+        } else {
+            reservedLabel->setText( tr("Reserved") );
+        }
+        reservedLabel->show();
+
+        if ( !isHidden ) {
+            emit displayingReservationMessage( reserved_for );
+        }
+    }
+
+    reservedFor = reserved_for;
 }

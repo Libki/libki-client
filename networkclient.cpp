@@ -213,15 +213,23 @@ void NetworkClient::processRegisterNodeReply( QNetworkReply* reply ) {
     QByteArray result;
     result = reply->readAll();
 
+    qDebug() << "Server Result: " << result;
+
     QScriptValue sc;
     QScriptEngine engine;
     sc = engine.evaluate("(" + QString(result) + ")");
 
-    if (sc.property("registered").toBoolean() == true){
-        //Really, there is nothing to do here.
-    } else {
+    if ( !sc.property("registered").toBoolean() ){
         qDebug("Node Registration FAILED");
     }
+
+    QSettings settings;
+    settings.setValue("session/ClientBehavior", sc.property("ClientBehavior").toString());
+    settings.setValue("session/ReservationShowUsername", sc.property("ReservationShowUsername").toString());
+    settings.sync();
+
+    QString reserved_for = sc.property("reserved_for").toString();
+    emit setReservationStatus( reserved_for );
 
     reply->abort();
     reply->deleteLater();
@@ -232,7 +240,7 @@ void NetworkClient::processRegisterNodeReply( QNetworkReply* reply ) {
 void NetworkClient::clearMessage(){
     qDebug("NetworkClient::clearMessage");
     QNetworkAccessManager* nam = new QNetworkAccessManager(this);
-    QObject::connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(processRegisterNodeReply(QNetworkReply*)));
+    QObject::connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(ignoreNetworkReply(QNetworkReply*)));
     QUrl url = QUrl( serviceURL );
     url.addQueryItem("action", "clear_message");
     url.addQueryItem( "username", username );
@@ -241,8 +249,19 @@ void NetworkClient::clearMessage(){
     nam->get(QNetworkRequest(url));
 }
 
-void NetworkClient::processClearMessageReply( QNetworkReply* reply ){
-    qDebug("NetworkClient::processClearMessageReply");
+void NetworkClient::acknowledgeReservation( QString reserved_for ){
+    qDebug("NetworkClient::acknowledgeReservation");
+    QNetworkAccessManager* nam = new QNetworkAccessManager(this);
+    QObject::connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(ignoreNetworkReply(QNetworkReply*)));
+    QUrl url = QUrl( serviceURL );
+    url.addQueryItem("action", "acknowledge_reservation");
+    url.addQueryItem("reserved_for", reserved_for);
+
+    nam->get(QNetworkRequest(url));
+}
+
+void NetworkClient::ignoreNetworkReply( QNetworkReply* reply ){
+    qDebug("NetworkClient::ignoreNetworkReply");
 
     reply->abort();
     reply->deleteLater();

@@ -120,6 +120,27 @@
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
+           <widget class="QLabel" name="reservedLabel">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="font">
+             <font>
+              <family>Bitstream Charter</family>
+              <pointsize>18</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Reserved</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QLabel" name="errorLabel">
             <property name="font">
              <font>
@@ -286,7 +307,7 @@
      <x>0</x>
      <y>0</y>
      <width>857</width>
-     <height>18</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>

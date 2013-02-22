@@ -48,6 +48,11 @@ int main(int argc, char *argv[]) {
     QCoreApplication::setApplicationName("Libki Kiosk Management System");
     QSettings::setDefaultFormat(QSettings::IniFormat);
 
+    QSettings settings;
+    settings.setValue("session/ClientBehavior", "");
+    settings.setValue("session/ReservationShowUsername", "");
+    settings.sync();
+
     LoginWindow* loginWindow = new LoginWindow();
     TimerWindow* timerWindow = new TimerWindow();
     NetworkClient* networkClient = new NetworkClient();
@@ -83,6 +88,20 @@ int main(int argc, char *argv[]) {
                 SIGNAL(loginFailed(QString)),
                 loginWindow,
                 SLOT(attemptLoginFailure(QString))
+                );
+
+    QObject::connect(
+                networkClient,
+                SIGNAL(setReservationStatus(QString)),
+                loginWindow,
+                SLOT(handleReservationStatus(QString))
+                );
+
+    QObject::connect(
+                loginWindow,
+                SIGNAL(displayingReservationMessage(QString)),
+                networkClient,
+                SLOT(acknowledgeReservation(QString))
                 );
 
     QObject::connect( networkClient, SIGNAL(timeUpdatedFromServer(int)), timerWindow, SLOT(updateTimeLeft(int)));

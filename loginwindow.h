@@ -42,6 +42,7 @@ public:
 signals:
     void loginSucceeded( const QString& username, const QString& password, const int& minutes );
     void attemptLogin( const QString& username, const QString& password );
+    void displayingReservationMessage( QString reserved_for );
 
 public slots:
     void setAllowClose( bool );
@@ -49,13 +50,18 @@ public slots:
     void attemptLogin();
     void attemptLoginFailure( QString loginError );
     void attemptLoginSuccess( QString username, QString password, int minutes );
+    void handleReservationStatus( QString reserved_for );
 
 private slots:
     void resetLoginScreen();
 
 private:
     QIcon libkiIcon;
+
+    QString reservedFor;
+
     bool allowClose;
+    bool isHidden;
 
     void setupActions();
     void getSettings();

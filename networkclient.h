@@ -57,10 +57,12 @@ signals:
     void logoutFailed();
     void messageRecieved( QString message );
     void allowClose( bool );
+    void setReservationStatus( QString reserved_for );
 
 public slots:
     void attemptLogin( QString username, QString password );
     void attemptLogout();
+    void acknowledgeReservation( QString reserved_for );
 
 private slots:
     void registerNode();
@@ -70,7 +72,8 @@ private slots:
     void processGetUserDataUpdateReply( QNetworkReply* reply );
 
     void clearMessage();
-    void processClearMessageReply( QNetworkReply* reply );
+
+    void ignoreNetworkReply( QNetworkReply* reply );
 
     void processAttemptLoginReply( QNetworkReply* reply );
     void processAttemptLogoutReply( QNetworkReply* reply );
