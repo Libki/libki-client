@@ -1,7 +1,7 @@
 <RCC>
     <qresource prefix="/images">
         <file>images/libki.png</file>
-        <file alias="padlock.png">images/padlock.png</file>
+        <file>images/libki_clock.png</file>
     </qresource>
     <qresource prefix="/icons">
         <file>images/icons/lock.svg</file>
