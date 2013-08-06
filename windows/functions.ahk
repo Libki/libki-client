@@ -31,14 +31,12 @@ ShowDesktopIcons(){
 }
 
 GetSetting( key ){
-	Envget, vAPPDATA, APPDATA
-	IniRead, OutputVar, %vAPPDATA%\Libki\Libki Kiosk Management System.ini, windows, %key%
+	IniRead, OutputVar, %A_AppDataCommon%\Libki\Libki Kiosk Management System.ini, windows, %key%
 	return OutputVar
 }
 
 TryUnlock(){
-	Envget, vAPPDATA, APPDATA
-	FileRead, UnlockPwd, %vAPPDATA%\Libki\keylock
+	FileRead, UnlockPwd, %A_AppDataCommon%\Libki\keylock
 	if ( UnlockPwd ) {
 		DisableTaskBar()
 		InputBox, UserInput, Enter Password, Enter Password, hide
