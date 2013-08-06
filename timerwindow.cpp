@@ -26,7 +26,7 @@ TimerWindow::TimerWindow(QWidget *parent) : QMainWindow(parent) {
 
     setupUi(this);
 
-    libkiIcon = QIcon(":images/padlock.png");
+    libkiIcon = QIcon(":images/libki_clock.png");
 
     this->setWindowIcon(libkiIcon);
 

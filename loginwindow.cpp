@@ -26,7 +26,7 @@ LoginWindow::LoginWindow(QWidget *parent) : QMainWindow(parent) {
 
     setupUi(this);
 
-    libkiIcon = QIcon(":images/padlock.png");
+    libkiIcon = QIcon(":images/libki_clock.png");
     this->setWindowIcon(libkiIcon);
 
     setWindowFlags( (windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint); // Remove the maximize window button

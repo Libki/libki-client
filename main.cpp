@@ -47,6 +47,7 @@ QString os_username;
     os_username = getenv("USER");
 #endif
     qDebug() << "OS Username: " << os_username;
+
     /* Apply the stylesheet */
     QFile qss("libki.qss");
     qss.open(QFile::ReadOnly);
