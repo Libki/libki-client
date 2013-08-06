@@ -34,11 +34,6 @@
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
-#ifdef Q_WS_WIN
-    // If this is an MS Windows platform, use the keylocker programs to limit mischief.
-    QProcess::startDetached("windows/on_startup.exe");
-#endif
-
 QString os_username;
 #ifdef Q_WS_WIN
     os_username = getenv("USERNAME");
@@ -80,6 +75,11 @@ QString os_username;
             exit(1);
         }
     }
+
+#ifdef Q_WS_WIN
+    // If this is an MS Windows platform, use the keylocker programs to limit mischief.
+    QProcess::startDetached("windows/on_startup.exe");
+#endif
 
     settings.setValue("session/ClientBehavior", "");
     settings.setValue("session/ReservationShowUsername", "");

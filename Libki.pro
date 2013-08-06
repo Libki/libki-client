@@ -6,6 +6,8 @@ INCLUDEPATH += .
 QT += network
 QT += script
 
+#CONFIG += console
+
 # Input
 HEADERS += loginwindow.h networkclient.h timerwindow.h
 FORMS += loginwindow.ui timerwindow.ui
