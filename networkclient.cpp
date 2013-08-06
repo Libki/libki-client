@@ -19,13 +19,26 @@
 
 #include "networkclient.h"
 
+#include <QtNetwork/QHostInfo>
+
 NetworkClient::NetworkClient() : QObject() {
     qDebug("NetworkClient::NetworkClient");
 
     QSettings settings;
 
     nodeName = settings.value("node/name").toString();
+
+    // Fail over to hostname if node name isn't defined.
+    if ( nodeName.isEmpty() ) {
+        QHostInfo hostInfo;
+        hostInfo = QHostInfo::fromName(QHostInfo::localHostName());
+        nodeName = QHostInfo::localHostName();
+    }
+
     nodeLocation = settings.value("node/location").toString();
+//    settings.dumpObjectInfo();
+//    settings.dumpObjectTree();
+//    qDebug() << "QSettings Path: " << settings.fileName();
 
     QString action = settings.value("node/logoutAction").toString();
     if ( action == "logout") {
@@ -168,7 +181,7 @@ void NetworkClient::processGetUserDataUpdateReply(QNetworkReply* reply) {
     sc = engine.evaluate("(" + QString(result) + ")");
 
     QString message = sc.property("message").toString();
-    if ( !message.isEmpty() ) {
+    if ( !message.isEmpty() && !message.isNull() ) {
         this->clearMessage();
         emit messageRecieved( message );
     }

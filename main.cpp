@@ -24,6 +24,8 @@
 #include "timerwindow.h"
 #include "networkclient.h"
 
+#include <stdlib.h>
+
 //#ifdef Q_WS_WIN
 //    #include "qt_windows.h"
 //#endif
@@ -37,6 +39,14 @@ int main(int argc, char *argv[]) {
     QProcess::startDetached("windows/on_startup.exe");
 #endif
 
+QString os_username;
+#ifdef Q_WS_WIN
+    os_username = getenv("USERNAME");
+#endif
+#ifdef Q_WS_X11
+    os_username = getenv("USER");
+#endif
+    qDebug() << "OS Username: " << os_username;
     /* Apply the stylesheet */
     QFile qss("libki.qss");
     qss.open(QFile::ReadOnly);
@@ -49,6 +59,27 @@ int main(int argc, char *argv[]) {
     QSettings::setDefaultFormat(QSettings::IniFormat);
 
     QSettings settings;
+
+    QString onlyRunFor;
+    onlyRunFor = settings.value("node/onlyRunFor").toString();
+    qDebug() << "onlyRunFor: " << onlyRunFor;
+    if ( !onlyRunFor.isEmpty() ) {
+        if ( onlyRunFor != os_username ) {
+            qDebug() << "onlyRunFor does not match OS username, exiting.";
+            exit(1);
+        }
+    }
+
+    QString onlyStopFor;
+    onlyStopFor = settings.value("node/onlyStopFor").toString();
+    qDebug() << "onlyStopFor: " << onlyStopFor;
+    if ( !onlyStopFor.isEmpty() ) {
+        if ( onlyStopFor == os_username ) {
+            qDebug() << "onlyStopFor matches OS username, exiting.";
+            exit(1);
+        }
+    }
+
     settings.setValue("session/ClientBehavior", "");
     settings.setValue("session/ReservationShowUsername", "");
     settings.sync();
