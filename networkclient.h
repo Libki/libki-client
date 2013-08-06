@@ -58,6 +58,7 @@ signals:
     void messageRecieved( QString message );
     void allowClose( bool );
     void setReservationStatus( QString reserved_for );
+    void handleBanners();
 
 public slots:
     void attemptLogin( QString username, QString password );

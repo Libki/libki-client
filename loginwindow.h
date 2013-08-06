@@ -51,6 +51,7 @@ public slots:
     void attemptLoginFailure( QString loginError );
     void attemptLoginSuccess( QString username, QString password, int minutes );
     void handleReservationStatus( QString reserved_for );
+    void handleBanners();
 
 private slots:
     void resetLoginScreen();

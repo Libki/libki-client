@@ -19,6 +19,7 @@
 
 #include <QApplication>
 #include <QProcess>
+#include <QWebView>
 
 #include "loginwindow.h"
 #include "timerwindow.h"
@@ -134,6 +135,13 @@ QString os_username;
                 SIGNAL(displayingReservationMessage(QString)),
                 networkClient,
                 SLOT(acknowledgeReservation(QString))
+                );
+
+    QObject::connect(
+                networkClient,
+                SIGNAL(handleBanners()),
+                loginWindow,
+                SLOT(handleBanners())
                 );
 
     QObject::connect( networkClient, SIGNAL(timeUpdatedFromServer(int)), timerWindow, SLOT(updateTimeLeft(int)));

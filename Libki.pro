@@ -3,8 +3,11 @@ TARGET =
 DEPENDPATH += .
 INCLUDEPATH += .
 
+QT += core
+QT += gui
 QT += network
 QT += script
+QT += webkit
 
 #CONFIG += console
 

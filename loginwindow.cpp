@@ -41,6 +41,8 @@ LoginWindow::LoginWindow(QWidget *parent) : QMainWindow(parent) {
 
     reservedLabel->hide();
 
+    handleBanners();
+
     showMe();
 }
 
@@ -201,4 +203,37 @@ void LoginWindow::handleReservationStatus(QString reserved_for){
     }
 
     reservedFor = reserved_for;
+}
+
+void LoginWindow::handleBanners() {
+    QSettings settings;
+
+    QPalette palette = bannerWebViewTop->palette();
+    palette.setBrush(QPalette::Base, Qt::transparent);
+
+    QString bannerTopUrl = "http://" + settings.value("session/BannerTopURL").toString();
+    if ( ! bannerTopUrl.isEmpty() ) {
+        int bannerTopHeight = settings.value("session/BannerTopHeight").toInt();
+        int bannerTopWidth = settings.value("session/BannerTopWidth").toInt();
+
+        bannerWebViewTop->setEnabled(true);
+        bannerWebViewTop->page()->setPalette(palette);
+        bannerWebViewTop->setAttribute(Qt::WA_OpaquePaintEvent, false);
+        if ( bannerTopHeight ) { bannerWebViewTop->setMaximumHeight( bannerTopHeight ); }
+        if ( bannerTopWidth ) { bannerWebViewTop->setMaximumWidth( bannerTopWidth ); }
+        bannerWebViewTop->load(QUrl(bannerTopUrl));
+    }
+
+    QString bannerBottomUrl = "http://" + settings.value("session/BannerBottomURL").toString();
+    if ( ! bannerBottomUrl.isEmpty() ) {
+        int bannerBottomHeight = settings.value("session/BannerBottomHeight").toInt();
+        int bannerBottomWidth = settings.value("session/BannerBottomWidth").toInt();
+
+        bannerWebViewBottom->setEnabled(true);
+        bannerWebViewBottom->page()->setPalette(palette);
+        bannerWebViewBottom->setAttribute(Qt::WA_OpaquePaintEvent, false);
+        if ( bannerBottomHeight ) { bannerWebViewBottom->setMaximumHeight( bannerBottomHeight ); }
+        if ( bannerBottomWidth ) { bannerWebViewBottom->setMaximumWidth( bannerBottomWidth ); }
+        bannerWebViewBottom->load(QUrl(bannerBottomUrl));
+    }
 }
