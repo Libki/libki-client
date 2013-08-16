@@ -237,6 +237,10 @@ void NetworkClient::processRegisterNodeReply( QNetworkReply* reply ) {
     }
 
     QSettings settings;
+
+    QString bannerTopURL = settings.value("session/BannerTopURL").toString();
+    QString bannerBottomURL = settings.value("session/BannerBottomURL").toString();
+
     settings.setValue("session/ClientBehavior", sc.property("ClientBehavior").toString());
     settings.setValue("session/ReservationShowUsername", sc.property("ReservationShowUsername").toString());
 
@@ -250,7 +254,9 @@ void NetworkClient::processRegisterNodeReply( QNetworkReply* reply ) {
 
     settings.sync();
 
-    emit handleBanners(); //TODO: Emit only if a banner url has changed
+    if ( bannerTopURL != sc.property("BannerTopURL").toString() || bannerBottomURL != sc.property("BannerBottomURL").toString() ) {
+        emit handleBanners(); //TODO: Emit only if a banner url has changed
+    }
 
     QString reserved_for = sc.property("reserved_for").toString();
     emit setReservationStatus( reserved_for );
