@@ -54,8 +54,8 @@ NetworkClient::NetworkClient() : QObject() {
     serviceURL.setScheme( settings.value("server/scheme").toString() );
     serviceURL.setPath("/api/client/v1_0");
 
-    serviceURL.addQueryItem("node", nodeName );
-    serviceURL.addQueryItem("location", nodeLocation );
+	urlQuery.addQueryItem("node", nodeName );
+    urlQuery.addQueryItem("location", nodeLocation );
 
     registerNode();
     registerNodeTimer = new QTimer(this);
@@ -73,9 +73,11 @@ void NetworkClient::attemptLogin( QString aUsername, QString aPassword ) {
     password = aPassword;
 
     QUrl url = QUrl( serviceURL );
-    url.addQueryItem("action", "login");
-    url.addQueryItem( "username", username );
-    url.addQueryItem( "password", password );
+	QUrlQuery query = QUrlQuery(urlQuery);
+    query.addQueryItem("action", "login");
+    query.addQueryItem( "username", username );
+    query.addQueryItem( "password", password );
+	url.setQuery(query);
 
     qDebug() << "LOGIN URL: " << url.toString();
     qDebug() << "NetworkClient::attemptLogin";
@@ -84,7 +86,7 @@ void NetworkClient::attemptLogin( QString aUsername, QString aPassword ) {
     nam = new QNetworkAccessManager(this);
     QObject::connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(processAttemptLoginReply(QNetworkReply*)));
 
-    QNetworkReply* reply = nam->get(QNetworkRequest(url));
+    /*QNetworkReply* reply = */nam->get(QNetworkRequest(url));
 }
 
 void NetworkClient::processAttemptLoginReply( QNetworkReply* reply ) {
@@ -127,10 +129,12 @@ void NetworkClient::attemptLogout(){
     QObject::connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(processAttemptLogoutReply(QNetworkReply*)));
 
     QUrl url = QUrl( serviceURL );
-    url.addQueryItem("action", "logout");
-    url.addQueryItem( "username", username );
-    url.addQueryItem( "password", password );
-    QNetworkReply* reply = nam->get(QNetworkRequest(url));
+	QUrlQuery query = QUrlQuery(urlQuery);
+    query.addQueryItem("action", "logout");
+    query.addQueryItem( "username", username );
+    query.addQueryItem( "password", password );
+	url.setQuery(query);
+    /*QNetworkReply* reply =*/ nam->get(QNetworkRequest(url));
 }
 
 void NetworkClient::processAttemptLogoutReply( QNetworkReply* reply ) {
@@ -161,11 +165,12 @@ void NetworkClient::getUserDataUpdate(){
     QObject::connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(processGetUserDataUpdateReply(QNetworkReply*)));
 
     QUrl url = QUrl( serviceURL );
-    url.addQueryItem("action", "get_user_data");
-    url.addQueryItem( "username", username );
-    url.addQueryItem( "password", password );
-
-    QNetworkReply* reply = nam->get(QNetworkRequest(url));
+	QUrlQuery query = QUrlQuery(urlQuery);
+    query.addQueryItem("action", "get_user_data");
+    query.addQueryItem( "username", username );
+    query.addQueryItem( "password", password );
+	url.setQuery(query);
+    /*QNetworkReply* reply =*/ nam->get(QNetworkRequest(url));
 }
 
 void NetworkClient::processGetUserDataUpdateReply(QNetworkReply* reply) {
@@ -213,11 +218,13 @@ void NetworkClient::registerNode(){
     nam = new QNetworkAccessManager(this);
     QObject::connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(processRegisterNodeReply(QNetworkReply*)));
 
-    QUrl registerUrl = QUrl( serviceURL );
-    registerUrl.addQueryItem("action", "register_node");
-    registerUrl.addQueryItem("node_name", nodeName );
+    QUrl url = QUrl( serviceURL );
+	QUrlQuery query = QUrlQuery(urlQuery);
+    query.addQueryItem("action", "register_node");
+    query.addQueryItem("node_name", nodeName );
+	url.setQuery(query);
 
-    QNetworkReply* reply = nam->get(QNetworkRequest(registerUrl));
+    /*QNetworkReply* reply =*/ nam->get(QNetworkRequest(url));
 }
 
 void NetworkClient::processRegisterNodeReply( QNetworkReply* reply ) {
@@ -272,10 +279,11 @@ void NetworkClient::clearMessage(){
     QNetworkAccessManager* nam = new QNetworkAccessManager(this);
     QObject::connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(ignoreNetworkReply(QNetworkReply*)));
     QUrl url = QUrl( serviceURL );
-    url.addQueryItem("action", "clear_message");
-    url.addQueryItem( "username", username );
-    url.addQueryItem( "password", password );
-
+    QUrlQuery query = QUrlQuery(urlQuery);
+    query.addQueryItem("action", "clear_message");
+    query.addQueryItem( "username", username );
+    query.addQueryItem( "password", password );
+	url.setQuery(query);
     nam->get(QNetworkRequest(url));
 }
 
@@ -284,8 +292,10 @@ void NetworkClient::acknowledgeReservation( QString reserved_for ){
     QNetworkAccessManager* nam = new QNetworkAccessManager(this);
     QObject::connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(ignoreNetworkReply(QNetworkReply*)));
     QUrl url = QUrl( serviceURL );
-    url.addQueryItem("action", "acknowledge_reservation");
-    url.addQueryItem("reserved_for", reserved_for);
+	QUrlQuery query = QUrlQuery(urlQuery);
+    query.addQueryItem("action", "acknowledge_reservation");
+    query.addQueryItem("reserved_for", reserved_for);
+	url.setQuery(query);
 
     nam->get(QNetworkRequest(url));
 }

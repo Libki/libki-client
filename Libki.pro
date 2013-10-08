@@ -1,5 +1,5 @@
 TEMPLATE = app
-TARGET = 
+TARGET = libkiclient
 DEPENDPATH += .
 INCLUDEPATH += .
 
@@ -7,7 +7,7 @@ QT += core
 QT += gui
 QT += network
 QT += script
-QT += webkit
+QT += webkitwidgets
 
 #CONFIG += console
 

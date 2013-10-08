@@ -17,6 +17,7 @@
 * along with Libki.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <QtWidgets/qdesktopwidget.h>
 #include "timerwindow.h"
 
 TimerWindow::TimerWindow(QWidget *parent) : QMainWindow(parent) {
@@ -51,7 +52,7 @@ TimerWindow::TimerWindow(QWidget *parent) : QMainWindow(parent) {
 
 TimerWindow::~TimerWindow() {}
 
-void TimerWindow::startTimer( const QString& username, const QString& password, int minutes ) {
+void TimerWindow::startTimer( const QString&, const QString&, int minutes ) {
     qDebug("TimerWindow::startTimer");
 
     trayIconPopupTimer->start( 1000 * 60 ); // Fire once a minute

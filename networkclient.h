@@ -25,6 +25,7 @@
 #include <QHash>
 #include <QTimer>
 #include <QUrl>
+#include <QUrlQuery>
 #include <QEventLoop>
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkRequest>
@@ -84,6 +85,7 @@ private:
     QTimer* updateUserDataTimer;
 
     QUrl serviceURL;
+	QUrlQuery urlQuery;
 
     QString nodeName;
     QString nodeLocation;
