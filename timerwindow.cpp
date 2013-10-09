@@ -109,8 +109,8 @@ void TimerWindow::doLogoutDialog(){
     QMessageBox msgBox;
     msgBox.setWindowIcon(libkiIcon);
     msgBox.setIcon(QMessageBox::Question);
-    msgBox.setText("Log Out?");
-    msgBox.setInformativeText("Are you sure you want to log out?");
+    msgBox.setText(tr("Log Out?"));
+    msgBox.setInformativeText(tr("Are you sure you want to log out?"));
     msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
     msgBox.setDefaultButton(QMessageBox::Yes);
     int ret = msgBox.exec();
@@ -196,7 +196,7 @@ void TimerWindow::showMessage( QString message ){
     QMessageBox msgBox;
     msgBox.setWindowIcon(libkiIcon);
     msgBox.setIcon(QMessageBox::Information);
-    msgBox.setText("You Have Recieve A Message");
+    msgBox.setText(tr("You Have Recieve A Message"));
     msgBox.setInformativeText( message );
 
     this->restoreTimerWindow();

@@ -14,4 +14,7 @@
         <file>images/icons/button_ok.png</file>
         <file>images/icons/lock.png</file>
     </qresource>
+    <qresource prefix="/">
+        <file>languages/libkiclient_fr_CA.qm</file>
+    </qresource>
 </RCC>

@@ -20,7 +20,8 @@ SOURCES += loginwindow.cpp \
            main.cpp \
            networkclient.cpp \
            timerwindow.cpp
+TRANSLATIONS = languages/libkiclient_fr_ca.ts
 
-#win32 {
-#    LIBS += -luser32 -lshell32 -lgdi32
-#}
+OTHER_FILES +=
+
+

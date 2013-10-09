@@ -27,11 +27,6 @@
 
 #include <stdlib.h>
 
-//#ifdef Q_WS_WIN
-//    #include "qt_windows.h"
-//#endif
-
-
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
@@ -43,6 +38,16 @@ QString os_username;
     os_username = getenv("USER");
 #endif
     qDebug() << "OS Username: " << os_username;
+
+    // Translate the application if the locale is available
+    QString locale = QLocale::system().name();
+    QString filename = QString("languages/libkiclient_") + locale;
+    QTranslator translator;
+    if( translator.load(filename, ":/") ){
+        app.installTranslator(&translator);
+        qDebug() << "Translation file loaded" << filename;
+    } else
+        qDebug() << "Translation file not found:" << filename;
 
     /* Apply the stylesheet */
     QFile qss("libki.qss");
