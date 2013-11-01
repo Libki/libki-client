@@ -310,7 +310,7 @@ void NetworkClient::ignoreNetworkReply( QNetworkReply* reply ){
 
 void NetworkClient::doLoginTasks( int units ){
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     // If this is an MS Windows platform, use the keylocker programs to limit mischief.
     QProcess::startDetached("windows/on_login.exe");
 #endif
@@ -326,7 +326,7 @@ void NetworkClient::doLogoutTasks(){
     username.clear();
     password.clear();
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     //If this is an MS Windows platform, use the keylocker programs to limit mischief.
     QProcess::startDetached("windows/on_logout.exe");
 

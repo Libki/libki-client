@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
 QString os_username;
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     os_username = getenv("USERNAME");
 #endif
 #ifdef Q_WS_X11
@@ -82,7 +82,7 @@ QString os_username;
         }
     }
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     // If this is an MS Windows platform, use the keylocker programs to limit mischief.
     QProcess::startDetached("windows/on_startup.exe");
 #endif
