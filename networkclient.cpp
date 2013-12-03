@@ -183,33 +183,41 @@ void NetworkClient::processGetUserDataUpdateReply(QNetworkReply* reply) {
 
     QScriptValue sc;
     QScriptEngine engine;
-    sc = engine.evaluate("(" + QString(result) + ")");
+    QString json = "(" + QString(result) + ")";
 
-    QString message = sc.property("message").toString();
-    if ( !message.isEmpty() && !message.isNull() ) {
-        this->clearMessage();
-        emit messageRecieved( message );
-    }
+    if ( engine.canEvaluate(json) ){
+        sc = engine.evaluate( json );
 
-    QString status = sc.property("status").toString();
-    if ( status == "Logged in" ) {
-        int units = sc.property("units").toInteger();
+        if ( ! engine.hasUncaughtException() ) {
 
-        emit timeUpdatedFromServer( units );
+//            QString message = sc.property("message").toString();
+//            if ( !message.isEmpty() && !message.isNull() ) {
+//                this->clearMessage();
+//                emit messageRecieved( message );
+//            }
 
-        if ( units < 1 ) {
-            doLogoutTasks();
+            QString status = sc.property("status").toString();
+            if ( status == "Logged in" ) {
+                int units = sc.property("units").toInteger();
+
+                emit timeUpdatedFromServer( units );
+
+                if ( units < 1 ) {
+                    doLogoutTasks();
+                }
+
+            } else if ( status == "Logged out" ) {
+                doLogoutTasks();
+            } else if ( status == "Kicked" ) {
+                doLogoutTasks();
+            }
         }
-
-    } else if ( status == "Logged out" ) {
-        doLogoutTasks();
-    } else if ( status == "Kicked" ) {
-        doLogoutTasks();
     }
 
     reply->abort();
     reply->deleteLater();
-    reply->manager()->deleteLater();}
+    reply->manager()->deleteLater();
+}
 
 void NetworkClient::registerNode(){
     qDebug("NetworkClient::registerNode");
