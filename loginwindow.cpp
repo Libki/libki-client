@@ -102,20 +102,54 @@ void LoginWindow::attemptLogin() {
 void LoginWindow::attemptLoginFailure( QString loginError ) {
     qDebug() << "LoginWindow::attemptLoginFailure(" + loginError + ")";
 
-    if ( loginError == "BAD_LOGIN" ) {
-        errorLabel->setText( tr("Login Failed: Username & Password Do Not Match") );
+    if ( loginError == "BAD_LOGIN" || loginError == "INVALID_USER" || loginError == "INVALID_PASSWORD" ) {
+        errorLabel->setText( tr("Login Failed: Username and password do not match") );
     } else if ( loginError == "NO_TIME" ) {
-        errorLabel->setText( tr("Login Failed: No Time Left") );
+        errorLabel->setText( tr("Login Failed: No time left") );
     } else if ( loginError == "ACCOUNT_IN_USE" ) {
-        errorLabel->setText( tr("Login Failed: Account Is Currently In Use") );
+        errorLabel->setText( tr("Login Failed: Account is currently in use") );
     } else if ( loginError == "ACCOUNT_DISABLED" ) {
-        errorLabel->setText( tr("Login Failed: Account Is Disabled") );
+        errorLabel->setText( tr("Login Failed: Account is disabled") );
     } else if ( loginError == "RESERVED_FOR_OTHER" ) {
-        errorLabel->setText( tr("Login Failed: This Kiosk Is Reserved For Someone Else") );
+        errorLabel->setText( tr("Login Failed: This kiosk is reserved for someone else") );
     } else if ( loginError == "RESERVATION_REQUIRED" ) {
-        errorLabel->setText( tr("Login Failed: Reservation Required") );
+        errorLabel->setText( tr("Login Failed: Reservation required") );
+    } else if ( loginError == "FEE_LIMIT" ) {
+        errorLabel->setText( tr("Login Failed: You have excessive outstanding fees") );
+    } else if ( loginError == "CHARGE_PRIVILEGES_DENIED" ) {
+        errorLabel->setText( tr("Login Failed: Charge privileges denied") );
+    } else if ( loginError == "RENEWAL_PRIVILEGES_DENIED" ) {
+        errorLabel->setText( tr("Login Failed: Renewal privileges denied") );
+    } else if ( loginError == "RECALL_PRIVILEGES_DENIED" ) {
+        errorLabel->setText( tr("Login Failed: Recall privileges denied") );
+    } else if ( loginError == "HOLD_PRIVILEGES_DENIED" ) {
+        errorLabel->setText( tr("Login Failed: Hold privileges denied") );
+    } else if ( loginError == "CARD_REPORTED_LOST" ) {
+        errorLabel->setText( tr("Login Failed: Your card has been reported lost") );
+    } else if ( loginError == "TOO_MANY_ITEMS_CHARGED" ) {
+        errorLabel->setText( tr("Login Failed: You have too many items charged to your account") );
+    } else if ( loginError == "TOO_MANY_ITEMS_OVERDUE" ) {
+        errorLabel->setText( tr("Login Failed: You have too many items overdue") );
+    } else if ( loginError == "TOO_MANY_ITEMS_RENEWALS" ) {
+        errorLabel->setText( tr("Login Failed: You have renewed items too many times") );
+    } else if ( loginError == "TOO_MANY_CLAIMS_OF_ITEMS_RETURNED" ) {
+        errorLabel->setText( tr("Login Failed: You have claimed to many items as returned") );
+    } else if ( loginError == "TOO_MANY_ITEMS_LOST" ) {
+        errorLabel->setText( tr("Login Failed: You have have lost too many items") );
+    } else if ( loginError == "EXCESSIVE_OUTSTANDING_FINES" ) {
+        errorLabel->setText( tr("Login Failed: You have excessive outstanding fines") );
+    } else if ( loginError == "EXCESSIVE_OUTSTANDING_FEES" ) {
+        errorLabel->setText( tr("Login Failed: You have excessive outstanding fees") );
+    } else if ( loginError == "RECALL_OVERDUE" ) {
+        errorLabel->setText( tr("Login Failed: You have a recalled item which is overdue") );
+    } else if ( loginError == "TOO_MANY_ITEMS_BILLED" ) {
+        errorLabel->setText( tr("Login Failed: You have been billed for too many items") );
+    } else if ( loginError == "INVALID_CLIENT" ) {
+        errorLabel->setText( tr("Login Failed: Client not registered") );
+    } else if ( loginError == "CONNECTION_FAILURE" ) {
+        errorLabel->setText( tr("Login Failed: Unable to connect to ILS") );
     } else {
-        errorLabel->setText( tr("Login Failed: Unable To Connect To Server") );
+        errorLabel->setText( tr("Login Failed: ") + loginError );
     }
 
     this->setButtonsEnabled( true );
