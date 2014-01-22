@@ -17,6 +17,8 @@
 * along with Libki.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <QCryptographicHash>
+
 #include "loginwindow.h"
 
 LoginWindow::LoginWindow(QWidget *parent) : QMainWindow(parent) {
@@ -90,11 +92,30 @@ void LoginWindow::getSettings() {
 void LoginWindow::attemptLogin() {
     qDebug("LoginWindow::attemptLogin");
     QString username = usernameField->text();
-    QString password = passwordField->text();
+    QByteArray password;
+    password.append(passwordField->text());
 
     this->setButtonsEnabled( false );
 
     errorLabel->setText( tr("Please Wait...") );
+
+    if ( username.isEmpty() ) {
+        QSettings settings;
+        QString md5FromIni = settings.value("node/password").toString();
+
+        if ( ! md5FromIni.isEmpty() ) {
+            /* Check for shutdown password */
+            QString passwordMd5 = QString(QCryptographicHash::hash(password,QCryptographicHash::Md5).toHex());
+            qDebug() << "Password: " << password;
+            qDebug() << "Hashed Password: " << passwordMd5;
+            qDebug() << "Hash from INI file: " << md5FromIni;
+            if ( passwordMd5 == md5FromIni ) {
+                /* Shut it down */
+                qDebug() << "Shutdown password matches, exiting.";
+                exit(1);
+            }
+        }
+    }
 
     emit attemptLogin( username, password );
 }
