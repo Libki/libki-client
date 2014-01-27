@@ -34,7 +34,7 @@ QString os_username;
 #ifdef Q_OS_WIN
     os_username = getenv("USERNAME");
 #endif
-#ifdef Q_WS_X11
+#ifdef Q_OS_UNIX
     os_username = getenv("USER");
 #endif
     qDebug() << "OS Username: " << os_username;

@@ -347,7 +347,7 @@ void NetworkClient::doLogoutTasks(){
     }
 #endif
 
-#ifdef Q_WS_X11
+#ifdef Q_OS_UNIX
     if ( actionOnLogout == LogoutAction::Logout ) {
         emit allowClose( true );
         // Restart KDE 4
