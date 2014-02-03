@@ -112,6 +112,11 @@ void LoginWindow::attemptLogin() {
             if ( passwordMd5 == md5FromIni ) {
                 /* Shut it down */
                 qDebug() << "Shutdown password matches, exiting.";
+
+#ifdef Q_OS_WIN
+                // If this is an MS Windows platform, use the keylocker programs to limit mischief.
+                QProcess::startDetached("windows/on_login.exe");
+#endif
                 exit(1);
             }
         }
