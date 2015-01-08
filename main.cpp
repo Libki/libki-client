@@ -149,7 +149,12 @@ QString os_username;
                 SLOT(handleBanners())
                 );
 
-    QObject::connect( networkClient, SIGNAL(timeUpdatedFromServer(int)), timerWindow, SLOT(updateTimeLeft(int)));
+    QObject::connect(
+                networkClient,
+                SIGNAL(timeUpdatedFromServer(int)),
+                timerWindow,
+                SLOT(updateTimeLeft(int))
+                );
 
 //    QObject::connect( networkClient, SIGNAL(messageRecieved(QString)), timerWindow, SLOT(showMessage(QString)));
 

@@ -174,6 +174,8 @@ void LoginWindow::attemptLoginFailure( QString loginError ) {
         errorLabel->setText( tr("Login Failed: Client not registered") );
     } else if ( loginError == "CONNECTION_FAILURE" ) {
         errorLabel->setText( tr("Login Failed: Unable to connect to ILS") );
+    } else if ( loginError == "TOO_MANY_SESSIONS" ) {
+        errorLabel->setText( tr("Login Failed: Too many concurrent sessions on this account") );
     } else {
         errorLabel->setText( tr("Login Failed: ") + loginError );
     }

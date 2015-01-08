@@ -197,7 +197,8 @@ void NetworkClient::processGetUserDataUpdateReply(QNetworkReply* reply) {
 //            }
 
             QString status = sc.property("status").toString();
-            if ( status == "Logged in" ) {
+            if ( status == "Logged in" ||
+                 status.contains( "concurrent sessions", Qt::CaseInsensitive)) {
                 int units = sc.property("units").toInteger();
 
                 emit timeUpdatedFromServer( units );
