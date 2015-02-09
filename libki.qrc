@@ -16,5 +16,6 @@
     </qresource>
     <qresource prefix="/">
         <file>languages/libkiclient_fr_CA.qm</file>
+        <file>languages/libkiclient_sv_SE.qm</file>
     </qresource>
 </RCC>
