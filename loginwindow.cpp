@@ -33,8 +33,9 @@ LoginWindow::LoginWindow(QWidget *parent) : QMainWindow(parent) {
     this->setWindowIcon(libkiIcon);
 
     setWindowFlags(windowFlags()
-		   | Qt::X11BypassWindowManagerHint
-		   | Qt::FramelessWindowHint);
+           | Qt::WindowStaysOnTopHint
+           | Qt::X11BypassWindowManagerHint
+           | Qt::FramelessWindowHint);
 
     setupActions();
 
