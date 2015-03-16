@@ -355,6 +355,8 @@ void NetworkClient::doLogoutTasks(){
         QProcess::startDetached("qdbus org.kde.ksmserver /KSMServer org.kde.KSMServerInterface.logout -0 -1 -1");
         // Restart Gnome
         QProcess::startDetached("gnome-session-save --kill --silent");
+        // Restart Unity
+        QProcess::startDetached("gnome-session-quit --no-prompt");
         // Restart XFCE 4
         QProcess::startDetached("/usr/bin/xfce4-session-logout");
         // Restart Mate
