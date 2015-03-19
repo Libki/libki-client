@@ -20,7 +20,6 @@
 #include <QCryptographicHash>
 
 #include "loginwindow.h"
-#include <QDesktopWidget>
 
 LoginWindow::LoginWindow(QWidget *parent) : QMainWindow(parent) {
     qDebug("LoginWindow::LoginWindow");
@@ -32,10 +31,11 @@ LoginWindow::LoginWindow(QWidget *parent) : QMainWindow(parent) {
     libkiIcon = QIcon(":images/libki_clock.png");
     this->setWindowIcon(libkiIcon);
 
-    setWindowFlags(windowFlags()
-           | Qt::WindowStaysOnTopHint
-           | Qt::X11BypassWindowManagerHint
-           | Qt::FramelessWindowHint);
+    setWindowFlags( (windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint); // Remove the maximize window button
+    setWindowFlags( (windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowSystemMenuHint); // Remove the close window button
+    setWindowFlags( (windowFlags() | Qt::CustomizeWindowHint) & Qt::WindowStaysOnTopHint);
+    setWindowFlags( (windowFlags() | Qt::CustomizeWindowHint) & Qt::X11BypassWindowManagerHint);
+    setWindowFlags( (windowFlags() | Qt::CustomizeWindowHint) & Qt::FramelessWindowHint);
 
     setupActions();
 
@@ -210,9 +210,11 @@ void LoginWindow::resetLoginScreen() {
 void LoginWindow::showMe() {
     qDebug() << "LoginWindow::showMe()";
 
-    QRect screen_rect = QApplication::desktop()->screenGeometry();
-    setFixedSize(screen_rect.width(), screen_rect.height()); // Prevent the window from being resized
     this->show();
+    this->showMaximized();
+    this->showFullScreen();
+    /* FIXME: For some reason, setFixedSize is preventing the window from being fullscreen. Why? */
+    //setFixedSize(width(), height()); // Prevent the window from being resized
     resetLoginScreen();
 
     isHidden = false;
