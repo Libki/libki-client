@@ -52,7 +52,7 @@ public slots:
     void startTimer( const QString& username, const QString& password, int minutes );
     void stopTimer();
     void updateTimeLeft( int minutes );
-//    void showMessage( QString message );
+    void showMessage( QString message );
 
 private slots:
     void doLogoutDialog();

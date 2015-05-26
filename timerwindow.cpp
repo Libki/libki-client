@@ -190,18 +190,18 @@ void TimerWindow::showSystemTrayIconTimeLeftMessage(){
     }
 }
 
-//void TimerWindow::showMessage( QString message ){
-//    qDebug("TimerWindow::showMessage");
+void TimerWindow::showMessage( QString message ){
+    qDebug() << "TimerWindow::showMessage(" << message << ")";
 
-//    QMessageBox msgBox;
-//    msgBox.setWindowIcon(libkiIcon);
-//    msgBox.setIcon(QMessageBox::Information);
-//    msgBox.setText(tr("You Have Recieve A Message"));
-//    msgBox.setInformativeText( message );
+    QMessageBox msgBox;
+    msgBox.setWindowIcon(libkiIcon);
+    msgBox.setIcon(QMessageBox::Information);
+    msgBox.setText(tr("You have a message"));
+    msgBox.setInformativeText( message );
 
-//    this->restoreTimerWindow();
-//    msgBox.exec();
-//}
+    this->restoreTimerWindow();
+    msgBox.exec();
+}
 
 void TimerWindow::getSettings() {}
 
