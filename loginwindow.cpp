@@ -132,6 +132,8 @@ void LoginWindow::attemptLoginFailure( QString loginError ) {
         errorLabel->setText( tr("Login Failed: Username and password do not match") );
     } else if ( loginError == "NO_TIME" ) {
         errorLabel->setText( tr("Login Failed: No time left") );
+    } else if ( loginError == "CLOSED" ) {
+        errorLabel->setText( tr("Login Failed: This kiosk is closed for the day") );
     } else if ( loginError == "ACCOUNT_IN_USE" ) {
         errorLabel->setText( tr("Login Failed: Account is currently in use") );
     } else if ( loginError == "ACCOUNT_DISABLED" ) {
@@ -159,7 +161,7 @@ void LoginWindow::attemptLoginFailure( QString loginError ) {
     } else if ( loginError == "TOO_MANY_ITEMS_RENEWALS" ) {
         errorLabel->setText( tr("Login Failed: You have renewed items too many times") );
     } else if ( loginError == "TOO_MANY_CLAIMS_OF_ITEMS_RETURNED" ) {
-        errorLabel->setText( tr("Login Failed: You have claimed to many items as returned") );
+        errorLabel->setText( tr("Login Failed: You have claimed too many items as returned") );
     } else if ( loginError == "TOO_MANY_ITEMS_LOST" ) {
         errorLabel->setText( tr("Login Failed: You have have lost too many items") );
     } else if ( loginError == "EXCESSIVE_OUTSTANDING_FINES" ) {
