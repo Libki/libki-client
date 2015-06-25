@@ -31,7 +31,6 @@ NetworkClient::NetworkClient() : QObject() {
     QSettings settings;
 
     nodeName = settings.value("node/name").toString();
-
     // Fail over to hostname if node name isn't defined.
     if ( nodeName.isEmpty() ) {
         QHostInfo hostInfo;
@@ -40,9 +39,9 @@ NetworkClient::NetworkClient() : QObject() {
     }
 
     nodeLocation = settings.value("node/location").toString();
-//    settings.dumpObjectInfo();
-//    settings.dumpObjectTree();
-//    qDebug() << "QSettings Path: " << settings.fileName();
+    qDebug() << "LOCATION: " << nodeLocation;
+    nodeAgeLimit = settings.value("node/age_limit").toString();
+    qDebug() << "AGE LIMIT: " << nodeAgeLimit;
 
     QString action = settings.value("node/logoutAction").toString();
     if ( action == "logout") {
@@ -235,6 +234,7 @@ void NetworkClient::registerNode(){
 	QUrlQuery query = QUrlQuery(urlQuery);
     query.addQueryItem("action", "register_node");
     query.addQueryItem("node_name", nodeName );
+    query.addQueryItem("age_limit", nodeAgeLimit );
 	url.setQuery(query);
 
     /*QNetworkReply* reply =*/ nam->get(QNetworkRequest(url));

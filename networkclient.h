@@ -89,6 +89,7 @@ private:
 
     QString nodeName;
     QString nodeLocation;
+    QString nodeAgeLimit;
 
     LogoutAction::Enum actionOnLogout;
 

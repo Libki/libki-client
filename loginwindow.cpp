@@ -130,6 +130,8 @@ void LoginWindow::attemptLoginFailure( QString loginError ) {
 
     if ( loginError == "BAD_LOGIN" || loginError == "INVALID_USER" || loginError == "INVALID_PASSWORD" ) {
         errorLabel->setText( tr("Login Failed: Username and password do not match") );
+    } else if ( loginError == "AGE_MISMATCH" ) {
+        errorLabel->setText( tr("Login Failed: You are not the correct age to use this client") );
     } else if ( loginError == "NO_TIME" ) {
         errorLabel->setText( tr("Login Failed: No time left") );
     } else if ( loginError == "CLOSED" ) {
