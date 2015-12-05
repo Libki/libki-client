@@ -97,9 +97,9 @@ QString os_username;
 
     QObject::connect(
                 loginWindow,
-                SIGNAL( loginSucceeded( const QString& , const QString& , int  ) ),
+                SIGNAL( loginSucceeded( const QString& , const QString& , int, int  ) ),
                 timerWindow,
-                SLOT( startTimer( const QString& , const QString& , int  ) )
+                SLOT( startTimer( const QString& , const QString& , int, int  ) )
                 );
 
     QObject::connect( timerWindow, SIGNAL(requestLogout()), networkClient, SLOT(attemptLogout()));
@@ -116,9 +116,9 @@ QString os_username;
 
     QObject::connect(
                 networkClient,
-                SIGNAL(loginSucceeded(QString,QString,int)),
+                SIGNAL(loginSucceeded(QString,QString,int,int)),
                 loginWindow,
-                SLOT(attemptLoginSuccess(QString,QString,int))
+                SLOT(attemptLoginSuccess(QString,QString,int,int))
                 );
 
     QObject::connect(

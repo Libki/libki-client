@@ -51,7 +51,7 @@ public:
     NetworkClient();
 
 signals:
-    void loginSucceeded( const QString& username, const QString& password, const int& minutes );
+    void loginSucceeded( const QString& username, const QString& password, const int& minutes, const int& hold_items_count );
     void loginFailed( QString errorCode );
     void timeUpdatedFromServer( int minutes );
     void logoutSucceeded();
@@ -96,7 +96,7 @@ private:
     QString username;
     QString password;
 
-    void doLoginTasks( int units );
+    void doLoginTasks( int units, int hold_items_count );
     void doLogoutTasks();
 };
 

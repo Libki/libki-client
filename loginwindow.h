@@ -40,7 +40,7 @@ public:
     void closeEvent(QCloseEvent *event);
 
 signals:
-    void loginSucceeded( const QString& username, const QString& password, const int& minutes );
+    void loginSucceeded( const QString& username, const QString& password, const int& minutes, const int& hold_items_count );
     void attemptLogin( const QString& username, const QString& password );
     void displayingReservationMessage( QString reserved_for );
 
@@ -49,7 +49,7 @@ public slots:
     void displayLoginWindow();
     void attemptLogin();
     void attemptLoginFailure( QString loginError );
-    void attemptLoginSuccess( QString username, QString password, int minutes );
+    void attemptLoginSuccess( QString username, QString password, int minutes, int hold_items_count );
     void handleReservationStatus( QString reserved_for );
     void handleBanners();
 

@@ -191,11 +191,11 @@ void LoginWindow::attemptLoginFailure( QString loginError ) {
     usernameField->selectAll();
 }
 
-void LoginWindow::attemptLoginSuccess( QString username, QString password, int minutes ) {
+void LoginWindow::attemptLoginSuccess( QString username, QString password, int minutes, int hold_items_count ) {
     qDebug("LoginWindow::attemptLoginSuccess");
     resetLoginScreen();
 
-    emit loginSucceeded( username, password, minutes );
+    emit loginSucceeded( username, password, minutes, hold_items_count );
     this->hide();
 
     isHidden = true;

@@ -106,7 +106,9 @@ void NetworkClient::processAttemptLoginReply( QNetworkReply* reply ) {
         qDebug("Login Authenticated");
 
         int units = sc.property("units").toInteger();
-        doLoginTasks( units );
+        int hold_items_count = sc.property("hold_items_count").toInteger();
+
+        doLoginTasks( units, hold_items_count );
     } else {
         qDebug("Login Failed");
 
@@ -321,7 +323,7 @@ void NetworkClient::ignoreNetworkReply( QNetworkReply* reply ){
     reply->manager()->deleteLater();
 }
 
-void NetworkClient::doLoginTasks( int units ){
+void NetworkClient::doLoginTasks( int units, int hold_items_count ){
 
 #ifdef Q_OS_WIN
     // If this is an MS Windows platform, use the keylocker programs to limit mischief.
@@ -329,7 +331,7 @@ void NetworkClient::doLoginTasks( int units ){
 #endif
 
     updateUserDataTimer->start( 1000 * 10 );
-    emit loginSucceeded( username, password, units );
+    emit loginSucceeded( username, password, units, hold_items_count );
 }
 
 void NetworkClient::doLogoutTasks(){
