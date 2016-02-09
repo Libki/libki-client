@@ -21,15 +21,6 @@ DisableCtrlAltDel()
 ;Disable Alt-Tab
 !TAB::
 
-;FIXME - Removed, DisableTaskBar makes this uneccessary
-;Disable Windows Key
-;LWin::
-;RWin::
-;#::
-
-;Disable Win-L for locking computer
-LWin::LCtrl
-
 ;Disable Ctrl-Escape to bring up start menu
 ^Escape::
 
