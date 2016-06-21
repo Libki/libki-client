@@ -61,6 +61,48 @@
        </widget>
       </item>
       <item>
+       <layout class="QHBoxLayout" name="logoWebViewLayout">
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <spacer name="horizontalSpacer_11">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QWebView" name="logoWebView">
+          <property name="url">
+           <url>
+            <string>about:blank</string>
+           </url>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_12">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
        <widget class="QLabel" name="logo">
         <property name="text">
          <string/>
@@ -163,7 +205,16 @@
       </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_4">
-        <property name="margin">
+        <property name="leftMargin">
+         <number>10</number>
+        </property>
+        <property name="topMargin">
+         <number>10</number>
+        </property>
+        <property name="rightMargin">
+         <number>10</number>
+        </property>
+        <property name="bottomMargin">
          <number>10</number>
         </property>
         <item>
@@ -187,7 +238,16 @@
           <property name="labelAlignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
           </property>
-          <property name="margin">
+          <property name="leftMargin">
+           <number>20</number>
+          </property>
+          <property name="topMargin">
+           <number>20</number>
+          </property>
+          <property name="rightMargin">
+           <number>20</number>
+          </property>
+          <property name="bottomMargin">
            <number>20</number>
           </property>
           <item row="0" column="0">
@@ -442,7 +502,7 @@
   <customwidget>
    <class>QWebView</class>
    <extends>QWidget</extends>
-   <header>QtWebKit/QWebView</header>
+   <header>QtWebKitWidgets/QWebView</header>
   </customwidget>
  </customwidgets>
  <tabstops>
