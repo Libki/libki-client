@@ -31,12 +31,23 @@ NetworkClient::NetworkClient() : QObject() {
     QSettings settings;
 
     nodeName = settings.value("node/name").toString();
+
+    if ( nodeName == "OS_USERNAME") {
+        QString osUsername = qgetenv("USER");
+        if ( osUsername.isEmpty() ) {
+            osUsername = qgetenv("USERNAME");
+        }
+        qDebug() << "OS USERNAME: " << osUsername;
+        nodeName = osUsername;
+    }
+
     // Fail over to hostname if node name isn't defined.
     if ( nodeName.isEmpty() ) {
         QHostInfo hostInfo;
         hostInfo = QHostInfo::fromName(QHostInfo::localHostName());
         nodeName = QHostInfo::localHostName();
     }
+    qDebug() << "NODE NAME: " << nodeName;
 
     nodeLocation = settings.value("node/location").toString();
     qDebug() << "LOCATION: " << nodeLocation;
@@ -52,6 +63,7 @@ NetworkClient::NetworkClient() : QObject() {
         actionOnLogout = LogoutAction::NoAction;
     }
 
+    qDebug() << "HOST: " << settings.value("server/host").toString();
     serviceURL.setHost( settings.value("server/host").toString() );
     serviceURL.setPort( settings.value("server/port").toInt() );
     serviceURL.setScheme( settings.value("server/scheme").toString() );
