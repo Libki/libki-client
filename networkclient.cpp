@@ -37,7 +37,7 @@ NetworkClient::NetworkClient() : QObject() {
         if ( osUsername.isEmpty() ) {
             osUsername = qgetenv("USERNAME");
         }
-        qDebug() << "OS USERNAME: " << osUsername;
+        qDebug() << "XXXXXXXXXXXXXXXXXXXXXX OS USERNAME: " << osUsername;
         nodeName = osUsername;
     }
 
