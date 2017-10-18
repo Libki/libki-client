@@ -51,7 +51,7 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString 
 }
 
 int main(int argc, char *argv[]) {
-    qInstallMessageHandler(myMessageHandler);
+//    qInstallMessageHandler(myMessageHandler);
     QApplication app(argc, argv);
 
 QString os_username;
@@ -61,6 +61,7 @@ QString os_username;
 #ifdef Q_OS_UNIX
     os_username = getenv("USER");
 #endif
+
     qDebug() << "OS Username: " << os_username;
 
     // Translate the application if the locale is available

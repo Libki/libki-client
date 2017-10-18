@@ -28,17 +28,23 @@
 NetworkClient::NetworkClient() : QObject() {
     qDebug("NetworkClient::NetworkClient");
 
+QString os_username;
+#ifdef Q_OS_WIN
+    os_username = getenv("USERNAME");
+#endif
+#ifdef Q_OS_UNIX
+    os_username = getenv("USER");
+#endif
+
     QSettings settings;
 
     nodeName = settings.value("node/name").toString();
 
+    qDebug() << "OS USERNAME: " << os_username;
+    qDebug() << "CONFIG NODE NAME: " << nodeName;
+
     if ( nodeName == "OS_USERNAME") {
-        QString osUsername = qgetenv("USER");
-        if ( osUsername.isEmpty() ) {
-            osUsername = qgetenv("USERNAME");
-        }
-        qDebug() << "XXXXXXXXXXXXXXXXXXXXXX OS USERNAME: " << osUsername;
-        nodeName = osUsername;
+        nodeName = os_username;
     }
 
     // Fail over to hostname if node name isn't defined.
