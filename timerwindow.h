@@ -1,21 +1,21 @@
 /*
-* Copyright 2010 Kyle M Hall <kyle.m.hall@gmail.com>
-*
-* This file is part of Libki.
-*
-* Libki is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Libki is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with Libki. If not, see <http://www.gnu.org/licenses/>.
-*/
+ * Copyright 2010 Kyle M Hall <kyle.m.hall@gmail.com>
+ *
+ * This file is part of Libki.
+ *
+ * Libki is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Libki is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Libki. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #ifndef TIMERWINDOW_H
 #define LOGINWINDOW_H
@@ -34,50 +34,57 @@
 #include "networkclient.h"
 
 class TimerWindow : public QMainWindow, public Ui::TimerWindow {
-
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    TimerWindow(QWidget *parent = 0);
-    ~TimerWindow();
-    void closeEvent(QCloseEvent *event);
+
+  TimerWindow(QWidget *parent = 0);
+  ~TimerWindow();
+  void closeEvent(QCloseEvent *event);
 
 signals:
-    void requestLogout();
-    void timerStopped();
-    void serverAccountMinutesRequest();
+
+  void requestLogout();
+  void timerStopped();
+  void serverAccountMinutesRequest();
 
 public slots:
-    void setAllowClose( bool );
-    void startTimer( const QString& username, const QString& password, int minutes, int hold_items_count );
-    void stopTimer();
-    void updateTimeLeft( int minutes );
-    void showMessage( QString message );
+
+  void setAllowClose(bool);
+  void startTimer(const QString& username,
+                  const QString& password,
+                  int            minutes,
+                  int            hold_items_count);
+  void stopTimer();
+  void updateTimeLeft(int minutes);
+  void showMessage(QString message);
 
 private slots:
-    void doLogoutDialog();
-    void restoreTimerWindow();
-    void iconActivated(QSystemTrayIcon::ActivationReason);
-    void showSystemTrayIconTimeLeftMessage();
+
+  void doLogoutDialog();
+  void restoreTimerWindow();
+  void iconActivated(QSystemTrayIcon::ActivationReason);
+  void showSystemTrayIconTimeLeftMessage();
 
 private:
-    bool allowClose;
 
-    QIcon libkiIcon;
-    QSystemTrayIcon *trayIcon;
-    QMenu *trayIconMenu;
+  bool allowClose;
 
-    QTimer* trayIconPopupTimer;
-    int minutesRemaining;
-    int minutesAtStart;
+  QIcon libkiIcon;
+  QSystemTrayIcon *trayIcon;
+  QMenu *trayIconMenu;
 
-    void setupActions();
+  QTimer *trayIconPopupTimer;
+  int minutesRemaining;
+  int minutesAtStart;
 
-    void setupTrayIcon();
+  void setupActions();
 
-    void getSettings();
+  void setupTrayIcon();
 
-    void updateClock();
+  void getSettings();
+
+  void updateClock();
 };
 
 #endif // LOGINWINDOW_H
