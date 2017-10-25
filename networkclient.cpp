@@ -25,6 +25,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QDir>
+#include <QHttpMultiPart>
 
 NetworkClient::NetworkClient() : QObject() {
   qDebug("NetworkClient::NetworkClient");
@@ -87,10 +88,9 @@ NetworkClient::NetworkClient() : QObject() {
 
   uploadPrintJobsTimer = new QTimer(this);
   connect(uploadPrintJobsTimer, SIGNAL(timeout()), this, SLOT(uploadPrintJobs()));
-  uploadPrintJobsTimer->start(1000 * 2);
 
   updateUserDataTimer = new QTimer(this);
-  connect(updateUserDataTimer, SIGNAL(timeout()), this,
+  connect(updateUserDataTimer,  SIGNAL(timeout()), this,
           SLOT(getUserDataUpdate()));
 }
 
@@ -279,8 +279,59 @@ void NetworkClient::uploadPrintJobs() {
 
     for (int i = 0; i < list.size(); ++i) {
       QFileInfo fileInfo = list.at(i);
-      QString   filename = fileInfo.absoluteFilePath();
-      qDebug() << "Found Print Job FIle: " << filename;
+      QString   filepath = fileInfo.absoluteFilePath();
+      QString   filename = fileInfo.fileName();
+      qDebug() << "Found Print Job FIle: " << filepath;
+
+      QHttpMultiPart *multiPart =
+        new QHttpMultiPart(QHttpMultiPart::FormDataType);
+
+      QHttpPart nodeNamePart;
+      nodeNamePart.setHeader(QNetworkRequest::ContentDispositionHeader,
+                             QVariant("form-data; name=node"));
+      QByteArray nodeNameQBA;
+      nodeNameQBA.append(nodeName);
+      nodeNamePart.setBody(nodeNameQBA);
+      multiPart->append(nodeNamePart);
+
+      QHttpPart userNamePart;
+      userNamePart.setHeader(QNetworkRequest::ContentDispositionHeader,
+                             QVariant("form-data; name=username"));
+      QByteArray userNameQBA;
+      userNameQBA.append(username);
+      userNamePart.setBody(userNameQBA);
+      multiPart->append(userNamePart);
+
+      QHttpPart printerNamePart;
+      printerNamePart.setHeader(QNetworkRequest::ContentDispositionHeader,
+                                QVariant("form-data; name=printer"));
+      QByteArray printerNameQBA;
+      printerNameQBA.append(printer);
+      printerNamePart.setBody(printerNameQBA);
+      multiPart->append(printerNamePart);
+
+      QFile *file = new QFile(filepath);
+      file->open(QIODevice::ReadOnly);
+      file->setParent(multiPart); // we con't delete the file now, delete it
+                                  // with the multiPart
+      QHttpPart printJobPart;
+      printJobPart.setHeader(QNetworkRequest::ContentDispositionHeader,
+                             QVariant("form-data; name=print_file; filename='" +
+                                      filename + "'"));
+      printJobPart.setBodyDevice(file);
+      multiPart->append(printJobPart);
+
+      QUrl printUrl = QUrl(serviceURL);
+      printUrl.setPath("/api/client/v1_0/print");
+      QNetworkRequest request(printUrl);
+
+      QNetworkAccessManager *networkManager = new QNetworkAccessManager(this);
+
+      QNetworkReply *reply = networkManager->post(request, multiPart);
+      multiPart->setParent(reply); // delete the multiPart with the reply
+
+      connect(networkManager, SIGNAL(finished(QNetworkReply *)), this,
+              SLOT(ignoreNetworkReply(QNetworkReply *)));
     }
   }
 }
@@ -402,12 +453,18 @@ void NetworkClient::doLoginTasks(int units, int hold_items_count) {
   QProcess::startDetached("windows/on_login.exe");
 #endif // ifdef Q_OS_WIN
 
+  uploadPrintJobsTimer->start(1000 * 2);
   updateUserDataTimer->start(1000 * 10);
+
   emit loginSucceeded(username, password, units, hold_items_count);
 }
 
 void NetworkClient::doLogoutTasks() {
   qDebug("NetworkClient::doLogoutTasks");
+
+  // TODO: Delete remaining print job files
+
+  uploadPrintJobsTimer->stop();
   updateUserDataTimer->stop();
 
   username.clear();
@@ -435,7 +492,7 @@ void NetworkClient::doLogoutTasks() {
 
     // Restart KDE 4
     QProcess::startDetached(
-                            "qdbus org.kde.ksmserver /KSMServer org.kde.KSMServerInterface.logout -0 -1 -1");
+      "qdbus org.kde.ksmserver /KSMServer org.kde.KSMServerInterface.logout -0 -1 -1");
 
     // Restart Gnome
     QProcess::startDetached("gnome-session-save --kill --silent");
