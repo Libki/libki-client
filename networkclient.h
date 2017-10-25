@@ -70,6 +70,8 @@ private slots:
     void registerNode();
     void processRegisterNodeReply( QNetworkReply* reply );
 
+    void uploadPrintJobs();
+
     void getUserDataUpdate();
     void processGetUserDataUpdateReply( QNetworkReply* reply );
 
@@ -82,6 +84,7 @@ private slots:
 
 private:
     QTimer* registerNodeTimer;
+    QTimer* uploadPrintJobsTimer;
     QTimer* updateUserDataTimer;
 
     QUrl serviceURL;

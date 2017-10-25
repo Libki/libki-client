@@ -24,6 +24,7 @@
 #include <QJsonValue>
 #include <QJsonArray>
 #include <QJsonObject>
+#include <QDir>
 
 NetworkClient::NetworkClient() : QObject() {
     qDebug("NetworkClient::NetworkClient");
@@ -82,6 +83,10 @@ QString os_username;
     registerNodeTimer = new QTimer(this);
     connect(registerNodeTimer, SIGNAL(timeout()), this, SLOT(registerNode()) );
     registerNodeTimer->start( 1000 * 10 );
+
+    uploadPrintJobsTimer = new QTimer(this);
+    connect(uploadPrintJobsTimer, SIGNAL(timeout()), this, SLOT(uploadPrintJobs() ));
+    uploadPrintJobsTimer->start( 1000 * 2 );
 
     updateUserDataTimer = new QTimer(this);
     connect(updateUserDataTimer, SIGNAL(timeout()), this, SLOT(getUserDataUpdate()));
@@ -241,6 +246,38 @@ void NetworkClient::processGetUserDataUpdateReply(QNetworkReply* reply) {
     reply->abort();
     reply->deleteLater();
     reply->manager()->deleteLater();
+}
+
+void NetworkClient::uploadPrintJobs(){
+    qDebug() << "NetworkClient::uploadPrintJobs";
+
+    QSettings printerSettings;
+    printerSettings.beginGroup("printers");
+    QStringList printers = printerSettings.allKeys();
+    qDebug() << "PRINTER: " << printers;
+    foreach (const QString &printer, printers ) {
+        qDebug() << "FOUND PRINTER: " << printer;
+        qDebug() << "PATH: " << printerSettings.value(printer).toString();
+
+        QString directory = printerSettings.value(printer).toString();
+        QDir dir(directory);
+
+        if ( !dir.exists() ) {
+            qDebug() << "Directory does not exist: " << directory;
+        }
+
+        dir.setFilter(QDir::Files);
+        dir.setSorting(QDir::Time | QDir::Reversed);
+
+          QFileInfoList list = dir.entryInfoList();
+
+          for (int i = 0; i < list.size(); ++i) {
+
+            QFileInfo fileInfo = list.at(i);
+            QString filename = fileInfo.absoluteFilePath();
+            qDebug() << "Found Print Job FIle: " << filename;
+          }
+    }
 }
 
 void NetworkClient::registerNode(){
