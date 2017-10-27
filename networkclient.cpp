@@ -278,13 +278,30 @@ void NetworkClient::uploadPrintJobs() {
     QFileInfoList list = dir.entryInfoList();
 
     for (int i = 0; i < list.size(); ++i) {
-      QFileInfo fileInfo = list.at(i);
-      QString   filepath = fileInfo.absoluteFilePath();
-      QString   filename = fileInfo.fileName();
-      qDebug() << "Found Print Job FIle: " << filepath;
+      QString printedFileSuffix = ".printed";
+
+      QFileInfo fileInfo         = list.at(i);
+      QString   absoluteFilePath = fileInfo.absoluteFilePath();
+      QString   fileName         = fileInfo.fileName();
+      qDebug() << "Found Print Job FIle: " << absoluteFilePath;
+
+      if (fileName.endsWith(printedFileSuffix)) {
+        qDebug() << "PRINT JOB ALREADY PROCCESSED: " << fileName;
+        continue;
+      }
+      qDebug() << "SENDING PRINT JOB: " << fileName;
+
+      QString newAbsoluteFilePath = absoluteFilePath + printedFileSuffix;
+      QFile::rename(absoluteFilePath, newAbsoluteFilePath);
+
+      QFile *file = new QFile(newAbsoluteFilePath);
+      file->open(QIODevice::ReadOnly);
 
       QHttpMultiPart *multiPart =
         new QHttpMultiPart(QHttpMultiPart::FormDataType);
+
+      // We con't delete the file object now, delete it with the multiPart
+      file->setParent(multiPart);
 
       QHttpPart nodeNamePart;
       nodeNamePart.setHeader(QNetworkRequest::ContentDispositionHeader,
@@ -302,24 +319,27 @@ void NetworkClient::uploadPrintJobs() {
       userNamePart.setBody(userNameQBA);
       multiPart->append(userNamePart);
 
-      QHttpPart printerNamePart;
-      printerNamePart.setHeader(QNetworkRequest::ContentDispositionHeader,
-                                QVariant("form-data; name=printer"));
-      QByteArray printerNameQBA;
-      printerNameQBA.append(printer);
-      printerNamePart.setBody(printerNameQBA);
-      multiPart->append(printerNamePart);
+//      QHttpPart printerNamePart;
+//      printerNamePart.setHeader(QNetworkRequest::ContentDispositionHeader,
+//                                QVariant("form-data; name=printer"));
+//      QByteArray printerNameQBA;
+//      printerNameQBA.append(printer);
+//      printerNamePart.setBody(printerNameQBA);
+//      multiPart->append(printerNamePart);
 
-      QFile *file = new QFile(filepath);
-      file->open(QIODevice::ReadOnly);
-      file->setParent(multiPart); // we con't delete the file now, delete it
-                                  // with the multiPart
       QHttpPart printJobPart;
       printJobPart.setHeader(QNetworkRequest::ContentDispositionHeader,
-                             QVariant("form-data; name=print_file; filename='" +
-                                      filename + "'"));
+                             QVariant("form-data; name=print_file; filename=" + fileName ));
       printJobPart.setBodyDevice(file);
       multiPart->append(printJobPart);
+
+      QHttpPart fileNamePart;
+      fileNamePart.setHeader(QNetworkRequest::ContentDispositionHeader,
+                             QVariant("form-data; name=filename"));
+      QByteArray fileNameQBA;
+      fileNameQBA.append(fileName);
+      fileNamePart.setBody(fileNameQBA);
+      multiPart->append(fileNamePart);
 
       QUrl printUrl = QUrl(serviceURL);
       printUrl.setPath("/api/client/v1_0/print");
@@ -330,10 +350,20 @@ void NetworkClient::uploadPrintJobs() {
       QNetworkReply *reply = networkManager->post(request, multiPart);
       multiPart->setParent(reply); // delete the multiPart with the reply
 
+      // TODO: delete file after finished signal emits
+      // https://stackoverflow.com/questions/5153157/passing-an-argument-to-a-slot
       connect(networkManager, SIGNAL(finished(QNetworkReply *)), this,
-              SLOT(ignoreNetworkReply(QNetworkReply *)));
+              SLOT(uploadPrintJobReply(QNetworkReply *)));
     }
   }
+}
+
+void NetworkClient::uploadPrintJobReply(QNetworkReply *reply) {
+  qDebug("NetworkClient::uploadPrintJobReply");
+
+  reply->abort();
+  reply->deleteLater();
+  reply->manager()->deleteLater();
 }
 
 void NetworkClient::registerNode() {
@@ -462,7 +492,24 @@ void NetworkClient::doLoginTasks(int units, int hold_items_count) {
 void NetworkClient::doLogoutTasks() {
   qDebug("NetworkClient::doLogoutTasks");
 
-  // TODO: Delete remaining print job files
+  // Delete print jobs
+  QSettings printerSettings;
+  printerSettings.beginGroup("printers");
+  QStringList printers = printerSettings.allKeys();
+  foreach(const QString &printer, printers) {
+    QString directory = printerSettings.value(printer).toString();
+    QDir    dir(directory);
+
+    dir.setFilter(QDir::Files);
+
+    QFileInfoList list = dir.entryInfoList();
+
+    for (int i = 0; i < list.size(); ++i) {
+      QFileInfo fileInfo         = list.at(i);
+      QString   absoluteFilePath = fileInfo.absoluteFilePath();
+      QFile::remove(absoluteFilePath);
+    }
+  }
 
   uploadPrintJobsTimer->stop();
   updateUserDataTimer->stop();

@@ -86,6 +86,8 @@ private slots:
   void clearMessage();
 
   void ignoreNetworkReply(QNetworkReply *reply);
+  void uploadPrintJobReply(QNetworkReply *reply);
+
 
   void processAttemptLoginReply(QNetworkReply *reply);
   void processAttemptLogoutReply(QNetworkReply *reply);
