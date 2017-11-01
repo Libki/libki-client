@@ -477,6 +477,7 @@ void NetworkClient::ignoreNetworkReply(QNetworkReply *reply) {
 
 void NetworkClient::doLoginTasks(int units, int hold_items_count) {
 #ifdef Q_OS_WIN
+  //FIXME: We should delete print jobs at login as well in case a client crash prevented the print jobs for getting cleaned up at logout time
 
   // If this is an MS Windows platform, use the keylocker programs to limit
   // mischief.
