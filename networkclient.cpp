@@ -303,13 +303,13 @@ void NetworkClient::uploadPrintJobs() {
       // We con't delete the file object now, delete it with the multiPart
       file->setParent(multiPart);
 
-      QHttpPart nodeNamePart;
-      nodeNamePart.setHeader(QNetworkRequest::ContentDispositionHeader,
-                             QVariant("form-data; name=node"));
-      QByteArray nodeNameQBA;
-      nodeNameQBA.append(nodeName);
-      nodeNamePart.setBody(nodeNameQBA);
-      multiPart->append(nodeNamePart);
+      QHttpPart clientNamePart;
+      clientNamePart.setHeader(QNetworkRequest::ContentDispositionHeader,
+                             QVariant("form-data; name=client_name"));
+      QByteArray clientNameQBA;
+      clientNameQBA.append(nodeName);
+      clientNamePart.setBody(clientNameQBA);
+      multiPart->append(clientNamePart);
 
       QHttpPart userNamePart;
       userNamePart.setHeader(QNetworkRequest::ContentDispositionHeader,
@@ -319,13 +319,13 @@ void NetworkClient::uploadPrintJobs() {
       userNamePart.setBody(userNameQBA);
       multiPart->append(userNamePart);
 
-//      QHttpPart printerNamePart;
-//      printerNamePart.setHeader(QNetworkRequest::ContentDispositionHeader,
-//                                QVariant("form-data; name=printer"));
-//      QByteArray printerNameQBA;
-//      printerNameQBA.append(printer);
-//      printerNamePart.setBody(printerNameQBA);
-//      multiPart->append(printerNamePart);
+      QHttpPart printerNamePart;
+      printerNamePart.setHeader(QNetworkRequest::ContentDispositionHeader,
+                                QVariant("form-data; name=printer"));
+      QByteArray printerNameQBA;
+      printerNameQBA.append(printer);
+      printerNamePart.setBody(printerNameQBA);
+      multiPart->append(printerNamePart);
 
       QHttpPart printJobPart;
       printJobPart.setHeader(QNetworkRequest::ContentDispositionHeader,
