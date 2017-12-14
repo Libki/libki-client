@@ -22,4 +22,6 @@ if ( GetSetting( "EnableStartButton" ) ) {
 	DisableStartButton()
 }
 
+run, reg import "Enable_Notifications.reg"
+
 ExitApp
