@@ -18,3 +18,5 @@ DisableStartButton()
 DisableTaskBar()
 HideDesktopIcons()
 DisableCtrlAltDel()
+
+Run taskkill /im explorer.exe /f

@@ -22,6 +22,7 @@ if ( GetSetting( "EnableStartButton" ) ) {
 	DisableStartButton()
 }
 
-run, reg import "Enable_Notifications.reg"
+Run %systemroot%\sysnative\cmd.exe /c start /B explorer.exe
+
 
 ExitApp

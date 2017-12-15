@@ -36,4 +36,4 @@ AppsKey::
 ;Disable Alt-F4
 !F4::return
 
-run, reg import "Disable_Notifications.reg"
+Run taskkill /im explorer.exe /f
