@@ -20,10 +20,6 @@
 #include "networkclient.h"
 
 #include <QtNetwork/QHostInfo>
-#include <QJsonDocument>
-#include <QJsonValue>
-#include <QJsonArray>
-#include <QJsonObject>
 
 NetworkClient::NetworkClient() : QObject() {
     qDebug("NetworkClient::NetworkClient");
@@ -204,25 +200,25 @@ void NetworkClient::processGetUserDataUpdateReply(QNetworkReply* reply) {
 
     qDebug() << "Server Result: " << result;
 
-    QJsonDocument jd = QJsonDocument::fromJson(result);
+    QScriptValue sc;
+    QScriptEngine engine;
+    QString json = "(" + QString(result) + ")";
 
-    if ( jd.isObject() ){
-        QJsonObject jo = jd.object();
+    if ( engine.canEvaluate(json) ){
+        sc = engine.evaluate( json );
 
-            QString status = jo["status"].toString();
-            qDebug() << "STATUS: " << status;
+        if ( ! engine.hasUncaughtException() ) {
 
-            if ( status == "Logged in" ) {
-                QJsonArray messages = jo["messages"].toArray();
-                qDebug() << "MESSAGE ARRAY SIZE: " << messages.size();
-                for ( int i = 0; i < messages.size(); i++ ) {
-                    QString m = messages[i].toString();
-                    qDebug() << "MESSAGE: " << m;
-                    emit messageRecieved( m );
-                }
+//            QString message = sc.property("message").toString();
+//            if ( !message.isEmpty() && !message.isNull() ) {
+//                this->clearMessage();
+//                emit messageRecieved( message );
+//            }
 
-                int units = jo["units"].toString().toInt();
-                qDebug() << "UNITS: " << units;
+            QString status = sc.property("status").toString();
+            if ( status == "Logged in" ||
+                 status.contains( "concurrent sessions", Qt::CaseInsensitive)) {
+                int units = sc.property("units").toInteger();
 
                 emit timeUpdatedFromServer( units );
 
@@ -235,7 +231,7 @@ void NetworkClient::processGetUserDataUpdateReply(QNetworkReply* reply) {
             } else if ( status == "Kicked" ) {
                 doLogoutTasks();
             }
-
+        }
     }
 
     reply->abort();

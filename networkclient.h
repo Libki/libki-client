@@ -56,7 +56,7 @@ signals:
     void timeUpdatedFromServer( int minutes );
     void logoutSucceeded();
     void logoutFailed();
-    void messageRecieved( QString message );
+//    void messageRecieved( QString message );
     void allowClose( bool );
     void setReservationStatus( QString reserved_for );
     void handleBanners();
