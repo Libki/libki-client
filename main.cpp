@@ -181,7 +181,7 @@ QString os_username;
                 SLOT(updateTimeLeft(int))
                 );
 
-    QObject::connect( networkClient, SIGNAL(messageRecieved(QString)), timerWindow, SLOT(showMessage(QString)));
+//    QObject::connect( networkClient, SIGNAL(messageRecieved(QString)), timerWindow, SLOT(showMessage(QString)));
 
     QObject::connect( networkClient, SIGNAL(allowClose(bool)), loginWindow, SLOT(setAllowClose(bool)));
     QObject::connect( networkClient, SIGNAL(allowClose(bool)), timerWindow, SLOT(setAllowClose(bool)));

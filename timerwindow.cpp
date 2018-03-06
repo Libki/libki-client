@@ -68,9 +68,6 @@ void TimerWindow::startTimer( const QString&, const QString&, int minutes, int h
     if ( ! settings.value("labels/waiting_holds").toString().isEmpty() ) {
         waiting_holds_message = settings.value("labels/waiting_holds").toString();
     }
-    if ( hold_items_count > 0 ) {
-        this->showMessage(waiting_holds_message);
-    }
 }
 
 void TimerWindow::stopTimer() {
@@ -199,18 +196,18 @@ void TimerWindow::showSystemTrayIconTimeLeftMessage(){
     }
 }
 
-void TimerWindow::showMessage( QString message ){
-    qDebug() << "TimerWindow::showMessage(" << message << ")";
+//void TimerWindow::showMessage( QString message ){
+//    qDebug("TimerWindow::showMessage");
 
-    QMessageBox msgBox;
-    msgBox.setWindowIcon(libkiIcon);
-    msgBox.setIcon(QMessageBox::Information);
-    msgBox.setText(tr("You have a message"));
-    msgBox.setInformativeText( message );
+//    QMessageBox msgBox;
+//    msgBox.setWindowIcon(libkiIcon);
+//    msgBox.setIcon(QMessageBox::Information);
+//    msgBox.setText(tr("You Have Recieve A Message"));
+//    msgBox.setInformativeText( message );
 
-    this->restoreTimerWindow();
-    msgBox.exec();
-}
+//    this->restoreTimerWindow();
+//    msgBox.exec();
+//}
 
 void TimerWindow::getSettings() {}
 
