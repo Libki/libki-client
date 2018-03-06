@@ -68,9 +68,6 @@ void TimerWindow::startTimer( const QString&, const QString&, int minutes, int h
     if ( ! settings.value("labels/waiting_holds").toString().isEmpty() ) {
         waiting_holds_message = settings.value("labels/waiting_holds").toString();
     }
-    if ( hold_items_count > 0 ) {
-        this->showMessage(waiting_holds_message);
-    }
 }
 
 void TimerWindow::stopTimer() {
