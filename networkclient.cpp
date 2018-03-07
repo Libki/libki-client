@@ -221,7 +221,7 @@ void NetworkClient::processGetUserDataUpdateReply(QNetworkReply* reply) {
                     emit messageRecieved( m );
                 }
 
-                int units = jo["units"].toString().toInt();
+                int units = jo["units"].toInt();
                 qDebug() << "UNITS: " << units;
 
                 emit timeUpdatedFromServer( units );
