@@ -63,6 +63,10 @@ void TimerWindow::startTimer( const QString&, const QString&, int minutes, int h
     minutesRemaining = minutesAtStart = minutes;
     updateClock();
 
+// For reasons unknown, this causes problems on versions of Debian ( Stretch or newer )
+// and Ubuntu ( 16.04.3 ) or newer.
+// See https://github.com/Libki/libki-client/issues/9 for details
+#ifdef Q_OS_WIN
     QSettings settings;
     QString waiting_holds_message = "You have one or more items on hold waiting for pickup. Please contact a librarian for more details";
     if ( ! settings.value("labels/waiting_holds").toString().isEmpty() ) {
@@ -71,6 +75,7 @@ void TimerWindow::startTimer( const QString&, const QString&, int minutes, int h
     if ( hold_items_count > 0 ) {
         this->showMessage(waiting_holds_message);
     }
+#endif
 }
 
 void TimerWindow::stopTimer() {
