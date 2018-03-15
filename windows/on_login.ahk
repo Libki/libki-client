@@ -22,7 +22,7 @@ if ( GetSetting( "EnableStartButton" ) ) {
 	DisableStartButton()
 }
 
-Run %systemroot%\sysnative\cmd.exe /c start /B explorer.exe
+Run cmd.exe /c start /B explorer.exe
 
 
 ExitApp
