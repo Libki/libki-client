@@ -18,6 +18,12 @@ HideDesktopIcons()
 DisableStartButton()
 DisableCtrlAltDel()
 
+if ( GetSetting( "disableInput" ) ) {
+    BlockInput MouseMove
+    Sleep 1000 * GetSetting( "disableInput" )
+    BlockInput MouseMoveOff
+}
+
 ;Disable Alt-Tab
 !TAB::
 
@@ -37,3 +43,5 @@ AppsKey::
 !F4::return
 
 Run taskkill /im explorer.exe /f
+
+ExitApp
