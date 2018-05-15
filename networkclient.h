@@ -87,7 +87,7 @@ private slots:
 
   void ignoreNetworkReply(QNetworkReply *reply);
   void uploadPrintJobReply(QNetworkReply *reply);
-
+  void handleUploadProgress(qint64, qint64);
 
   void processAttemptLoginReply(QNetworkReply *reply);
   void processAttemptLogoutReply(QNetworkReply *reply);
@@ -109,6 +109,8 @@ private:
 
   QString username;
   QString password;
+
+  int fileCounter;
 
   void doLoginTasks(int units,
                     int hold_items_count);

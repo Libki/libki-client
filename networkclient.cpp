@@ -30,6 +30,8 @@
 NetworkClient::NetworkClient() : QObject() {
   qDebug("NetworkClient::NetworkClient");
 
+  fileCounter = 0;
+
   QString os_username;
 #ifdef Q_OS_WIN
   os_username = getenv("USERNAME");
@@ -261,6 +263,7 @@ void NetworkClient::uploadPrintJobs() {
   printerSettings.beginGroup("printers");
   QStringList printers = printerSettings.allKeys();
   qDebug() << "PRINTER: " << printers;
+
   foreach(const QString &printer, printers) {
     qDebug() << "FOUND PRINTER: " << printer;
     qDebug() << "PATH: " << printerSettings.value(printer).toString();
@@ -283,15 +286,18 @@ void NetworkClient::uploadPrintJobs() {
       QFileInfo fileInfo         = list.at(i);
       QString   absoluteFilePath = fileInfo.absoluteFilePath();
       QString   fileName         = fileInfo.fileName();
-      qDebug() << "Found Print Job FIle: " << absoluteFilePath;
+      //qDebug() << "Found Print Job File: " << absoluteFilePath;
 
       if (fileName.endsWith(printedFileSuffix)) {
-        qDebug() << "PRINT JOB ALREADY PROCCESSED: " << fileName;
+        //qDebug() << "PRINT JOB ALREADY PROCCESSED: " << fileName;
         continue;
       }
       qDebug() << "SENDING PRINT JOB: " << fileName;
 
-      QString newAbsoluteFilePath = absoluteFilePath + printedFileSuffix;
+      QString fileCounterString = QString::number(fileCounter);
+      fileCounter++;
+
+      QString newAbsoluteFilePath = absoluteFilePath + "." + fileCounterString + printedFileSuffix;
       QFile::rename(absoluteFilePath, newAbsoluteFilePath);
 
       QFile *file = new QFile(newAbsoluteFilePath);
@@ -354,8 +360,14 @@ void NetworkClient::uploadPrintJobs() {
       // https://stackoverflow.com/questions/5153157/passing-an-argument-to-a-slot
       connect(networkManager, SIGNAL(finished(QNetworkReply *)), this,
               SLOT(uploadPrintJobReply(QNetworkReply *)));
+      connect(reply, SIGNAL(uploadProgress(qint64, qint64)), this,
+              SLOT(handleUploadProgress(qint64, qint64)));
     }
   }
+}
+
+void NetworkClient::handleUploadProgress(qint64 bytesSent, qint64 bytesTotal) {
+    qDebug() << "Uploaded " << bytesSent << "of" << bytesTotal;
 }
 
 void NetworkClient::uploadPrintJobReply(QNetworkReply *reply) {
