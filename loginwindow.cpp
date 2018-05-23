@@ -76,6 +76,7 @@ void LoginWindow::setupActions() {
 void LoginWindow::getSettings() {
   /* Set Labels */
   QSettings settings;
+  settings.setIniCodec("UTF-8");
 
   if (!settings.value("labels/username").toString().isEmpty()) {
     usernameLabel->setText(settings.value("labels/username").toString());
@@ -133,6 +134,7 @@ void LoginWindow::attemptLogin() {
 
   if (username.isEmpty()) {
     QSettings settings;
+    settings.setIniCodec("UTF-8");
     QString   md5FromIni = settings.value("node/password").toString();
 
     if (!md5FromIni.isEmpty()) {
@@ -325,6 +327,7 @@ void LoginWindow::handleReservationStatus(QString reserved_for) {
 
 void LoginWindow::handleBanners() {
   QSettings settings;
+  settings.setIniCodec("UTF-8");
 
   QPalette palette = bannerWebViewTop->palette();
 

@@ -93,6 +93,7 @@ int main(int argc, char *argv[]) {
   QSettings::setDefaultFormat(QSettings::IniFormat);
 
   QSettings settings;
+  settings.setIniCodec("UTF-8");
 
   QString onlyRunFor;
   onlyRunFor = settings.value("node/onlyRunFor").toString();
