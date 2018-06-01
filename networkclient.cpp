@@ -41,6 +41,7 @@ NetworkClient::NetworkClient() : QObject() {
 #endif // ifdef Q_OS_UNIX
 
   QSettings settings;
+  settings.setIniCodec("UTF-8");
 
   nodeName = settings.value("node/name").toString();
 
@@ -413,6 +414,7 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
   }
 
   QSettings settings;
+  settings.setIniCodec("UTF-8");
 
   QString bannerTopURL    = settings.value("session/BannerTopURL").toString();
   QString bannerBottomURL = settings.value("session/BannerBottomURL").toString();

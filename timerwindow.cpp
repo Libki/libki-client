@@ -76,6 +76,7 @@ void TimerWindow::startTimer(const QString&,
   updateClock();
 
   QSettings settings;
+  settings.setIniCodec("UTF-8");
 
   QString waiting_holds_message =
     "You have one or more items on hold waiting for pickup. Please contact a librarian for more details";
