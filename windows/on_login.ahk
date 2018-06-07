@@ -22,7 +22,7 @@ if ( GetSetting( "EnableStartButton" ) ) {
 	DisableStartButton()
 }
 
-Run cmd.exe /c start /B explorer.exe
+Run cmd.exe /c tasklist /nh /fi "imagename eq explorer.exe" | find /i "explorer.exe" > nul || (start explorer.exe)
 
 
 ExitApp
