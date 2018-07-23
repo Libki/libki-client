@@ -237,7 +237,7 @@ void NetworkClient::processGetUserDataUpdateReply(QNetworkReply *reply) {
         emit messageRecieved(m);
       }
 
-      int units = jo["units"].toInt();
+      int units = jo["units"].toString().toInt(); // Don't ask why, I don't know. It's the array value is a json string.
       qDebug() << "UNITS: " << units;
 
       emit timeUpdatedFromServer(units);
