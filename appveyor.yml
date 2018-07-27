@@ -1,0 +1,44 @@
+# Build worker image (VM template)
+image:
+  - Visual Studio 2013
+
+# Do not build on tags (GitHub and BitBucket)
+skip_tags: true
+
+# branches to build
+branches:
+  # whitelist
+  only:
+    - master
+
+# scripts that run after cloning repository
+install:
+  - set QTDIR=C:\Qt\5.5\mingw492_32
+  - set PATH=%PATH%;C:\MinGW\bin;%QTDIR%\bin;"C:\\Program Files (x86)\\Inno Setup 5"
+
+build_script:
+  - qmake Libki.pro
+  - mingw32-make
+  - dir release
+  - copy release\libkiclient.exe deploy\windows\libkiclient.exe
+  - cd deploy\windows
+  - ISCC.exe installer-wizard.iss
+
+# defines what we can export from the build environment
+artifacts:
+  - path: 'deploy\windows\Output\Libki_Client_Installer.exe'
+    name: 'Libki Client (Unstable) [$(APPVEYOR_REPO_COMMIT)]'
+
+# deployment configuration, deploy to github releases
+deploy:
+  release: libki-client-unstable-v$(APPVEYOR_REPO_COMMIT)
+  description: 'Libki Client (Unstable) [$(APPVEYOR_REPO_COMMIT)]'
+  artifact: 'deploy\windows\Output\Libki_Client_Installer.exe'
+  provider: GitHub
+  auth_token: $(GITHUB_TOKEN)
+  draft: false
+  prerelease: true
+  force_update: true
+  skip_tags: true                  # Build only for branches not tags
+  on:
+    branch: master                 # release from master branch only
