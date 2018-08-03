@@ -49,6 +49,8 @@ void myMessageHandler(QtMsgType      type,
   case QtFatalMsg:
     txt = QString("Fatal: %1\n").arg(msg);
     break;
+  default:
+    break;
   }
   QFile outFile("libki_client.log");
   outFile.open(QIODevice::WriteOnly | QIODevice::Append);
