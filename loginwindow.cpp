@@ -18,6 +18,7 @@
  */
 
 #include <QCryptographicHash>
+#include <QMessageBox>
 
 #include "loginwindow.h"
 
@@ -159,6 +160,22 @@ void LoginWindow::attemptLogin() {
         exit(1);
       }
     }
+  }
+
+  QSettings settings;
+  settings.setIniCodec("UTF-8");
+  QString termsOfService = settings.value("session/TermsOfService").toString();
+  if ( termsOfService.length() > 0 ) {
+      QMessageBox msgBox;
+      msgBox.setText("Do you accept the terms of service?");
+      msgBox.setInformativeText(termsOfService);
+      msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+      msgBox.setDefaultButton(QMessageBox::No);
+      int ret = msgBox.exec();
+      if( ret == QMessageBox::No ) {
+          resetLoginScreen();
+          return;
+      }
   }
 
   emit attemptLogin(username, password);
