@@ -507,11 +507,21 @@ void NetworkClient::doLoginTasks(int units, int hold_items_count) {
   uploadPrintJobsTimer->start(1000 * 2);
   updateUserDataTimer->start(1000 * 10);
 
+  QSettings settings;
+  settings.setIniCodec("UTF-8");
+  settings.setValue("session/LoggedInUser", username);
+  settings.sync();
+
   emit loginSucceeded(username, password, units, hold_items_count);
 }
 
 void NetworkClient::doLogoutTasks() {
   qDebug("NetworkClient::doLogoutTasks");
+
+  QSettings settings;
+  settings.setIniCodec("UTF-8");
+  settings.setValue("session/LoggedInUser", "");
+  settings.sync();
 
   // Delete print jobs
   QSettings printerSettings;

@@ -128,6 +128,8 @@ int main(int argc, char *argv[]) {
 
   settings.setValue("session/ClientBehavior",          "");
   settings.setValue("session/ReservationShowUsername", "");
+  settings.setValue("session/LoggedInUser",            "");
+
   settings.sync();
 
   LoginWindow   *loginWindow   = new LoginWindow();
