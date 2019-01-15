@@ -65,6 +65,7 @@ private slots:
   void restoreTimerWindow();
   void iconActivated(QSystemTrayIcon::ActivationReason);
   void showSystemTrayIconTimeLeftMessage();
+  void checkForInactivity();
 
 private:
 
@@ -75,8 +76,13 @@ private:
   QMenu *trayIconMenu;
 
   QTimer *trayIconPopupTimer;
+  QTimer *inactivityTimer;
   int minutesRemaining;
   int minutesAtStart;
+
+  int minutesSinceLastActivity;
+  int prevMousePosX;
+  int prevMousePosY;
 
   void setupActions();
 

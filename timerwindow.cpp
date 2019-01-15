@@ -49,6 +49,9 @@ TimerWindow::TimerWindow(QWidget *parent) : QMainWindow(parent) {
   connect(trayIconPopupTimer, SIGNAL(timeout()), this,
           SLOT(showSystemTrayIconTimeLeftMessage()));
 
+  inactivityTimer = new QTimer(this);
+  connect(inactivityTimer, SIGNAL(timeout()), this,
+          SLOT(checkForInactivity()));
 
   // Disable unused features
   pauseButton->hide();
@@ -68,6 +71,9 @@ void TimerWindow::startTimer(const QString&,
   qDebug("TimerWindow::startTimer");
 
   trayIconPopupTimer->start(1000 * 60); // Fire once a minute
+
+  minutesSinceLastActivity = 0;
+  inactivityTimer->start(1000 * 60);
 
   this->show();
   trayIcon->show();
@@ -92,6 +98,9 @@ void TimerWindow::startTimer(const QString&,
 
 void TimerWindow::stopTimer() {
   qDebug("TimerWindow::stopTimer");
+
+  inactivityTimer->stop();
+
   trayIconPopupTimer->stop();
   trayIcon->hide();
   this->hide();
@@ -225,6 +234,70 @@ void TimerWindow::showSystemTrayIconTimeLeftMessage() {
     trayIcon->showMessage(title, message, QSystemTrayIcon::Information, 1000);
   } else if (minutesRemaining <= 5) {
     trayIcon->showMessage(title, message, QSystemTrayIcon::Warning, 1000);
+  }
+}
+
+void TimerWindow::checkForInactivity() {
+  qDebug("checkForInactivity");
+
+  //TODO: keep one object level instance of settings for each of TimerWindow and NetworkClient
+  QSettings settings;
+  settings.setIniCodec("UTF-8");
+
+  int inactivityLogout = 0;
+  if (!settings.value("node/inactivity_logout").toString().isEmpty()) {
+    inactivityLogout = settings.value("node/inactivity_logout").toInt();
+  }
+  qDebug() << "INACTIVIY LOGOUT: " << inactivityLogout;
+
+
+  int inactivityWarning = 5;
+  if (!settings.value("node/inactivity_warning").toString().isEmpty()) {
+    inactivityWarning = settings.value("node/inactivity_warning").toInt();
+  }
+  qDebug() << "INACTIVIY WARNING: " << inactivityWarning;
+
+  if ( inactivityLogout > 0 ) {
+      QPoint pos = QCursor::pos();
+      int x = pos.x();
+      int y = pos.y();
+
+      //TODO: Implement ranges to account for mouse wobble?
+      if ( prevMousePosX == x && prevMousePosY == y ) {
+          minutesSinceLastActivity++;
+          qDebug() << "No activity detected. Minutes since last activity: " << minutesSinceLastActivity;
+      } else {
+          minutesSinceLastActivity = 0;
+          qDebug() << "Activity detected. Minutes since last activity: 0";
+      }
+
+      if ( minutesSinceLastActivity == inactivityWarning ) {
+          QString title   = tr("Inactivity detected");
+          QString message = tr("Please confirm you are still using this computer.");
+
+          QMessageBox* msgBox = new QMessageBox( this );
+          msgBox->setAttribute( Qt::WA_DeleteOnClose ); //makes sure the msgbox is deleted automatically when closed
+          msgBox->setStandardButtons( QMessageBox::Ok );
+          msgBox->setWindowTitle( title );
+          msgBox->setText( message );
+          msgBox->setWindowState( (windowState() & ~Qt::WindowMinimized) | Qt::WindowActive);
+          msgBox->raise();
+          msgBox->activateWindow();
+          msgBox->open();
+
+          QCoreApplication::processEvents(); // Should clear out any previous system tray message
+          trayIcon->showMessage(title, message, QSystemTrayIcon::Critical, 100000);
+
+    //      this->activateWindow();
+    //      this->raise();
+      }
+
+      if ( minutesSinceLastActivity >= inactivityLogout ) {
+          emit requestLogout();
+      }
+
+      prevMousePosX = x;
+      prevMousePosY = y;
   }
 }
 
