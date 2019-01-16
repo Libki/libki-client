@@ -247,15 +247,15 @@ void TimerWindow::checkForInactivity() {
   settings.setIniCodec("UTF-8");
 
   int inactivityLogout = 0;
-  if (!settings.value("node/inactivity_logout").toString().isEmpty()) {
-    inactivityLogout = settings.value("node/inactivity_logout").toInt();
+  if (!settings.value("node/inactivityLogout").toString().isEmpty()) {
+    inactivityLogout = settings.value("node/inactivityLogout").toInt();
   }
   qDebug() << "INACTIVIY LOGOUT: " << inactivityLogout;
 
 
   int inactivityWarning = 5;
-  if (!settings.value("node/inactivity_warning").toString().isEmpty()) {
-    inactivityWarning = settings.value("node/inactivity_warning").toInt();
+  if (!settings.value("node/inactivityWarning").toString().isEmpty()) {
+    inactivityWarning = settings.value("node/inactivityWarning").toInt();
   }
   qDebug() << "INACTIVIY WARNING: " << inactivityWarning;
 
