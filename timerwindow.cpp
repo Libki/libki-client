@@ -250,6 +250,9 @@ void TimerWindow::checkForInactivity() {
   if (!settings.value("node/inactivityLogout").toString().isEmpty()) {
     inactivityLogout = settings.value("node/inactivityLogout").toInt();
   }
+  else if (!settings.value("session/inactivityLogout").toString().isEmpty()) {
+    inactivityLogout = settings.value("session/inactivityLogout").toInt();
+  }
   qDebug() << "INACTIVIY LOGOUT: " << inactivityLogout;
 
 
@@ -257,6 +260,10 @@ void TimerWindow::checkForInactivity() {
   if (!settings.value("node/inactivityWarning").toString().isEmpty()) {
     inactivityWarning = settings.value("node/inactivityWarning").toInt();
   }
+  else if (!settings.value("session/inactivityWarning").toString().isEmpty()) {
+    inactivityWarning = settings.value("session/inactivityWarning").toInt();
+  }
+
   qDebug() << "INACTIVIY WARNING: " << inactivityWarning;
 
   if ( inactivityLogout > 0 ) {

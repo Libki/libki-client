@@ -444,6 +444,11 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
   settings.setValue("session/BannerBottomHeight",
                     sc.property("BannerBottomHeight").toString());
 
+  settings.setValue("session/inactivityLogout",
+                    sc.property("inactivityLogout").toString());
+  settings.setValue("session/inactivityWarning",
+                    sc.property("inactivityWarning").toString());
+
   settings.sync();
 
   if ((bannerTopURL != sc.property("BannerTopURL").toString()) ||
