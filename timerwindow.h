@@ -80,7 +80,7 @@ private:
   int minutesRemaining;
   int minutesAtStart;
 
-  int minutesSinceLastActivity;
+  int secondsSinceLastActivity;
   int prevMousePosX;
   int prevMousePosY;
 

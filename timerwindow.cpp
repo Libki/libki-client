@@ -20,6 +20,8 @@
 #include <QtWidgets/qdesktopwidget.h>
 #include "timerwindow.h"
 
+#define INACTIVITY_CHECK_INTERVAL 10
+
 TimerWindow::TimerWindow(QWidget *parent) : QMainWindow(parent) {
   qDebug("TimerWindow::TimerWindow");
 
@@ -72,8 +74,8 @@ void TimerWindow::startTimer(const QString&,
 
   trayIconPopupTimer->start(1000 * 60); // Fire once a minute
 
-  minutesSinceLastActivity = 0;
-  inactivityTimer->start(1000 * 60);
+  secondsSinceLastActivity = 0;
+  inactivityTimer->start(1000 * INACTIVITY_CHECK_INTERVAL);
 
   this->show();
   trayIcon->show();
@@ -85,7 +87,7 @@ void TimerWindow::startTimer(const QString&,
   settings.setIniCodec("UTF-8");
 
   QString waiting_holds_message =
-    "You have one or more items on hold waiting for pickup. Please contact a librarian for more details";
+    tr("You have one or more items on hold waiting for pickup. Please contact a librarian for more details");
 
   if (!settings.value("labels/waiting_holds").toString().isEmpty()) {
     waiting_holds_message = settings.value("labels/waiting_holds").toString();
@@ -264,35 +266,34 @@ void TimerWindow::checkForInactivity() {
 
       //TODO: Implement ranges to account for mouse wobble?
       if ( prevMousePosX == x && prevMousePosY == y ) {
-          minutesSinceLastActivity++;
-          qDebug() << "No activity detected. Minutes since last activity: " << minutesSinceLastActivity;
+          secondsSinceLastActivity += INACTIVITY_CHECK_INTERVAL;
+          qDebug() << "No activity detected. Seconds since last activity: " << secondsSinceLastActivity;
       } else {
-          minutesSinceLastActivity = 0;
-          qDebug() << "Activity detected. Minutes since last activity: 0";
+          secondsSinceLastActivity = 0;
+          qDebug() << "Activity detected. Seconds since last activity: 0";
       }
 
-      if ( minutesSinceLastActivity == inactivityWarning ) {
+      if ( secondsSinceLastActivity / 60 >= inactivityWarning ) {
           QString title   = tr("Inactivity detected");
           QString message = tr("Please confirm you are still using this computer.");
 
-          QMessageBox* msgBox = new QMessageBox( this );
-          msgBox->setAttribute( Qt::WA_DeleteOnClose ); //makes sure the msgbox is deleted automatically when closed
-          msgBox->setStandardButtons( QMessageBox::Ok );
-          msgBox->setWindowTitle( title );
-          msgBox->setText( message );
-          msgBox->setWindowState( (windowState() & ~Qt::WindowMinimized) | Qt::WindowActive);
-          msgBox->raise();
-          msgBox->activateWindow();
-          msgBox->open();
+          /* This would be useful if we could bring the timer window to the forefront, but there appears to be no way to do that
+           * QMessageBox* msgBox = new QMessageBox( this );
+           * msgBox->setAttribute( Qt::WA_DeleteOnClose ); //makes sure the msgbox is deleted automatically when closed
+           * msgBox->setStandardButtons( QMessageBox::Ok );
+           * msgBox->setWindowTitle( title );
+           * msgBox->setText( message );
+           * msgBox->setWindowState( (windowState() & ~Qt::WindowMinimized) | Qt::WindowActive);
+           * msgBox->raise();
+           * msgBox->activateWindow();
+           * msgBox->open();
+           */
 
           QCoreApplication::processEvents(); // Should clear out any previous system tray message
           trayIcon->showMessage(title, message, QSystemTrayIcon::Critical, 100000);
-
-    //      this->activateWindow();
-    //      this->raise();
       }
 
-      if ( minutesSinceLastActivity >= inactivityLogout ) {
+      if ( secondsSinceLastActivity / 60 >= inactivityLogout ) {
           emit requestLogout();
       }
 
