@@ -262,6 +262,13 @@ void LoginWindow::attemptLoginSuccess(QString username,
   qDebug("LoginWindow::attemptLoginSuccess");
   resetLoginScreen();
 
+  QSettings settings;
+  QString runOnLogin = settings.value("node/run_on_login").toString();
+  if ( ! runOnLogin.isEmpty() ) {
+      // Yes, these quotes around the command within string are required, IKR?
+      QProcess::startDetached('"' + runOnLogin + '"');
+  }
+
   emit loginSucceeded(username, password, minutes, hold_items_count);
   this->hide();
 
