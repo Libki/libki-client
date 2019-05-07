@@ -15,7 +15,7 @@
         <file>images/icons/lock.png</file>
     </qresource>
     <qresource prefix="/">
-        <file>languages/libkiclient_fr_CA.qm</file>
-        <file>languages/libkiclient_sv_SE.qm</file>
+        <file>languages/libkiclient_fr.qm</file>
+        <file>languages/libkiclient_sv.qm</file>
     </qresource>
 </RCC>
