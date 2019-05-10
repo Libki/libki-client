@@ -16,7 +16,7 @@
     </message>
     <message>
         <location filename="../loginwindow.ui" line="152"/>
-        <location filename="../loginwindow.cpp" line="340"/>
+        <location filename="../loginwindow.cpp" line="342"/>
         <source>Reserved</source>
         <translation>Réservé</translation>
     </message>
@@ -59,133 +59,143 @@
         <translation>Veuillez patienter...</translation>
     </message>
     <message>
-        <location filename="../loginwindow.cpp" line="189"/>
-        <source>Login Failed: Username and password do not match</source>
+        <location filename="../loginwindow.cpp" line="174"/>
+        <source>Yes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../loginwindow.cpp" line="175"/>
+        <source>No</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="191"/>
+        <source>Login Failed: Username and password do not match</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../loginwindow.cpp" line="193"/>
         <source>Login Failed: You are not the correct age to use this client</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../loginwindow.cpp" line="194"/>
+        <location filename="../loginwindow.cpp" line="196"/>
         <source>Login Failed: No time left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../loginwindow.cpp" line="196"/>
+        <location filename="../loginwindow.cpp" line="198"/>
         <source>Login Failed: This kiosk is closed for the day</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../loginwindow.cpp" line="198"/>
+        <location filename="../loginwindow.cpp" line="200"/>
         <source>Login Failed: Account is currently in use</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../loginwindow.cpp" line="200"/>
+        <location filename="../loginwindow.cpp" line="202"/>
         <source>Login Failed: Account is disabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../loginwindow.cpp" line="202"/>
+        <location filename="../loginwindow.cpp" line="204"/>
         <source>Login Failed: This kiosk is reserved for someone else</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../loginwindow.cpp" line="205"/>
+        <location filename="../loginwindow.cpp" line="207"/>
         <source>Login Failed: Reservation required</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../loginwindow.cpp" line="207"/>
-        <location filename="../loginwindow.cpp" line="233"/>
+        <location filename="../loginwindow.cpp" line="209"/>
+        <location filename="../loginwindow.cpp" line="235"/>
         <source>Login Failed: You have excessive outstanding fees</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../loginwindow.cpp" line="209"/>
+        <location filename="../loginwindow.cpp" line="211"/>
         <source>Login Failed: Charge privileges denied</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../loginwindow.cpp" line="211"/>
+        <location filename="../loginwindow.cpp" line="213"/>
         <source>Login Failed: Renewal privileges denied</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../loginwindow.cpp" line="213"/>
+        <location filename="../loginwindow.cpp" line="215"/>
         <source>Login Failed: Recall privileges denied</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../loginwindow.cpp" line="215"/>
+        <location filename="../loginwindow.cpp" line="217"/>
         <source>Login Failed: Hold privileges denied</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../loginwindow.cpp" line="217"/>
+        <location filename="../loginwindow.cpp" line="219"/>
         <source>Login Failed: Your card has been reported lost</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../loginwindow.cpp" line="219"/>
+        <location filename="../loginwindow.cpp" line="221"/>
         <source>Login Failed: You have too many items charged to your account</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../loginwindow.cpp" line="222"/>
+        <location filename="../loginwindow.cpp" line="224"/>
         <source>Login Failed: You have too many items overdue</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../loginwindow.cpp" line="224"/>
+        <location filename="../loginwindow.cpp" line="226"/>
         <source>Login Failed: You have renewed items too many times</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../loginwindow.cpp" line="226"/>
+        <location filename="../loginwindow.cpp" line="228"/>
         <source>Login Failed: You have claimed too many items as returned</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../loginwindow.cpp" line="229"/>
+        <location filename="../loginwindow.cpp" line="231"/>
         <source>Login Failed: You have have lost too many items</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../loginwindow.cpp" line="231"/>
+        <location filename="../loginwindow.cpp" line="233"/>
         <source>Login Failed: You have excessive outstanding fines</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../loginwindow.cpp" line="235"/>
+        <location filename="../loginwindow.cpp" line="237"/>
         <source>Login Failed: You have a recalled item which is overdue</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../loginwindow.cpp" line="238"/>
+        <location filename="../loginwindow.cpp" line="240"/>
         <source>Login Failed: You have been billed for too many items</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../loginwindow.cpp" line="241"/>
+        <location filename="../loginwindow.cpp" line="243"/>
         <source>Login Failed: Client not registered</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../loginwindow.cpp" line="243"/>
+        <location filename="../loginwindow.cpp" line="245"/>
         <source>Login Failed: Unable to connect to ILS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../loginwindow.cpp" line="245"/>
+        <location filename="../loginwindow.cpp" line="247"/>
         <source>Login Failed: Too many concurrent sessions on this account</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../loginwindow.cpp" line="248"/>
+        <location filename="../loginwindow.cpp" line="250"/>
         <source>Login Failed: </source>
         <translation type="unfinished"></translation>
     </message>
@@ -219,7 +229,7 @@
         <translation type="vanished">Échec: Impossible de se connecter au serveur</translation>
     </message>
     <message>
-        <location filename="../loginwindow.cpp" line="338"/>
+        <location filename="../loginwindow.cpp" line="340"/>
         <source>Reserved for </source>
         <translation>Réservé pour </translation>
     </message>
@@ -233,7 +243,7 @@
     </message>
     <message>
         <location filename="../timerwindow.ui" line="98"/>
-        <location filename="../timerwindow.cpp" line="182"/>
+        <location filename="../timerwindow.cpp" line="184"/>
         <source>Log Out</source>
         <translation>Se déconnecter</translation>
     </message>
@@ -249,7 +259,7 @@
     </message>
     <message>
         <location filename="../timerwindow.cpp" line="130"/>
-        <location filename="../timerwindow.cpp" line="233"/>
+        <location filename="../timerwindow.cpp" line="235"/>
         <source>Minutes Left</source>
         <translation>minutes restantes</translation>
     </message>
@@ -264,22 +274,32 @@
         <translation>Voulez-vous vraiment déconnecter?</translation>
     </message>
     <message>
-        <location filename="../timerwindow.cpp" line="232"/>
+        <location filename="../timerwindow.cpp" line="156"/>
+        <source>Yes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../timerwindow.cpp" line="157"/>
+        <source>Cancel</source>
+        <translation type="unfinished">Annuler</translation>
+    </message>
+    <message>
+        <location filename="../timerwindow.cpp" line="234"/>
         <source>Time Remaining</source>
         <translation>Temps disponible</translation>
     </message>
     <message>
-        <location filename="../timerwindow.cpp" line="284"/>
+        <location filename="../timerwindow.cpp" line="286"/>
         <source>Inactivity detected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../timerwindow.cpp" line="285"/>
+        <location filename="../timerwindow.cpp" line="287"/>
         <source>Please confirm you are still using this computer.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../timerwindow.cpp" line="318"/>
+        <location filename="../timerwindow.cpp" line="320"/>
         <source>You have a message</source>
         <translation type="unfinished"></translation>
     </message>

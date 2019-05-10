@@ -153,6 +153,8 @@ void TimerWindow::doLogoutDialog() {
   msgBox.setInformativeText(tr("Are you sure you want to log out?"));
   msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
   msgBox.setDefaultButton(QMessageBox::Yes);
+  msgBox.setButtonText(QMessageBox::Yes, tr("Yes"));
+  msgBox.setButtonText(QMessageBox::Cancel, tr("Cancel"));
   int ret = msgBox.exec();
 
   switch (ret) {
