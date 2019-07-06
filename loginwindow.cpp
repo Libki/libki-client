@@ -165,7 +165,7 @@ void LoginWindow::attemptLogin() {
   QSettings settings;
   settings.setIniCodec("UTF-8");
   QString termsOfService = settings.value("session/TermsOfService").toString();
-  if ( termsOfService.length() > 0 ) {
+  if ( termsOfService.length() > 4 ) {
       QMessageBox msgBox;
       msgBox.setText("Do you accept the terms of service?");
       msgBox.setInformativeText(termsOfService);
