@@ -62,6 +62,8 @@ NetworkClient::NetworkClient() : QObject() {
 
   nodeLocation = settings.value("node/location").toString();
   qDebug() << "LOCATION: " << nodeLocation;
+  nodeType = settings.value("node/type").toString();
+  qDebug() << "TYPE: " << nodeType;
   nodeAgeLimit = settings.value("node/age_limit").toString();
   qDebug() << "AGE LIMIT: " << nodeAgeLimit;
 
@@ -83,6 +85,7 @@ NetworkClient::NetworkClient() : QObject() {
 
   urlQuery.addQueryItem("node",     nodeName);
   urlQuery.addQueryItem("location", nodeLocation);
+  urlQuery.addQueryItem("type", nodeType);
 
   registerNode();
   registerNodeTimer = new QTimer(this);
