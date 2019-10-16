@@ -21,7 +21,6 @@ SOURCES += loginwindow.cpp \
            networkclient.cpp \
            timerwindow.cpp
 TRANSLATIONS = languages/libkiclient_fr.ts \
-        languages/libkiclient_sv.ts
+        languages/libkiclient_sv.ts \
+        languages/libkiclient_es.ts
 OTHER_FILES +=
-
-
