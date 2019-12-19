@@ -24,9 +24,6 @@ if ( GetSetting( "disableInput" ) ) {
     BlockInput MouseMoveOff
 }
 
-;Disable Alt-Tab
-!TAB::
-
 ;Disable Ctrl-Escape to bring up start menu
 ^Escape::
 
@@ -41,6 +38,19 @@ AppsKey::
 
 ;Disable Alt-F4
 !F4::return
+
+; Disable Alt+Tab
+!TAB::
+!Tab::Return
+
+; Disable Windows Key + Tab
+#Tab::Return
+
+; Disable Left Windows Key
+LWin::Return
+
+; Disable Right Windows Key
+RWin::Return
 
 Run taskkill /im explorer.exe /f
 
