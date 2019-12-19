@@ -25,22 +25,21 @@ if ( GetSetting( "disableInput" ) ) {
 }
 
 ;Disable Ctrl-Escape to bring up start menu
-^Escape::
+^Escape::Return
 
 ;Disable Shift-F10
-+F10::
++F10::Return
 
 ;Disablt Ctrl-Shift-Esc
-^+Escape::
+^+Escape::Return
 
 ;Disable Apps key
-AppsKey::
+AppsKey::Return
 
 ;Disable Alt-F4
-!F4::return
+!F4::Return
 
 ; Disable Alt+Tab
-!TAB::
 !Tab::Return
 
 ; Disable Windows Key + Tab
