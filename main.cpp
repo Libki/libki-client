@@ -123,6 +123,7 @@ int main(int argc, char *argv[]) {
 
   // If this is an MS Windows platform, use the keylocker programs to limit
   // mischief.
+  QProcess::startDetached("taskkill /f /im explorer.exe");
   QProcess::startDetached("windows/on_startup.exe");
 #endif // ifdef Q_OS_WIN
 
