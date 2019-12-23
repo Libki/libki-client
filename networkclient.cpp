@@ -519,7 +519,10 @@ void NetworkClient::doLoginTasks(int units, int hold_items_count) {
   settings.setIniCodec("UTF-8");
   settings.setValue("session/LoggedInUser", username);
   settings.sync();
-
+  qDebug() << "SCRIPTLOGIN:" << settings.value("scriptlogin/enable").toString();
+  if (settings.value("scriptlogin/enable").toString() == "1"){
+      QProcess::startDetached(settings.value("scriptlogin/script").toString());
+  }
   emit loginSucceeded(username, password, units, hold_items_count);
 }
 
@@ -600,6 +603,9 @@ void NetworkClient::doLogoutTasks() {
     QProcess::startDetached("sudo reboot");
   }
 #endif // ifdef Q_OS_UNIX
-
+  qDebug() << "SCRIPTLOGOUT:" << settings.value("scriptlogout/enable").toString();
+  if (settings.value("scriptlogout/enable").toString() == "1"){
+      QProcess::startDetached(settings.value("scriptlogout/script").toString());
+  }
   emit logoutSucceeded();
 }
