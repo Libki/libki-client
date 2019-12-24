@@ -23,17 +23,17 @@
     <message>
         <location filename="../loginwindow.ui" line="182"/>
         <source>Please Log In.</source>
-        <translation>Connexion</translation>
+        <translation>Veuillez vous connecter.</translation>
     </message>
     <message>
         <location filename="../loginwindow.ui" line="256"/>
         <source>Username:</source>
-        <translation>Identifiant</translation>
+        <translation>Identifiant:</translation>
     </message>
     <message>
         <location filename="../loginwindow.ui" line="272"/>
         <source>Password:</source>
-        <translation>Mot de passe</translation>
+        <translation>Mot de passe:</translation>
     </message>
     <message>
         <location filename="../loginwindow.ui" line="292"/>
@@ -61,172 +61,143 @@
     <message>
         <location filename="../loginwindow.cpp" line="174"/>
         <source>Yes</source>
-        <translation type="unfinished"></translation>
+        <translation>Oui</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="175"/>
         <source>No</source>
-        <translation type="unfinished"></translation>
+        <translation>Non</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="191"/>
         <source>Login Failed: Username and password do not match</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de connexion: Identifiant ou mot de passe incorrect</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="193"/>
         <source>Login Failed: You are not the correct age to use this client</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de connexion: Vous n'avez pas l'age requis pour utiliser le poste</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="196"/>
         <source>Login Failed: No time left</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de connexion: Temps alloué échu</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="198"/>
         <source>Login Failed: This kiosk is closed for the day</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de connexion: La bibliothèque est fermée pour la journée</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="200"/>
         <source>Login Failed: Account is currently in use</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de connexion: Compte déjà en cours d'utilisation sur un autre poste</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="202"/>
         <source>Login Failed: Account is disabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de connexion: Compte désactivé</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="204"/>
         <source>Login Failed: This kiosk is reserved for someone else</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de connexion: Ce poste est réservé à un autre utilisateur</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="207"/>
         <source>Login Failed: Reservation required</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de connexion: Requiert une réservation</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="209"/>
         <location filename="../loginwindow.cpp" line="235"/>
         <source>Login Failed: You have excessive outstanding fees</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de connexion: Vous avez des frais impayés</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="211"/>
         <source>Login Failed: Charge privileges denied</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de connexion: Privilèges de facturation refusés </translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="213"/>
         <source>Login Failed: Renewal privileges denied</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de connexion: Privilèges de renouvellement refusés</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="215"/>
         <source>Login Failed: Recall privileges denied</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de connexion: Privilèges de rappel refusés</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="217"/>
         <source>Login Failed: Hold privileges denied</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de connexion: Privilèges de blocage refusés</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="219"/>
         <source>Login Failed: Your card has been reported lost</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de connexion: Votre carte est marquée comme perdue</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="221"/>
         <source>Login Failed: You have too many items charged to your account</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de connexion: Vous avez trop d'articles en prêt sur votre compte</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="224"/>
         <source>Login Failed: You have too many items overdue</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de connexion: documents en retard sur le dossier. Prière de vous adresser au comptoir du prêt.</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="226"/>
         <source>Login Failed: You have renewed items too many times</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de connexion: Vouz avez renouvelé des articles beaucoup de fois</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="228"/>
         <source>Login Failed: You have claimed too many items as returned</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de connexion: Vous avez réclamé trop d'articles en retour</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="231"/>
         <source>Login Failed: You have have lost too many items</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de connexion: documents perdus sur le dossier. Prière de vous adresser au comptoir du prêt</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="233"/>
         <source>Login Failed: You have excessive outstanding fines</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de connexion: amendes sur le dossier. Prière de vous adresser au comptoir du prêt</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="237"/>
         <source>Login Failed: You have a recalled item which is overdue</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de connexion: document rappelé qui est en retard. Prière de vous adresser au comptoir du prêt</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="240"/>
         <source>Login Failed: You have been billed for too many items</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de connexion: Vous avez été facturé pour trop d'articles</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="243"/>
         <source>Login Failed: Client not registered</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de connexion: Poste non enregistré</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="245"/>
         <source>Login Failed: Unable to connect to ILS</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de connexion: Impossible de se connecter au serveur</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="247"/>
         <source>Login Failed: Too many concurrent sessions on this account</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de connexion: Trop de sessions simultanées sur ce compte</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="250"/>
         <source>Login Failed: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Login Failed: Username &amp; Password Do Not Match</source>
-        <translation type="vanished">Échec: l&apos;identifiant et le mot de passe ne correspondent pas</translation>
-    </message>
-    <message>
-        <source>Login Failed: No Time Left</source>
-        <translatorcomment>Je trouve échu plus joli que écoulé :)</translatorcomment>
-        <translation type="vanished">Échec: Temps alloué échu</translation>
-    </message>
-    <message>
-        <source>Login Failed: Account Is Currently In Use</source>
-        <translation type="vanished">Échec: Compte déjà en utilisation</translation>
-    </message>
-    <message>
-        <source>Login Failed: Account Is Disabled</source>
-        <translation type="vanished">Échec: Compte désactivé </translation>
-    </message>
-    <message>
-        <source>Login Failed: This Kiosk Is Reserved For Someone Else</source>
-        <translation type="vanished">Échec: Ce poste est réservé à un autre utilisateur</translation>
-    </message>
-    <message>
-        <source>Login Failed: Reservation Required</source>
-        <translation type="vanished">Échec: Requiert une réservation</translation>
-    </message>
-    <message>
-        <source>Login Failed: Unable To Connect To Server</source>
-        <translation type="vanished">Échec: Impossible de se connecter au serveur</translation>
+        <translation>Échec de connexion:</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="340"/>
@@ -255,7 +226,7 @@
     <message>
         <location filename="../timerwindow.cpp" line="90"/>
         <source>You have one or more items on hold waiting for pickup. Please contact a librarian for more details</source>
-        <translation type="unfinished"></translation>
+        <translation>Vous avez un ou plusieurs articles en attente de retrait. Prière de vous adresser au comptoir du prêt.</translation>
     </message>
     <message>
         <location filename="../timerwindow.cpp" line="130"/>
@@ -276,12 +247,12 @@
     <message>
         <location filename="../timerwindow.cpp" line="156"/>
         <source>Yes</source>
-        <translation type="unfinished"></translation>
+        <translation>Oui</translation>
     </message>
     <message>
         <location filename="../timerwindow.cpp" line="157"/>
         <source>Cancel</source>
-        <translation type="unfinished">Annuler</translation>
+        <translation>Annuler</translation>
     </message>
     <message>
         <location filename="../timerwindow.cpp" line="234"/>
@@ -291,17 +262,17 @@
     <message>
         <location filename="../timerwindow.cpp" line="286"/>
         <source>Inactivity detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Inactivité détectée</translation>
     </message>
     <message>
         <location filename="../timerwindow.cpp" line="287"/>
         <source>Please confirm you are still using this computer.</source>
-        <translation type="unfinished"></translation>
+        <translation>Veuillez confirmer que vous utilisez toujours cet ordinateur.</translation>
     </message>
     <message>
         <location filename="../timerwindow.cpp" line="320"/>
         <source>You have a message</source>
-        <translation type="unfinished"></translation>
+        <translation>Vous avez un messag</translation>
     </message>
     <message>
         <source>You Have Recieve A Message</source>
