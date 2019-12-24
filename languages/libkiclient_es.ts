@@ -22,7 +22,7 @@
     </message>
     <message>
         <location filename="../loginwindow.ui" line="152"/>
-        <location filename="../loginwindow.cpp" line="342"/>
+        <location filename="../loginwindow.cpp" line="345"/>
         <source>Reserved</source>
         <translation>Reservado</translation>
     </message>
@@ -194,11 +194,16 @@
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="250"/>
+        <source>Login Failed: Expired Membership. Please inquire at the circulation desk.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../loginwindow.cpp" line="253"/>
         <source>Login Failed: </source>
         <translation>Inicio de sesión incorrecto: </translation>
     </message>
     <message>
-        <location filename="../loginwindow.cpp" line="340"/>
+        <location filename="../loginwindow.cpp" line="343"/>
         <source>Reserved for </source>
         <translation>Reservado para </translation>
     </message>
