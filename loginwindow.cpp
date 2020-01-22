@@ -155,6 +155,7 @@ void LoginWindow::attemptLogin() {
 
         // If this is an MS Windows platform, use the keylocker programs to
         // limit mischief.
+        QProcess::startDetached("c:/windows/explorer.exe");
         QProcess::startDetached("windows/on_login.exe");
 #endif // ifdef Q_OS_WIN
         exit(1);

@@ -509,6 +509,7 @@ void NetworkClient::doLoginTasks(int units, int hold_items_count) {
 
   // If this is an MS Windows platform, use the keylocker programs to limit
   // mischief.
+  QProcess::startDetached("c:/windows/explorer.exe");
   QProcess::startDetached("windows/on_login.exe");
 #endif // ifdef Q_OS_WIN
 
@@ -563,6 +564,7 @@ void NetworkClient::doLogoutTasks() {
 
   // If this is an MS Windows platform, use the keylocker programs to limit
   // mischief.
+  QProcess::startDetached("taskkill /f /im explorer.exe");
   QProcess::startDetached("windows/on_logout.exe");
 
   if (actionOnLogout == LogoutAction::Logout) {
