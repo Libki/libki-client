@@ -16,7 +16,7 @@
     </message>
     <message>
         <location filename="../loginwindow.ui" line="152"/>
-        <location filename="../loginwindow.cpp" line="342"/>
+        <location filename="../loginwindow.cpp" line="345"/>
         <source>Reserved</source>
         <translation>Réservé</translation>
     </message>
@@ -196,6 +196,11 @@
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="250"/>
+        <source>Login Failed: Expired Membership. Please inquire at the circulation desk.</source>
+        <translation>Échec de connexion : dossier expiré. Prière de vous adresser au comptoir du prêt.</translation>
+    </message>
+    <message>
+        <location filename="../loginwindow.cpp" line="253"/>
         <source>Login Failed: </source>
         <translation type="unfinished"></translation>
     </message>
@@ -229,7 +234,7 @@
         <translation type="vanished">Échec: Impossible de se connecter au serveur</translation>
     </message>
     <message>
-        <location filename="../loginwindow.cpp" line="340"/>
+        <location filename="../loginwindow.cpp" line="343"/>
         <source>Reserved for </source>
         <translation>Réservé pour </translation>
     </message>

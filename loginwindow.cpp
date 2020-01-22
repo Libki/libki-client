@@ -246,7 +246,10 @@ void LoginWindow::attemptLoginFailure(QString loginError) {
   } else if (loginError == "TOO_MANY_SESSIONS") {
     errorLabel->setText(tr(
                           "Login Failed: Too many concurrent sessions on this account"));
-  } else {
+  } else if (loginError == "EXPIRED_CARD"){
+    errorLabel->setText(tr(
+                          "Login Failed: Expired Membership. Please inquire at the circulation desk."));
+  }else {
     errorLabel->setText(tr("Login Failed: ") + loginError);
   }
 
