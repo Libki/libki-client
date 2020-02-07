@@ -607,7 +607,7 @@ void NetworkClient::doLogoutTasks() {
 #endif // ifdef Q_OS_UNIX
   qDebug() << "SCRIPTLOGOUT:" << settings.value("scriptlogout/enable").toString();
   if (settings.value("scriptlogout/enable").toString() == "1"){
-      QProcess::startDetached('"' + settings.value("scriptlogout/script").toString() + '"');
+      QProcess::startDetached(settings.value("scriptlogout/script").toString());
   }
   emit logoutSucceeded();
 }
