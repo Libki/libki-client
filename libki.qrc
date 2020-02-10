@@ -18,6 +18,6 @@
         <file>languages/libkiclient_fr.qm</file>
         <file>languages/libkiclient_sv.qm</file>
         <file>languages/libkiclient_es.qm</file>
-        <file>languages/libkiclient_pt_PT.qm</file>
+        <file>languages/libkiclient_pt.qm</file>
     </qresource>
 </RCC>
