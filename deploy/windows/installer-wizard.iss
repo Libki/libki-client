@@ -82,6 +82,7 @@ Filename: "{commonappdata}\Libki\Libki Kiosk Management System.ini"; Section: "n
 var
   ServerPage: TInputQueryWizardPage;
   ClientPage: TInputQueryWizardPage;
+  StartupModePage: TInputOptionWizardPage;
   RebootActionPage: TInputOptionWizardPage;
   PasswordPage: TInputQueryWizardPage;
 
@@ -104,8 +105,13 @@ begin
   ClientPage.Add('Run for all users but this one:', False);
   ClientPage.Add('Client name:', False);
 
+  StartupModePage := CreateInputOptionPage(ClientPage.ID,
+    'Startup mode', 'Specify how to start the client',
+    'Please specify how the Libki client should be started',
+    False, False);
+  StartupModePage.Add('Automatically start Libki client');
 
-  RebootActionPage := CreateInputOptionPage(ClientPage.ID,
+  RebootActionPage := CreateInputOptionPage(StartupModePage.ID,
     'Logout Action', 'Specify action on logout?',
     'Please specify how the Libki client should act on logout.',
     True, False);
