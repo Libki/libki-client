@@ -108,8 +108,10 @@ begin
   StartupModePage := CreateInputOptionPage(ClientPage.ID,
     'Startup mode', 'Specify how to start the client',
     'Please specify how the Libki client should be started',
-    False, False);
-  StartupModePage.Add('Automatically start Libki client');
+    True, False);
+  StartupModePage.Add('Automatically start Libki client after normal user shell');
+  StartupModePage.Add('Automatically start Libki instead of user shell (shell replacement)');
+  StartupModePage.Add('Do not start Libki client automatically');
 
   RebootActionPage := CreateInputOptionPage(StartupModePage.ID,
     'Logout Action', 'Specify action on logout?',
