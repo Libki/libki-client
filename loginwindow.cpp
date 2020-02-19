@@ -271,8 +271,31 @@ void LoginWindow::attemptLoginSuccess(QString username,
   QSettings settings;
   QString runOnLogin = settings.value("node/run_on_login").toString();
   if ( ! runOnLogin.isEmpty() ) {
+      QProcess process;
+      QString passEnvToRunOnLogin = settings.value("node/pass_env_to_run_on_login").toString();
+      if ( ! passEnvToRunOnLogin.isEmpty() ) {
+          QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+          QStringList envVarsToPass = passEnvToRunOnLogin.split(',');
+          for (int i = 0; i < envVarsToPass.size(); ++i) {
+              if (envVarsToPass.at(i) == "username") {
+                env.insert("LIBKI_USER_NAME", username);
+              }
+              if (envVarsToPass.at(i) == "password") {
+                env.insert("LIBKI_USER_PASSWORD", password);
+              }
+              if (envVarsToPass.at(i) == "name") {
+                env.insert("LIBKI_CLIENT_NAME", settings.value("node/name"));
+              }
+              if (envVarsToPass.at(i) == "location") {
+                env.insert("LIBKI_CLIENT_LOCATION", settings.value("node/location"));
+              }
+          }
+          process.setProcessEnvironment(env);
+      }
+
       // Yes, these quotes around the command within string are required, IKR?
-      QProcess::startDetached('"' + runOnLogin + '"');
+      //QProcess::startDetached('"' + runOnLogin + '"');
+      process.start('"' + runOnLogin + '"');
   }
 
   emit loginSucceeded(username, password, minutes, hold_items_count);
