@@ -46,10 +46,10 @@ AppsKey::Return
 #Tab::Return
 
 ; Disable Left Windows Key
-LWin::Return
+$LWin::Return
 
 ; Disable Right Windows Key
-RWin::Return
+$RWin::Return
 
 Run taskkill /im explorer.exe /f
 
