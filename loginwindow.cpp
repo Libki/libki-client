@@ -284,10 +284,10 @@ void LoginWindow::attemptLoginSuccess(QString username,
                 env.insert("LIBKI_USER_PASSWORD", password);
               }
               if (envVarsToPass.at(i) == "name") {
-                env.insert("LIBKI_CLIENT_NAME", settings.value("node/name"));
+                env.insert("LIBKI_CLIENT_NAME", settings.value("node/name").toString());
               }
               if (envVarsToPass.at(i) == "location") {
-                env.insert("LIBKI_CLIENT_LOCATION", settings.value("node/location"));
+                env.insert("LIBKI_CLIENT_LOCATION", settings.value("node/location").toString());
               }
           }
           process.setProcessEnvironment(env);
