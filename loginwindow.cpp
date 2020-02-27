@@ -268,34 +268,34 @@ void LoginWindow::attemptLoginSuccess(QString username,
   qDebug("LoginWindow::attemptLoginSuccess");
   resetLoginScreen();
 
+  QProcess process;
   QSettings settings;
   QString runOnLogin = settings.value("node/run_on_login").toString();
   if ( ! runOnLogin.isEmpty() ) {
-      QProcess process;
       QString passEnvToRunOnLogin = settings.value("node/pass_env_to_run_on_login").toString();
       if ( ! passEnvToRunOnLogin.isEmpty() ) {
-          QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
           QStringList envVarsToPass = passEnvToRunOnLogin.split(',');
           for (int i = 0; i < envVarsToPass.size(); ++i) {
+              // On Qt 5.5 there is no way to pass environment variables to a detached process,
+              // so we need to add the vars to the current environment with qputenv
               if (envVarsToPass.at(i) == "username") {
-                env.insert("LIBKI_USER_NAME", username);
+                // qputenv needs a QByteArray as second parameter, hence the call to toUtf8
+                qputenv("LIBKI_USER_NAME", username.toUtf8());
               }
               if (envVarsToPass.at(i) == "password") {
-                env.insert("LIBKI_USER_PASSWORD", password);
+                qputenv("LIBKI_USER_PASSWORD", password.toUtf8());
               }
               if (envVarsToPass.at(i) == "name") {
-                env.insert("LIBKI_CLIENT_NAME", settings.value("node/name").toString());
+                qputenv("LIBKI_CLIENT_NAME", settings.value("node/name").toString().toUtf8());
               }
               if (envVarsToPass.at(i) == "location") {
-                env.insert("LIBKI_CLIENT_LOCATION", settings.value("node/location").toString());
+                qputenv("LIBKI_CLIENT_LOCATION", settings.value("node/location").toString().toUtf8());
               }
           }
-          process.setProcessEnvironment(env);
       }
 
       // Yes, these quotes around the command within string are required, IKR?
-      //QProcess::startDetached('"' + runOnLogin + '"');
-      process.start('"' + runOnLogin + '"');
+      QProcess::startDetached('"' + runOnLogin + '"');
   }
 
   emit loginSucceeded(username, password, minutes, hold_items_count);
