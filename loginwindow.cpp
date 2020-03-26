@@ -187,7 +187,9 @@ void LoginWindow::attemptLogin() {
 void LoginWindow::attemptLoginFailure(QString loginError) {
   qDebug() << "LoginWindow::attemptLoginFailure(" + loginError + ")";
 
-  if ((loginError == "BAD_LOGIN") || (loginError == "INVALID_USER") ||
+  if (!settings.value("labels/" + loginError).toString().isEmpty()) {
+    errorLabel->setText(settings.value("labels/" + loginError).toString());
+  } else if ((loginError == "BAD_LOGIN") || (loginError == "INVALID_USER") ||
       (loginError == "INVALID_PASSWORD")) {
     errorLabel->setText(tr("Login Failed: Username and password do not match"));
   } else if (loginError == "AGE_MISMATCH") {
