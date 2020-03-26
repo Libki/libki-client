@@ -19,7 +19,8 @@ RC_FILE += libki.rc
 SOURCES += loginwindow.cpp \
            main.cpp \
            networkclient.cpp \
-           timerwindow.cpp
+           timerwindow.cpp \
+           utils.cpp
 TRANSLATIONS = languages/libkiclient_fr.ts \
         languages/libkiclient_sv.ts \
         languages/libkiclient_es.ts \

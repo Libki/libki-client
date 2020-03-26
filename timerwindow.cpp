@@ -19,6 +19,7 @@
 
 #include <QtWidgets/qdesktopwidget.h>
 #include "timerwindow.h"
+#include "utils.h"
 
 #define INACTIVITY_CHECK_INTERVAL 10
 
@@ -89,8 +90,9 @@ void TimerWindow::startTimer(const QString&,
   QString waiting_holds_message =
     tr("You have one or more items on hold waiting for pickup. Please contact a librarian for more details");
 
-  if (!settings.value("labels/waiting_holds").toString().isEmpty()) {
-    waiting_holds_message = settings.value("labels/waiting_holds").toString();
+  QString label = getLabel("waiting_holds");
+  if (!label.isEmpty()) {
+    waiting_holds_message = label;
   }
 
   if (hold_items_count > 0) {
