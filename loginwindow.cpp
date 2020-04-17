@@ -21,6 +21,7 @@
 #include <QMessageBox>
 
 #include "loginwindow.h"
+#include "utils.h"
 
 LoginWindow::LoginWindow(QWidget *parent) : QMainWindow(parent) {
   qDebug("LoginWindow::LoginWindow");
@@ -79,12 +80,14 @@ void LoginWindow::getSettings() {
   QSettings settings;
   settings.setIniCodec("UTF-8");
 
-  if (!settings.value("labels/username").toString().isEmpty()) {
-    usernameLabel->setText(settings.value("labels/username").toString());
+  QString label = getLabel("username");
+  if (!label.isEmpty()) {
+    usernameLabel->setText(label);
   }
 
-  if (!settings.value("labels/password").toString().isEmpty()) {
-    passwordLabel->setText(settings.value("labels/password").toString());
+  label = getLabel("password");
+  if (!label.isEmpty()) {
+    passwordLabel->setText(label);
   }
 
   if (!settings.value("images/logo").toString().isEmpty()) {
@@ -187,7 +190,10 @@ void LoginWindow::attemptLogin() {
 void LoginWindow::attemptLoginFailure(QString loginError) {
   qDebug() << "LoginWindow::attemptLoginFailure(" + loginError + ")";
 
-  if ((loginError == "BAD_LOGIN") || (loginError == "INVALID_USER") ||
+  QString customErrorMessage = getLabel(loginError);
+  if (! customErrorMessage.isEmpty()) {
+    errorLabel->setText(customErrorMessage);
+  } else if ((loginError == "BAD_LOGIN") || (loginError == "INVALID_USER") ||
       (loginError == "INVALID_PASSWORD")) {
     errorLabel->setText(tr("Login Failed: Username and password do not match"));
   } else if (loginError == "AGE_MISMATCH") {
