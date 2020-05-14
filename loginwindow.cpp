@@ -172,7 +172,8 @@ void LoginWindow::attemptLogin() {
   if ( termsOfService.length() > 4 ) {
       QMessageBox msgBox;
       msgBox.setText("Do you accept the terms of service?");
-      msgBox.setInformativeText(termsOfService);
+      msgBox.setInformativeText("You must accept the terms of service to use this kiosk.");
+      msgBox.setDetailedText(termsOfService);
       msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
       msgBox.setDefaultButton(QMessageBox::No);
       msgBox.setButtonText(QMessageBox::Yes, tr("Yes"));
