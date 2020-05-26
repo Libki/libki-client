@@ -420,6 +420,12 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
     qDebug("Node Registration FAILED");
   }
 
+  if (sc.property("unlock").toBoolean()) {
+    qDebug("Unlocking...");
+    username = sc.property("username").toString();
+    doLoginTasks(sc.property("minutes").toInteger(), 0);
+  }
+
   QSettings settings;
   settings.setIniCodec("UTF-8");
 
