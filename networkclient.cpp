@@ -436,6 +436,8 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
                     sc.property("ClientBehavior").toString());
   settings.setValue("session/ReservationShowUsername",
                     sc.property("ReservationShowUsername").toString());
+  settings.setValue("session/EnableClientSessionLocking",
+                    sc.property("EnableClientSessionLocking").toString());
   settings.setValue("session/TermsOfService",
                     sc.property("TermsOfService").toString());
 

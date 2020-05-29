@@ -56,8 +56,11 @@ TimerWindow::TimerWindow(QWidget *parent) : QMainWindow(parent) {
   connect(inactivityTimer, SIGNAL(timeout()), this,
           SLOT(checkForInactivity()));
 
-  // Disable unused features
-  lockSessionButton->hide();
+  QSettings settings;
+  settings.setIniCodec("UTF-8");
+  if ( !settings.value("session/EnableClientSessionLocking").toBool()) {
+    lockSessionButton->hide();
+  }
 
   this->move(
     QApplication::desktop()->screen()->rect().center() - this->rect().center());
