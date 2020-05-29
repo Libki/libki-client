@@ -4,10 +4,10 @@
         <file>images/libki_clock.png</file>
     </qresource>
     <qresource prefix="/icons">
-        <file alias="system_log_out.svg">images/icons/system_log_out.svg</file>
         <file>images/icons/sign-out-alt-solid.svg</file>
         <file>images/icons/sign-in-alt-solid.svg</file>
         <file>images/icons/lock-solid.svg</file>
+        <file>images/icons/ban-solid.svg</file>
     </qresource>
     <qresource prefix="/">
         <file>languages/libkiclient_fr.qm</file>

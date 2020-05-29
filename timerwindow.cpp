@@ -57,7 +57,7 @@ TimerWindow::TimerWindow(QWidget *parent) : QMainWindow(parent) {
           SLOT(checkForInactivity()));
 
   // Disable unused features
-  pauseButton->hide();
+  lockSessionButton->hide();
 
   this->move(
     QApplication::desktop()->screen()->rect().center() - this->rect().center());
