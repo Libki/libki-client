@@ -420,6 +420,8 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
     qDebug("Node Registration FAILED");
   }
 
+  //TODO: Rename this to something like 'auto-login guest session'
+  // This feature is not related to session locking
   if (sc.property("unlock").toBoolean()) {
     qDebug("Unlocking...");
     username = sc.property("username").toString();

@@ -20,6 +20,7 @@
 #include <QtWidgets/qdesktopwidget.h>
 #include "timerwindow.h"
 #include "utils.h"
+#include "sessionlockedwindow.h"
 
 #define INACTIVITY_CHECK_INTERVAL 10
 
@@ -58,7 +59,9 @@ TimerWindow::TimerWindow(QWidget *parent) : QMainWindow(parent) {
 
   QSettings settings;
   settings.setIniCodec("UTF-8");
-  if ( !settings.value("session/EnableClientSessionLocking").toBool()) {
+  if ( settings.value("session/EnableClientSessionLocking").toBool()) {
+    connect(lockSessionButton, SIGNAL(clicked(bool)), this, SLOT(lockSession()));
+  } else {
     lockSessionButton->hide();
   }
 
@@ -70,11 +73,14 @@ TimerWindow::TimerWindow(QWidget *parent) : QMainWindow(parent) {
 
 TimerWindow::~TimerWindow() {}
 
-void TimerWindow::startTimer(const QString&,
-                             const QString&,
+void TimerWindow::startTimer(QString newUsername,
+                             QString newPassword,
                              int minutes,
                              int hold_items_count) {
   qDebug("TimerWindow::startTimer");
+
+  username = newUsername;
+  password = newPassword;
 
   trayIconPopupTimer->start(1000 * 60); // Fire once a minute
 
@@ -327,6 +333,27 @@ void TimerWindow::showMessage(QString message) {
 
   this->restoreTimerWindow();
   msgBox.exec();
+}
+
+void TimerWindow::lockSession() {
+    qDebug() << "TimerWindow::lockSession()";
+
+    sessionLockedWindow = new SessionLockedWindow(0, username, password);
+    connect(sessionLockedWindow, SIGNAL(unlockSession()), this, SLOT(unlockSession()));
+
+    QProcess::startDetached("windows/on_startup.exe");
+    this->hide();
+    sessionLockedWindow->show();
+}
+
+void TimerWindow::unlockSession() {
+    qDebug() << "TimerWindow::unlockSession()";
+
+    QProcess::startDetached("windows/on_login.exe");
+
+    sessionLockedWindow->hide();
+    this->show();
+    delete sessionLockedWindow;
 }
 
 void TimerWindow::getSettings() {}

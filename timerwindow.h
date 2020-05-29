@@ -31,6 +31,7 @@
 
 #include "ui_timerwindow.h"
 
+#include "sessionlockedwindow.h"
 #include "networkclient.h"
 
 class TimerWindow : public QMainWindow, public Ui::TimerWindow {
@@ -51,13 +52,15 @@ signals:
 public slots:
 
   void setAllowClose(bool);
-  void startTimer(const QString& username,
-                  const QString& password,
+  void startTimer(QString username,
+                  QString password,
                   int            minutes,
                   int            hold_items_count);
   void stopTimer();
   void updateTimeLeft(int minutes);
   void showMessage(QString message);
+  void lockSession();
+  void unlockSession();
 
 private slots:
 
@@ -68,6 +71,10 @@ private slots:
   void checkForInactivity();
 
 private:
+
+  SessionLockedWindow *sessionLockedWindow;
+  QString username;
+  QString password;
 
   bool allowClose;
 
