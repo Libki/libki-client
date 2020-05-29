@@ -2,20 +2,11 @@
     <qresource prefix="/images">
         <file>images/libki.png</file>
         <file>images/libki_clock.png</file>
-        <file>images/padlock.png</file>
     </qresource>
     <qresource prefix="/icons">
-        <file>images/icons/lock.svg</file>
         <file alias="system_log_out.svg">images/icons/system_log_out.svg</file>
-        <file>images/icons/button_cancel.svg</file>
-        <file>images/icons/button_ok.svg</file>
-        <file alias="system_log_out.png">images/icons/system_log_out.png</file>
-        <file>images/icons/button_cancel.png</file>
-        <file>images/icons/button_ok.png</file>
-        <file>images/icons/lock.png</file>
         <file>images/icons/pause-solid.svg</file>
         <file>images/icons/sign-out-alt-solid.svg</file>
-        <file>images/icons/ban-solid.svg</file>
         <file>images/icons/sign-in-alt-solid.svg</file>
     </qresource>
     <qresource prefix="/">
