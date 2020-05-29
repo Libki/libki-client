@@ -132,16 +132,16 @@
        </spacer>
       </item>
       <item row="2" column="0">
-       <widget class="QPushButton" name="pauseButton">
+       <widget class="QPushButton" name="lockSessionButton">
         <property name="enabled">
          <bool>true</bool>
         </property>
         <property name="text">
-         <string>Lock System</string>
+         <string>Lock Session</string>
         </property>
         <property name="icon">
          <iconset resource="libki.qrc">
-          <normaloff>:/icons/images/icons/pause-solid.svg</normaloff>:/icons/images/icons/pause-solid.svg</iconset>
+          <normaloff>:/icons/images/icons/lock-solid.svg</normaloff>:/icons/images/icons/lock-solid.svg</iconset>
         </property>
         <property name="iconSize">
          <size>
