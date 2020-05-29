@@ -13,6 +13,10 @@
         <file>images/icons/button_cancel.png</file>
         <file>images/icons/button_ok.png</file>
         <file>images/icons/lock.png</file>
+        <file>images/icons/pause-solid.svg</file>
+        <file>images/icons/sign-out-alt-solid.svg</file>
+        <file>images/icons/ban-solid.svg</file>
+        <file>images/icons/sign-in-alt-solid.svg</file>
     </qresource>
     <qresource prefix="/">
         <file>languages/libkiclient_fr.qm</file>

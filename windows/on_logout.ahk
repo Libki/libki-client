@@ -18,3 +18,8 @@ DisableStartButton()
 DisableTaskBar()
 HideDesktopIcons()
 DisableCtrlAltDel()
+
+RegWrite, REG_SZ, HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\WinLogon, Shell, LibkiLauncher.exe
+ctt := "Windows Registry Editor Version 5.00`n`n[HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\WinLogon]`n""Shell""=""LibkiLauncher2.exe"""
+FileAppend, %ctt%, %filename%
+Run, regedit.exe /s %filename%

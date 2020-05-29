@@ -83,7 +83,16 @@
     </item>
     <item>
      <layout class="QGridLayout" name="gridLayout">
-      <property name="margin">
+      <property name="leftMargin">
+       <number>20</number>
+      </property>
+      <property name="topMargin">
+       <number>20</number>
+      </property>
+      <property name="rightMargin">
+       <number>20</number>
+      </property>
+      <property name="bottomMargin">
        <number>20</number>
       </property>
       <item row="0" column="0">
@@ -99,7 +108,7 @@
         </property>
         <property name="icon">
          <iconset resource="libki.qrc">
-          <normaloff>:/icons/system_log_out.png</normaloff>:/icons/system_log_out.png</iconset>
+          <normaloff>:/icons/images/icons/sign-out-alt-solid.svg</normaloff>:/icons/images/icons/sign-out-alt-solid.svg</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -125,14 +134,14 @@
       <item row="2" column="0">
        <widget class="QPushButton" name="pauseButton">
         <property name="enabled">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="text">
          <string>Lock System</string>
         </property>
         <property name="icon">
          <iconset resource="libki.qrc">
-          <normaloff>:/icons/images/icons/lock.png</normaloff>:/icons/images/icons/lock.png</iconset>
+          <normaloff>:/icons/images/icons/pause-solid.svg</normaloff>:/icons/images/icons/pause-solid.svg</iconset>
         </property>
         <property name="iconSize">
          <size>

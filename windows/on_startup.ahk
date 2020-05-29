@@ -13,6 +13,13 @@
 
 #Include functions.ahk
 
+;RegWrite, REG_SZ, HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\WinLogon, Shell, Explorer.exe
+ctt := "Windows Registry Editor Version 5.00`n`n[HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\WinLogon]`n""Shell""=""Explorer.exe"""
+FileAppend, %ctt%, %filename%
+Run, regedit.exe /s %filename%
+
+Clipboard := filename
+
 DisableTaskBar()
 HideDesktopIcons()
 DisableStartButton()
@@ -51,6 +58,6 @@ $LWin::Return
 ; Disable Right Windows Key
 $RWin::Return
 
-Run taskkill /im explorer.exe /f
+;Run taskkill /im explorer.exe /f
 
 ExitApp
