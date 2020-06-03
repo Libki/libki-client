@@ -396,7 +396,7 @@ void LoginWindow::handleBanners() {
   QString bannerTopUrl = "http://" +
                          settings.value("session/BannerTopURL").toString();
 
-  if (!bannerTopUrl.isEmpty()) {
+  if (bannerTopUrl!="http://") {
     int bannerTopHeight = settings.value("session/BannerTopHeight").toInt();
     int bannerTopWidth  = settings.value("session/BannerTopWidth").toInt();
 
@@ -413,7 +413,7 @@ void LoginWindow::handleBanners() {
   QString bannerBottomUrl = "http://" +
                             settings.value("session/BannerBottomURL").toString();
 
-  if (!bannerBottomUrl.isEmpty()) {
+  if (bannerBottomUrl!="http://") {
     int bannerBottomHeight = settings.value("session/BannerBottomHeight").toInt();
     int bannerBottomWidth  = settings.value("session/BannerBottomWidth").toInt();
 
