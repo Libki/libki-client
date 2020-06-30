@@ -428,6 +428,46 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
     doLoginTasks(sc.property("minutes").toInteger(), 0);
   }
 
+  if (sc.property("shutdown").toBoolean()) {
+    emit allowClose(true);
+
+#ifdef Q_OS_WIN
+    QProcess::startDetached("shutdown -s -f -t 0");
+#endif // ifdef Q_OS_WIN
+
+#ifdef Q_OS_UNIX
+    // For this to work, sudo must be installed and the line
+    // %shutdown ALL=(root) NOPASSWD: /sbin/reboot FIXME
+    // needs to be added to /etc/sudoers
+    QProcess::startDetached("sudo shutdown 0");
+#endif // ifdef Q_OS_UNIX
+  }
+
+  if (sc.property("suspend").toBoolean()) {
+#ifdef Q_OS_WIN
+    QProcess::startDetached("rundll32.exe powrprof.dll,SetSuspendState 0,1,0");
+#endif // ifdef Q_OS_WIN
+
+#ifdef Q_OS_UNIX
+    QProcess::startDetached("systemctl suspend -i");
+#endif // ifdef Q_OS_UNIX
+  }
+
+  if (sc.property("restart").toBoolean()) {
+    emit allowClose(true);
+
+#ifdef Q_OS_WIN
+    QProcess::startDetached("shutdown -r -f -t 0");
+#endif // ifdef Q_OS_WIN
+
+#ifdef Q_OS_UNIX
+    // For this to work, sudo must be installed and the line
+    // %shutdown ALL=(root) NOPASSWD: /sbin/reboot
+    // needs to be added to /etc/sudoers
+    QProcess::startDetached("sudo reboot");
+#endif // ifdef Q_OS_UNIX
+  }
+
   QSettings settings;
   settings.setIniCodec("UTF-8");
 
