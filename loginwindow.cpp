@@ -19,6 +19,7 @@
 
 #include <QCryptographicHash>
 #include <QMessageBox>
+#include <QTextEdit>
 
 #include "loginwindow.h"
 #include "utils.h"
@@ -174,6 +175,10 @@ void LoginWindow::attemptLogin() {
       msgBox.setText("Do you accept the terms of service?");
       msgBox.setInformativeText(tr("Terms of Service"));
       msgBox.setDetailedText(termsOfService);
+      if (Qt::mightBeRichText(termsOfService)) {
+        QTextEdit *detailedText = msgBox.findChild<QTextEdit *>();
+        detailedText->setHtml(termsOfService);
+      }
       msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
       msgBox.setDefaultButton(QMessageBox::No);
       msgBox.setButtonText(QMessageBox::Yes, tr("Yes"));
