@@ -116,6 +116,8 @@ private:
   void doLoginTasks(int units,
                     int hold_items_count);
   void doLogoutTasks();
+
+  void wakeOnLan(QStringList MAC_addresses, QString host, qint64 port);
 };
 
 #endif // NETWORKCLIENT_H
