@@ -26,6 +26,7 @@
 #include <QJsonObject>
 #include <QDir>
 #include <QHttpMultiPart>
+#include <QUdpSocket>
 
 NetworkClient::NetworkClient() : QObject() {
   qDebug("NetworkClient::NetworkClient");
@@ -468,6 +469,11 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
 #endif // ifdef Q_OS_UNIX
   }
 
+  if (sc.property("wakeup").toBoolean()) {
+    QStringList MAC_addresses = sc.engine()->fromScriptValue<QStringList>(sc.property("wol_mac_addresses"));
+    wakeOnLan(MAC_addresses, sc.property("wol_host").toString(), sc.property("wol_port").toInteger());
+  }
+
   QSettings settings;
   settings.setIniCodec("UTF-8");
 
@@ -660,4 +666,27 @@ void NetworkClient::doLogoutTasks() {
       QProcess::startDetached(settings.value("scriptlogout/script").toString());
   }
   emit logoutSucceeded();
+}
+
+void NetworkClient::wakeOnLan(QStringList MAC_addresses, QString host, qint64 port) {
+  QHostAddress host_address;
+  host_address.setAddress(host);
+
+  for (int i = 0; i < MAC_addresses.size(); i++) {
+    char address [6];
+    char packet [102];
+
+    memset(packet, 0xff, 6);
+
+    for (int j = 0; j < 6; j++) {
+      address[j] = MAC_addresses.at(i).section(":", j, j).toInt(Q_NULLPTR, 16);
+    }
+
+    for (int j = 1; j <= 16; j++) {
+      memcpy(&packet[j*6], &address, 6 * sizeof(char));
+    }
+
+    QUdpSocket udpSocket;
+    udpSocket.writeDatagram(packet, 102, host_address, port);
+  }
 }
