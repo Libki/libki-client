@@ -27,6 +27,6 @@ SOURCES += loginwindow.cpp \
 TRANSLATIONS = languages/libkiclient_fr.ts \
         languages/libkiclient_sv.ts \
         languages/libkiclient_es.ts \
-        languages/libkiclient_no.ts \
+        languages/libkiclient_nb_NO.ts \
         languages/libkiclient_pt.ts
 OTHER_FILES +=

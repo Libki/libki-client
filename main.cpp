@@ -76,6 +76,8 @@ int main(int argc, char *argv[]) {
   // Translate the application if the locale is available
   QString locale   = QLocale::system().name();
   QString filename = QString("languages/libkiclient_") + locale;
+  qDebug() << "LOCALE: " << locale;
+  qDebug() << "LOCALE FILE: " << filename;
   QTranslator translator;
 
   if (translator.load(filename, ":/")) {
