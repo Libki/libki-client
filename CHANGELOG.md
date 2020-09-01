@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 - Add ability to remotely shutdown, restart, and wake-on-lan clients
+- Update Norvegian translation
 
 ## [2.2.1] - 2020-06-03
 ### Added

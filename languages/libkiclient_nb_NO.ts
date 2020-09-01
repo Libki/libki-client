@@ -6,7 +6,7 @@
     <message>
         <location filename="../loginwindow.ui" line="14"/>
         <source>Libki Kiosk System</source>
-        <translation>Libki innloggingssystem</translation>
+        <translation>Libki kiosksystem</translation>
     </message>
     <message>
         <location filename="../loginwindow.ui" line="56"/>
@@ -59,7 +59,7 @@
     <message>
         <location filename="../loginwindow.cpp" line="176"/>
         <source>Terms of Service</source>
-        <translation type="unfinished"></translation>
+        <translation>Vilkår for støtte</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="184"/>
@@ -79,7 +79,7 @@
     <message>
         <location filename="../loginwindow.cpp" line="206"/>
         <source>Login Failed: You are not the correct age to use this client</source>
-        <translation type="unfinished"></translation>
+        <translation>Du er for ung til å bruke denne PCen</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="209"/>
@@ -89,7 +89,7 @@
     <message>
         <location filename="../loginwindow.cpp" line="211"/>
         <source>Login Failed: This kiosk is closed for the day</source>
-        <translation type="unfinished"></translation>
+        <translation>PCen er stengt for dagen</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="213"/>
@@ -160,12 +160,12 @@
     <message>
         <location filename="../loginwindow.cpp" line="241"/>
         <source>Login Failed: You have claimed too many items as returned</source>
-        <translation type="unfinished"></translation>
+        <translation>Du har hevdet å levert tilbake for mange ganger</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="244"/>
         <source>Login Failed: You have have lost too many items</source>
-        <translation type="unfinished"></translation>
+        <translation>Du har mistet for mange gjenstander</translation>
     </message>
     <message>
         <source>Login Failed: You have claimed to many items as returned</source>
@@ -208,7 +208,7 @@
     <message>
         <location filename="../loginwindow.cpp" line="263"/>
         <source>Login Failed: Expired Membership. Please inquire at the circulation desk.</source>
-        <translation type="unfinished"></translation>
+        <translation>Brukerkonto utløpt. Henvend deg i skranken</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="266"/>
@@ -226,39 +226,39 @@
     <message>
         <location filename="../sessionlockedwindow.ui" line="14"/>
         <source>Libki Kiosk System</source>
-        <translation type="unfinished"></translation>
+        <translation>Libki kiosksystem</translation>
     </message>
     <message>
         <location filename="../sessionlockedwindow.ui" line="56"/>
         <source>Internet Kiosk</source>
-        <translation type="unfinished">PublikumsPC</translation>
+        <translation>PublikumsPC</translation>
     </message>
     <message>
         <location filename="../sessionlockedwindow.ui" line="85"/>
         <location filename="../sessionlockedwindow.ui" line="380"/>
         <location filename="../sessionlockedwindow.ui" line="446"/>
         <source>about:blank</source>
-        <translation type="unfinished"></translation>
+        <translation>about:blank</translation>
     </message>
     <message>
         <location filename="../sessionlockedwindow.ui" line="152"/>
         <source>Session Locked</source>
-        <translation type="unfinished"></translation>
+        <translation>PCen er låst</translation>
     </message>
     <message>
         <location filename="../sessionlockedwindow.ui" line="182"/>
         <source>Enter Password To Resume Session</source>
-        <translation type="unfinished"></translation>
+        <translation>Oppgi passord for å fortsette</translation>
     </message>
     <message>
         <location filename="../sessionlockedwindow.ui" line="256"/>
         <source>Password:</source>
-        <translation type="unfinished">Passord:</translation>
+        <translation>Passord:</translation>
     </message>
     <message>
         <location filename="../sessionlockedwindow.ui" line="281"/>
         <source>Resume</source>
-        <translation type="unfinished"></translation>
+        <translation>Fortsett</translation>
     </message>
 </context>
 <context>
@@ -277,7 +277,7 @@
     <message>
         <location filename="../timerwindow.ui" line="146"/>
         <source>Lock Session</source>
-        <translation type="unfinished"></translation>
+        <translation>Lås PCen</translation>
     </message>
     <message>
         <source>Lock System</source>
@@ -286,7 +286,7 @@
     <message>
         <location filename="../timerwindow.cpp" line="100"/>
         <source>You have one or more items on hold waiting for pickup. Please contact a librarian for more details</source>
-        <translation type="unfinished"></translation>
+        <translation>Du har en eller flere gjenstander som venter på bli hentet. Kontakt en ansatt for flere detaljer</translation>
     </message>
     <message>
         <location filename="../timerwindow.cpp" line="141"/>
@@ -307,12 +307,12 @@
     <message>
         <location filename="../timerwindow.cpp" line="167"/>
         <source>Yes</source>
-        <translation type="unfinished">Ja</translation>
+        <translation>Ja</translation>
     </message>
     <message>
         <location filename="../timerwindow.cpp" line="168"/>
         <source>Cancel</source>
-        <translation type="unfinished">Avbryt</translation>
+        <translation>Avbryt</translation>
     </message>
     <message>
         <location filename="../timerwindow.cpp" line="245"/>
@@ -322,17 +322,17 @@
     <message>
         <location filename="../timerwindow.cpp" line="297"/>
         <source>Inactivity detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Oppdaget ikke bruk av PCen</translation>
     </message>
     <message>
         <location filename="../timerwindow.cpp" line="298"/>
         <source>Please confirm you are still using this computer.</source>
-        <translation type="unfinished"></translation>
+        <translation>Bekreft at du fortsatt vil bruke PCen</translation>
     </message>
     <message>
         <location filename="../timerwindow.cpp" line="331"/>
         <source>You have a message</source>
-        <translation type="unfinished"></translation>
+        <translation>Du har fått en beskjed</translation>
     </message>
     <message>
         <source>You Have Recieve A Message</source>
