@@ -3,8 +3,8 @@ IDI_ICON1               ICON    DISCARDABLE     "images/icons/libki.ico"
 #include <windows.h>
 
 VS_VERSION_INFO     VERSIONINFO
-FILEVERSION         2, 2, 1, 0
-PRODUCTVERSION      2, 2, 1, 0
+FILEVERSION         2, 2, 2, 0
+PRODUCTVERSION      2, 2, 2, 0
 FILEFLAGSMASK       0x3fL
 FILEFLAGS           0
 FILEOS              VOS_NT_WINDOWS32
@@ -21,9 +21,9 @@ BEGIN
         BLOCK   "040904b0"
         BEGIN
             VALUE   "ProductName",      		"Libki Kiosk Management System\0"
-            VALUE   "ProductVersion",   		"Client v2.2.1 Api v1.0\0"
+            VALUE   "ProductVersion",   		"Client v2.2.2 Api v1.0\0"
 			VALUE   "FileDescription",  		"Libki Client\0"
-			VALUE   "FileVersion",      		"2.2.1\0"
+			VALUE   "FileVersion",      		"2.2.2\0"
             VALUE   "InternalName",     		"Libki\0"
             VALUE   "LegalCopyright",   		"Copyright 2014 Kyle M Hall\0"
         END
