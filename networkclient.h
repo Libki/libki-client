@@ -65,6 +65,8 @@ signals:
   void allowClose(bool);
   void setReservationStatus(QString reserved_for);
   void handleBanners();
+  void clientSuspended();
+  void clientOnline();
 
 public slots:
 
@@ -107,6 +109,8 @@ private:
   QString nodeAgeLimit;
 
   LogoutAction::Enum actionOnLogout;
+
+  QString clientStatus;
 
   QString username;
   QString password;

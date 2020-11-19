@@ -212,6 +212,20 @@ int main(int argc, char *argv[]) {
 
   QObject::connect(
     networkClient,
+    SIGNAL(clientSuspended()),
+    loginWindow,
+    SLOT(disableLogin())
+    );
+
+  QObject::connect(
+    networkClient,
+    SIGNAL(clientOnline()),
+    loginWindow,
+    SLOT(enableLogin())
+    );
+
+  QObject::connect(
+    networkClient,
     SIGNAL(timeUpdatedFromServer(int)),
     timerWindow,
     SLOT(updateTimeLeft(int))

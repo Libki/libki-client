@@ -433,3 +433,16 @@ void LoginWindow::handleBanners() {
     bannerWebViewBottom->load(QUrl(bannerBottomUrl));
   }
 }
+
+void LoginWindow::disableLogin() {
+  qDebug("LoginWindow::disableLogin");
+  this->setButtonsEnabled(false);
+  messageLabel->setVisible(false);
+  errorLabel->setText(tr("This kiosk is out of order."));
+}
+
+void LoginWindow::enableLogin() {
+  qDebug("LoginWindow::enableLogin");
+  this->resetLoginScreen();
+  messageLabel->setVisible(true);
+}
