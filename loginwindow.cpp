@@ -172,7 +172,7 @@ void LoginWindow::attemptLogin() {
   QString termsOfService = settings.value("session/TermsOfService").toString();
   if ( termsOfService.length() > 4 ) {
       QMessageBox msgBox;
-      msgBox.setText("Do you accept the terms of service?");
+      msgBox.setText(tr("Do you accept the terms of service?"));
       msgBox.setInformativeText(tr("Terms of Service"));
       msgBox.setDetailedText(termsOfService);
       if (Qt::mightBeRichText(termsOfService)) {
