@@ -282,6 +282,8 @@ void NetworkClient::uploadPrintJobs() {
 
     if (!dir.exists()) {
       qDebug() << "Directory does not exist: " << directory;
+      bool s = dir.mkpath(directory);
+      qDebug() << "Attempt to create directory result: " << s;
     }
 
     dir.setFilter(QDir::Files);

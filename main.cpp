@@ -20,6 +20,7 @@
 #include <QApplication>
 #include <QProcess>
 #include <QWebView>
+#include <QSettings>
 
 #include "loginwindow.h"
 #include "timerwindow.h"
