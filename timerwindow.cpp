@@ -57,6 +57,7 @@ TimerWindow::TimerWindow(QWidget *parent) : QMainWindow(parent) {
   connect(inactivityTimer, SIGNAL(timeout()), this,
           SLOT(checkForInactivity()));
 
+  sessionLockedWindow = Q_NULLPTR;
   QSettings settings;
   settings.setIniCodec("UTF-8");
   if ( settings.value("session/EnableClientSessionLocking").toBool()) {
@@ -117,6 +118,12 @@ void TimerWindow::stopTimer() {
   trayIconPopupTimer->stop();
   trayIcon->hide();
   this->hide();
+
+  if (sessionLockedWindow) {
+    sessionLockedWindow->hide();
+    delete sessionLockedWindow;
+    sessionLockedWindow = Q_NULLPTR;
+  }
 
   emit timerStopped();
 }
@@ -354,6 +361,7 @@ void TimerWindow::unlockSession() {
     sessionLockedWindow->hide();
     this->show();
     delete sessionLockedWindow;
+    sessionLockedWindow = Q_NULLPTR;
 }
 
 void TimerWindow::getSettings() {}

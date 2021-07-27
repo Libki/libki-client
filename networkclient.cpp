@@ -78,6 +78,8 @@ NetworkClient::NetworkClient() : QObject() {
     actionOnLogout = LogoutAction::NoAction;
   }
 
+  clientStatus = "online";
+
   qDebug() << "HOST: " << settings.value("server/host").toString();
   serviceURL.setHost(settings.value("server/host").toString());
   serviceURL.setPort(settings.value("server/port").toInt());
@@ -519,6 +521,16 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
 
   QString reserved_for = sc.property("reserved_for").toString();
   emit    setReservationStatus(reserved_for);
+
+  QString status = sc.property("status").toString();
+  if (status != clientStatus) {
+    if (status == "suspended") {
+      emit clientSuspended();
+    } else if (status == "online") {
+      emit clientOnline();
+    }
+  }
+  clientStatus = status;
 
   reply->abort();
   reply->deleteLater();

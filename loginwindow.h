@@ -61,6 +61,8 @@ public slots:
                            int     hold_items_count);
   void handleReservationStatus(QString reserved_for);
   void handleBanners();
+  void disableLogin();
+  void enableLogin();
 
 private slots:
 

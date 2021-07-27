@@ -59,9 +59,14 @@
         <translation>Veuillez patienter...</translation>
     </message>
     <message>
+        <location filename="../loginwindow.cpp" line="175"/>
+        <source>Do you accept the terms of service?</source>
+        <translation>Acceptez-vous les conditions d&apos;utilisation?</translation>
+    </message>
+    <message>
         <location filename="../loginwindow.cpp" line="176"/>
         <source>Terms of Service</source>
-        <translation type="unfinished"></translation>
+        <translation>Conditions d&apos;utilisation</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="184"/>
@@ -81,7 +86,7 @@
     <message>
         <location filename="../loginwindow.cpp" line="206"/>
         <source>Login Failed: You are not the correct age to use this client</source>
-        <translation>Échec de connexion: Vous n&apos;avez pas l&apos;age requis pour utiliser le poste</translation>
+        <translation>Échec de connexion: Vous n&apos;avez pas l&apos;âge requis pour utiliser ce poste</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="209"/>
@@ -122,7 +127,7 @@
     <message>
         <location filename="../loginwindow.cpp" line="224"/>
         <source>Login Failed: Charge privileges denied</source>
-        <translation>Échec de connexion: Privilèges de facturation refusés </translation>
+        <translation>Échec de connexion: Privilèges de facturation refusés</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="226"/>
@@ -152,12 +157,12 @@
     <message>
         <location filename="../loginwindow.cpp" line="237"/>
         <source>Login Failed: You have too many items overdue</source>
-        <translation>Échec de connexion: documents en retard sur le dossier. Prière de vous adresser au comptoir du prêt.</translation>
+        <translation>Échec de connexion: Documents en retard sur le dossier. Prière de vous adresser au comptoir du prêt</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="239"/>
         <source>Login Failed: You have renewed items too many times</source>
-        <translation>Échec de connexion: Vouz avez renouvelé des articles beaucoup de fois</translation>
+        <translation>Échec de connexion: Vous avez renouvelé des articles trop de fois</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="241"/>
@@ -167,17 +172,17 @@
     <message>
         <location filename="../loginwindow.cpp" line="244"/>
         <source>Login Failed: You have have lost too many items</source>
-        <translation>Échec de connexion: documents perdus sur le dossier. Prière de vous adresser au comptoir du prêt</translation>
+        <translation>Échec de connexion: Documents perdus sur le dossier. Prière de vous adresser au comptoir du prêt</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="246"/>
         <source>Login Failed: You have excessive outstanding fines</source>
-        <translation>Échec de connexion: amendes sur le dossier. Prière de vous adresser au comptoir du prêt</translation>
+        <translation>Échec de connexion: Amendes sur le dossier. Prière de vous adresser au comptoir du prêt</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="250"/>
         <source>Login Failed: You have a recalled item which is overdue</source>
-        <translation>Échec de connexion: document rappelé qui est en retard. Prière de vous adresser au comptoir du prêt</translation>
+        <translation>Échec de connexion: Document rappelé en retard. Prière de vous adresser au comptoir du prêt</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="253"/>
@@ -202,17 +207,22 @@
     <message>
         <location filename="../loginwindow.cpp" line="263"/>
         <source>Login Failed: Expired Membership. Please inquire at the circulation desk.</source>
-        <translation>Échec de connexion : dossier expiré. Prière de vous adresser au comptoir du prêt.</translation>
+        <translation>Échec de connexion : Dossier expiré. Prière de vous adresser au comptoir du prêt.</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="266"/>
         <source>Login Failed: </source>
-        <translation>Échec de connexion:</translation>
+        <translation>Échec de connexion: </translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="379"/>
         <source>Reserved for </source>
         <translation>Réservé pour </translation>
+    </message>
+    <message>
+        <location filename="../loginwindow.cpp" line="441"/>
+        <source>This kiosk is out of order.</source>
+        <translation>Ce poste est en maintenance.</translation>
     </message>
 </context>
 <context>
@@ -220,39 +230,44 @@
     <message>
         <location filename="../sessionlockedwindow.ui" line="14"/>
         <source>Libki Kiosk System</source>
-        <translation type="unfinished">Gestionnaire de poste Libki</translation>
+        <translation>Gestionnaire de poste Libki</translation>
     </message>
     <message>
         <location filename="../sessionlockedwindow.ui" line="56"/>
         <source>Internet Kiosk</source>
-        <translation type="unfinished">Poste public</translation>
+        <translation>Poste public</translation>
     </message>
     <message>
         <location filename="../sessionlockedwindow.ui" line="85"/>
         <location filename="../sessionlockedwindow.ui" line="380"/>
         <location filename="../sessionlockedwindow.ui" line="446"/>
         <source>about:blank</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../sessionlockedwindow.ui" line="152"/>
         <source>Session Locked</source>
-        <translation type="unfinished"></translation>
+        <translation>Session verrouillée</translation>
     </message>
     <message>
         <location filename="../sessionlockedwindow.ui" line="182"/>
         <source>Enter Password To Resume Session</source>
-        <translation type="unfinished"></translation>
+        <translation>Entrez votre mot de passe pour reprendre la session</translation>
     </message>
     <message>
         <location filename="../sessionlockedwindow.ui" line="256"/>
         <source>Password:</source>
-        <translation type="unfinished">Mot de passe:</translation>
+        <translation>Mot de passe:</translation>
     </message>
     <message>
         <location filename="../sessionlockedwindow.ui" line="281"/>
         <source>Resume</source>
-        <translation type="unfinished"></translation>
+        <translation>Reprendre</translation>
+    </message>
+    <message>
+        <location filename="../sessionlockedwindow.cpp" line="107"/>
+        <source>Incorrect Password</source>
+        <translation>Mot de passe incorrect</translation>
     </message>
 </context>
 <context>
@@ -264,69 +279,69 @@
     </message>
     <message>
         <location filename="../timerwindow.ui" line="107"/>
-        <location filename="../timerwindow.cpp" line="195"/>
+        <location filename="../timerwindow.cpp" line="202"/>
         <source>Log Out</source>
         <translation>Se déconnecter</translation>
     </message>
     <message>
         <location filename="../timerwindow.ui" line="146"/>
         <source>Lock Session</source>
-        <translation type="unfinished"></translation>
+        <translation>Verrouiller</translation>
     </message>
     <message>
         <source>Lock System</source>
         <translation type="vanished">Verrouiller</translation>
     </message>
     <message>
-        <location filename="../timerwindow.cpp" line="100"/>
+        <location filename="../timerwindow.cpp" line="101"/>
         <source>You have one or more items on hold waiting for pickup. Please contact a librarian for more details</source>
         <translation>Vous avez un ou plusieurs articles en attente de retrait. Prière de vous adresser au comptoir du prêt.</translation>
     </message>
     <message>
-        <location filename="../timerwindow.cpp" line="141"/>
-        <location filename="../timerwindow.cpp" line="246"/>
+        <location filename="../timerwindow.cpp" line="148"/>
+        <location filename="../timerwindow.cpp" line="253"/>
         <source>Minutes Left</source>
         <translation>minutes restantes</translation>
     </message>
     <message>
-        <location filename="../timerwindow.cpp" line="163"/>
+        <location filename="../timerwindow.cpp" line="170"/>
         <source>Log Out?</source>
         <translation>Quitter?</translation>
     </message>
     <message>
-        <location filename="../timerwindow.cpp" line="164"/>
+        <location filename="../timerwindow.cpp" line="171"/>
         <source>Are you sure you want to log out?</source>
-        <translation>Voulez-vous vraiment déconnecter?</translation>
+        <translation>Voulez-vous vraiment vous déconnecter?</translation>
     </message>
     <message>
-        <location filename="../timerwindow.cpp" line="167"/>
+        <location filename="../timerwindow.cpp" line="174"/>
         <source>Yes</source>
         <translation>Oui</translation>
     </message>
     <message>
-        <location filename="../timerwindow.cpp" line="168"/>
+        <location filename="../timerwindow.cpp" line="175"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="../timerwindow.cpp" line="245"/>
+        <location filename="../timerwindow.cpp" line="252"/>
         <source>Time Remaining</source>
         <translation>Temps disponible</translation>
     </message>
     <message>
-        <location filename="../timerwindow.cpp" line="297"/>
+        <location filename="../timerwindow.cpp" line="304"/>
         <source>Inactivity detected</source>
         <translation>Inactivité détectée</translation>
     </message>
     <message>
-        <location filename="../timerwindow.cpp" line="298"/>
+        <location filename="../timerwindow.cpp" line="305"/>
         <source>Please confirm you are still using this computer.</source>
         <translation>Veuillez confirmer que vous utilisez toujours cet ordinateur.</translation>
     </message>
     <message>
-        <location filename="../timerwindow.cpp" line="331"/>
+        <location filename="../timerwindow.cpp" line="338"/>
         <source>You have a message</source>
-        <translation>Vous avez un messag</translation>
+        <translation>Vous avez un message</translation>
     </message>
     <message>
         <source>You Have Recieve A Message</source>

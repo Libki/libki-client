@@ -104,7 +104,7 @@ void SessionLockedWindow::attemptUnlock() {
     if ( passwordEntered == password ) {
         emit unlockSession();
     } else {
-        messageLabel->setText("Incorrect Password");
+        messageLabel->setText(tr("Incorrect Password"));
         passwordField->clear();
     }
 }

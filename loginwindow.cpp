@@ -172,7 +172,7 @@ void LoginWindow::attemptLogin() {
   QString termsOfService = settings.value("session/TermsOfService").toString();
   if ( termsOfService.length() > 4 ) {
       QMessageBox msgBox;
-      msgBox.setText("Do you accept the terms of service?");
+      msgBox.setText(tr("Do you accept the terms of service?"));
       msgBox.setInformativeText(tr("Terms of Service"));
       msgBox.setDetailedText(termsOfService);
       if (Qt::mightBeRichText(termsOfService)) {
@@ -432,4 +432,17 @@ void LoginWindow::handleBanners() {
     if (bannerBottomWidth) bannerWebViewBottom->setMaximumWidth(bannerBottomWidth);
     bannerWebViewBottom->load(QUrl(bannerBottomUrl));
   }
+}
+
+void LoginWindow::disableLogin() {
+  qDebug("LoginWindow::disableLogin");
+  this->setButtonsEnabled(false);
+  messageLabel->setVisible(false);
+  errorLabel->setText(tr("This kiosk is out of order."));
+}
+
+void LoginWindow::enableLogin() {
+  qDebug("LoginWindow::enableLogin");
+  this->resetLoginScreen();
+  messageLabel->setVisible(true);
 }
