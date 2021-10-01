@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.4]
+- Handle SSL errors
+
 ## [2.2.3]
 - Client now attempts to create printer directories if they do not already exist.
 
