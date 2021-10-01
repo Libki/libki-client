@@ -30,6 +30,9 @@
 
 NetworkClient::NetworkClient() : QObject() {
   qDebug("NetworkClient::NetworkClient");
+  qDebug()<<"SSL version use for build: "<<QSslSocket::sslLibraryBuildVersionString();
+  qDebug()<<"SSL version use for run-time: "<<QSslSocket::sslLibraryVersionNumber();
+
 
   fileCounter = 0;
 
