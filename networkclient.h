@@ -94,6 +94,8 @@ private slots:
   void processAttemptLoginReply(QNetworkReply *reply);
   void processAttemptLogoutReply(QNetworkReply *reply);
 
+  void handleSslErrors(QNetworkReply* reply,QList<QSslError> error);
+
 private:
 
   QTimer *registerNodeTimer;

@@ -27,12 +27,13 @@
 #include <QDir>
 #include <QHttpMultiPart>
 #include <QUdpSocket>
+#include <QList>
+#include <QSslError>
 
 NetworkClient::NetworkClient() : QObject() {
   qDebug("NetworkClient::NetworkClient");
   qDebug()<<"SSL version use for build: "<<QSslSocket::sslLibraryBuildVersionString();
   qDebug()<<"SSL version use for run-time: "<<QSslSocket::sslLibraryVersionNumber();
-
 
   fileCounter = 0;
 
@@ -126,6 +127,11 @@ void NetworkClient::attemptLogin(QString aUsername, QString aPassword) {
   nam = new QNetworkAccessManager(this);
   QObject::connect(nam, SIGNAL(finished(QNetworkReply *)), this,
                    SLOT(processAttemptLoginReply(QNetworkReply *)));
+  QObject::connect(
+              nam,
+              SIGNAL(sslErrors(QNetworkReply*, const QList<QSslError> & )),
+              this,
+              SLOT(handleSslErrors(QNetworkReply*, const QList<QSslError> & )));
 
   /*QNetworkReply* reply = */ nam->get(QNetworkRequest(url));
 }
@@ -171,6 +177,11 @@ void NetworkClient::attemptLogout() {
   nam = new QNetworkAccessManager(this);
   QObject::connect(nam, SIGNAL(finished(QNetworkReply *)), this,
                    SLOT(processAttemptLogoutReply(QNetworkReply *)));
+  QObject::connect(
+              nam,
+              SIGNAL(sslErrors(QNetworkReply*, const QList<QSslError> & )),
+              this,
+              SLOT(handleSslErrors(QNetworkReply*, const QList<QSslError> & )));
 
   QUrl url        = QUrl(serviceURL);
   QUrlQuery query = QUrlQuery(urlQuery);
@@ -209,6 +220,11 @@ void NetworkClient::getUserDataUpdate() {
   QNetworkAccessManager *nam = new QNetworkAccessManager(this);
   QObject::connect(nam, SIGNAL(finished(QNetworkReply *)), this,
                    SLOT(processGetUserDataUpdateReply(QNetworkReply *)));
+  QObject::connect(
+              nam,
+              SIGNAL(sslErrors(QNetworkReply*, const QList<QSslError> & )),
+              this,
+              SLOT(handleSslErrors(QNetworkReply*, const QList<QSslError> & )));
 
   QUrl url        = QUrl(serviceURL);
   QUrlQuery query = QUrlQuery(urlQuery);
@@ -368,6 +384,11 @@ void NetworkClient::uploadPrintJobs() {
       QNetworkRequest request(printUrl);
 
       QNetworkAccessManager *networkManager = new QNetworkAccessManager(this);
+      QObject::connect(
+              networkManager,
+              SIGNAL(sslErrors(QNetworkReply*, const QList<QSslError> & )),
+              this,
+              SLOT(handleSslErrors(QNetworkReply*, const QList<QSslError> & )));
 
       QNetworkReply *reply = networkManager->post(request, multiPart);
       multiPart->setParent(reply); // delete the multiPart with the reply
@@ -402,6 +423,12 @@ void NetworkClient::registerNode() {
   QObject::connect(nam, SIGNAL(finished(QNetworkReply *)), this,
                    SLOT(processRegisterNodeReply(QNetworkReply *)));
 
+  QObject::connect(
+              nam,
+              SIGNAL(sslErrors(QNetworkReply*, QList<QSslError> )),
+              this,
+              SLOT(handleSslErrors(QNetworkReply*, QList<QSslError> )));
+
   QUrl url        = QUrl(serviceURL);
   QUrlQuery query = QUrlQuery(urlQuery);
   query.addQueryItem("action",    "register_node");
@@ -410,6 +437,11 @@ void NetworkClient::registerNode() {
   url.setQuery(query);
 
   /*QNetworkReply* reply =*/ nam->get(QNetworkRequest(url));
+}
+
+void NetworkClient::handleSslErrors(QNetworkReply *reply, QList<QSslError> error ) {
+  qDebug("NetworkClient::handleSslErrors");
+  reply->ignoreSslErrors(error);
 }
 
 void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
@@ -545,6 +577,11 @@ void NetworkClient::clearMessage() {
   QNetworkAccessManager *nam = new QNetworkAccessManager(this);
   QObject::connect(nam, SIGNAL(finished(QNetworkReply *)), this,
                    SLOT(ignoreNetworkReply(QNetworkReply *)));
+  QObject::connect(
+              nam,
+              SIGNAL(sslErrors(QNetworkReply*, const QList<QSslError> & )),
+              this,
+              SLOT(handleSslErrors(QNetworkReply*, const QList<QSslError> & )));
   QUrl url        = QUrl(serviceURL);
   QUrlQuery query = QUrlQuery(urlQuery);
   query.addQueryItem("action",   "clear_message");
@@ -559,6 +596,11 @@ void NetworkClient::acknowledgeReservation(QString reserved_for) {
   QNetworkAccessManager *nam = new QNetworkAccessManager(this);
   QObject::connect(nam, SIGNAL(finished(QNetworkReply *)), this,
                    SLOT(ignoreNetworkReply(QNetworkReply *)));
+  QObject::connect(
+              nam,
+              SIGNAL(sslErrors(QNetworkReply*, const QList<QSslError> & )),
+              this,
+              SLOT(handleSslErrors(QNetworkReply*, const QList<QSslError> & )));
   QUrl url        = QUrl(serviceURL);
   QUrlQuery query = QUrlQuery(urlQuery);
   query.addQueryItem("action",       "acknowledge_reservation");
