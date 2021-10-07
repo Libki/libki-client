@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.5]
+- Update the installer to add the Windows 10 delayed loading registry edit fix: https://thegeekpage.com/startupdelayinmsec/
+
 ## [2.2.4]
 - Handle SSL errors
 
