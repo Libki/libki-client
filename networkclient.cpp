@@ -434,6 +434,7 @@ void NetworkClient::registerNode() {
   query.addQueryItem("action",    "register_node");
   query.addQueryItem("node_name", nodeName);
   query.addQueryItem("age_limit", nodeAgeLimit);
+  query.addQueryItem("version",   "2.2.6");
   url.setQuery(query);
 
   /*QNetworkReply* reply =*/ nam->get(QNetworkRequest(url));
