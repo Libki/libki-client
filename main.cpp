@@ -25,43 +25,14 @@
 #include "loginwindow.h"
 #include "timerwindow.h"
 #include "networkclient.h"
+#include "logutils.h"
 
 #include <stdlib.h>
 
-void myMessageHandler(QtMsgType      type,
-                      const QMessageLogContext&,
-                      const QString& msg)
-{
-  QString txt;
-
-  switch (type) {
-  case QtDebugMsg:
-    txt = QString("Debug: %1\n").arg(msg);
-    break;
-
-  case QtWarningMsg:
-    txt = QString("Warning: %1\n").arg(msg);
-    break;
-
-  case QtCriticalMsg:
-    txt = QString("Critical: %1\n").arg(msg);
-    break;
-
-  case QtFatalMsg:
-    txt = QString("Fatal: %1\n").arg(msg);
-    break;
-  default:
-    break;
-  }
-  QFile outFile("libki_client.log");
-  outFile.open(QIODevice::WriteOnly | QIODevice::Append);
-  QTextStream ts(&outFile);
-  ts << txt << endl;
-}
-
 int main(int argc, char *argv[]) {
-  //    qInstallMessageHandler(myMessageHandler);
   QApplication app(argc, argv);
+
+  LogUtils::initLogging();
 
   QString os_username;
 

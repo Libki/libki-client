@@ -13,7 +13,8 @@ QT += webkitwidgets
 
 # Input
 HEADERS += loginwindow.h networkclient.h timerwindow.h \
-    sessionlockedwindow.h
+    sessionlockedwindow.h \
+    logutils.h
 FORMS += loginwindow.ui timerwindow.ui \
     sessionlockedwindow.ui
 RESOURCES += libki.qrc
@@ -23,7 +24,8 @@ SOURCES += loginwindow.cpp \
            networkclient.cpp \
            timerwindow.cpp \
            utils.cpp \
-    sessionlockedwindow.cpp
+    sessionlockedwindow.cpp \
+    logutils.cpp
 TRANSLATIONS = languages/libkiclient_fr.ts \
         languages/libkiclient_sv.ts \
         languages/libkiclient_es.ts \
