@@ -410,9 +410,13 @@ void NetworkClient::handleUploadProgress(qint64 bytesSent, qint64 bytesTotal) {
 void NetworkClient::uploadPrintJobReply(QNetworkReply *reply) {
   qDebug("NetworkClient::uploadPrintJobReply");
 
-  reply->abort();
-  reply->deleteLater();
-  reply->manager()->deleteLater();
+  if (reply->error() == QNetworkReply::NoError) {
+    reply->abort();
+    reply->deleteLater();
+    reply->manager()->deleteLater();
+  } else {
+    qDebug() << "Network Error: " << reply->errorString();
+  };
 }
 
 void NetworkClient::registerNode() {
