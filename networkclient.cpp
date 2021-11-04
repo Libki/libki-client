@@ -416,6 +416,29 @@ void NetworkClient::uploadPrintJobReply(QNetworkReply *reply) {
     reply->manager()->deleteLater();
   } else {
     qDebug() << "Network Error: " << reply->errorString();
+    qDebug() << "Retrying network request.";
+
+    QNetworkRequest request = reply->request();
+
+    QHttpMultiPart *multiPart = reply->findChild<QHttpMultiPart *>();
+    qDebug() << "Found multiPart " << multiPart;
+
+    QNetworkAccessManager *networkManager = new QNetworkAccessManager(this);
+    QObject::connect(
+            networkManager,
+            SIGNAL(sslErrors(QNetworkReply*, const QList<QSslError> & )),
+            this,
+            SLOT(handleSslErrors(QNetworkReply*, const QList<QSslError> & )));
+
+    QNetworkReply *reply = networkManager->post(request, multiPart);
+
+    multiPart->setParent(reply); // delete the multiPart with the reply
+
+    connect(networkManager, SIGNAL(finished(QNetworkReply *)), this,
+            SLOT(uploadPrintJobReply(QNetworkReply *)));
+    connect(reply, SIGNAL(uploadProgress(qint64, qint64)), this,
+            SLOT(handleUploadProgress(qint64, qint64)));
+
   };
 }
 
