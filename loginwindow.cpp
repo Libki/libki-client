@@ -375,8 +375,8 @@ void LoginWindow::handleReservationStatus(QString reserved_for) {
   } else {
     QSettings settings;
 
-    if (settings.value("session/ReservationShowUsername").toBool() && !reserved_for.isEmpty() ) {
-      reservedLabel->setText(tr("Reserved for ") + reserved_for);
+    if (settings.value("session/ReservationShowUsername").toString() != "RSD" && !reserved_for.isEmpty() ) {
+      reservedLabel->setText(tr("Reserved: ") + reserved_for);
     } else {
       reservedLabel->setText(tr("Reserved"));
     }
