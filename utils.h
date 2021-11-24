@@ -24,4 +24,4 @@
 
 QString getLabel(QString labelcode);
 
-#endif // UTILS_H
+#endif  // UTILS_H

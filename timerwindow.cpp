@@ -17,10 +17,12 @@
  * along with Libki.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QtWidgets/qdesktopwidget.h>
 #include "timerwindow.h"
-#include "utils.h"
+
+#include <QtWidgets/qdesktopwidget.h>
+
 #include "sessionlockedwindow.h"
+#include "utils.h"
 
 #define INACTIVITY_CHECK_INTERVAL 10
 
@@ -39,12 +41,12 @@ TimerWindow::TimerWindow(QWidget *parent) : QMainWindow(parent) {
   setFixedSize(width(), height());
 
   // Remove the maximize window button
-  setWindowFlags(
-    (windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
+  setWindowFlags((windowFlags() | Qt::CustomizeWindowHint) &
+                 ~Qt::WindowMaximizeButtonHint);
 
   // Remove the close window button
-  setWindowFlags(
-    (windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowSystemMenuHint);
+  setWindowFlags((windowFlags() | Qt::CustomizeWindowHint) &
+                 ~Qt::WindowSystemMenuHint);
 
   setupActions();
   setupTrayIcon();
@@ -54,36 +56,34 @@ TimerWindow::TimerWindow(QWidget *parent) : QMainWindow(parent) {
           SLOT(showSystemTrayIconTimeLeftMessage()));
 
   inactivityTimer = new QTimer(this);
-  connect(inactivityTimer, SIGNAL(timeout()), this,
-          SLOT(checkForInactivity()));
+  connect(inactivityTimer, SIGNAL(timeout()), this, SLOT(checkForInactivity()));
 
   sessionLockedWindow = Q_NULLPTR;
   QSettings settings;
   settings.setIniCodec("UTF-8");
-  if ( settings.value("session/EnableClientSessionLocking").toBool()) {
-    connect(lockSessionButton, SIGNAL(clicked(bool)), this, SLOT(lockSession()));
+  if (settings.value("session/EnableClientSessionLocking").toBool()) {
+    connect(lockSessionButton, SIGNAL(clicked(bool)), this,
+            SLOT(lockSession()));
   } else {
     lockSessionButton->hide();
   }
 
-  this->move(
-    QApplication::desktop()->screen()->rect().center() - this->rect().center());
+  this->move(QApplication::desktop()->screen()->rect().center() -
+             this->rect().center());
 
   this->hide();
 }
 
 TimerWindow::~TimerWindow() {}
 
-void TimerWindow::startTimer(QString newUsername,
-                             QString newPassword,
-                             int minutes,
-                             int hold_items_count) {
+void TimerWindow::startTimer(QString newUsername, QString newPassword,
+                             int minutes, int hold_items_count) {
   qDebug("TimerWindow::startTimer");
 
   username = newUsername;
   password = newPassword;
 
-  trayIconPopupTimer->start(1000 * 60); // Fire once a minute
+  trayIconPopupTimer->start(1000 * 60);  // Fire once a minute
 
   secondsSinceLastActivity = 0;
   inactivityTimer->start(1000 * INACTIVITY_CHECK_INTERVAL);
@@ -98,7 +98,8 @@ void TimerWindow::startTimer(QString newUsername,
   settings.setIniCodec("UTF-8");
 
   QString waiting_holds_message =
-    tr("You have one or more items on hold waiting for pickup. Please contact a librarian for more details");
+      tr("You have one or more items on hold waiting for pickup. Please "
+         "contact a librarian for more details");
 
   QString label = getLabel("waiting_holds");
   if (!label.isEmpty()) {
@@ -132,7 +133,7 @@ void TimerWindow::updateClock() {
   qDebug("TimerWindow::updateClock");
 
   /* Convert minutes remaining into Hours::Minutes */
-  int hours   = minutesRemaining / 60;
+  int hours = minutesRemaining / 60;
   int minutes = minutesRemaining % 60;
 
   QString time = QString::number(hours) + ":" +
@@ -145,8 +146,8 @@ void TimerWindow::updateClock() {
   progressBar->setRange(0, minutesAtStart);
   progressBar->setValue(minutesRemaining);
 
-  trayIcon->setToolTip(QString::number(minutesRemaining) + " " + tr(
-                         "Minutes Left"));
+  trayIcon->setToolTip(QString::number(minutesRemaining) + " " +
+                       tr("Minutes Left"));
 
   this->setWindowTitle("Libki " + time);
 }
@@ -176,15 +177,15 @@ void TimerWindow::doLogoutDialog() {
   int ret = msgBox.exec();
 
   switch (ret) {
-  case QMessageBox::Yes:
-    emit requestLogout();
-    break;
+    case QMessageBox::Yes:
+      emit requestLogout();
+      break;
 
-  case QMessageBox::Cancel:
-    break;
+    case QMessageBox::Cancel:
+      break;
 
-  default:
-    break;
+    default:
+      break;
   }
 }
 
@@ -199,7 +200,7 @@ void TimerWindow::setupTrayIcon() {
   trayIconMenu = new QMenu(this);
 
   QAction *logoutAction =
-    new QAction(QIcon(":icons/system_log_out.png"), tr("Log Out"), this);
+      new QAction(QIcon(":icons/system_log_out.png"), tr("Log Out"), this);
   connect(logoutAction, SIGNAL(triggered()), this, SLOT(doLogoutDialog()));
   trayIconMenu->addAction(logoutAction);
 
@@ -209,29 +210,29 @@ void TimerWindow::setupTrayIcon() {
 
   connect(trayIcon, SIGNAL(messageClicked()), this, SLOT(restoreTimerWindow()));
 
-  connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
-          this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
+  connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this,
+          SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
 }
 
 void TimerWindow::iconActivated(QSystemTrayIcon::ActivationReason reason) {
   switch (reason) {
-  case QSystemTrayIcon::Trigger:
-    break;
+    case QSystemTrayIcon::Trigger:
+      break;
 
-  case QSystemTrayIcon::DoubleClick:
-    restoreTimerWindow();
-    break;
+    case QSystemTrayIcon::DoubleClick:
+      restoreTimerWindow();
+      break;
 
-  case QSystemTrayIcon::MiddleClick:
-    break;
+    case QSystemTrayIcon::MiddleClick:
+      break;
 
-  case QSystemTrayIcon::Context:
-    qDebug("CONTEXT MENU");
-    trayIcon->contextMenu()->showNormal();
-    break;
+    case QSystemTrayIcon::Context:
+      qDebug("CONTEXT MENU");
+      trayIcon->contextMenu()->showNormal();
+      break;
 
-  default:
-    break;
+    default:
+      break;
   }
 }
 
@@ -249,8 +250,9 @@ void TimerWindow::restoreTimerWindow() {
 void TimerWindow::showSystemTrayIconTimeLeftMessage() {
   qDebug("showSystemTrayIconTimeLeftMessage");
 
-  QString title   = tr("Time Remaining");
-  QString message = QString::number(minutesRemaining) + " " + tr("Minutes Left");
+  QString title = tr("Time Remaining");
+  QString message =
+      QString::number(minutesRemaining) + " " + tr("Minutes Left");
 
   if (!(minutesRemaining % 5)) {
     trayIcon->showMessage(title, message, QSystemTrayIcon::Information, 1000);
@@ -262,70 +264,71 @@ void TimerWindow::showSystemTrayIconTimeLeftMessage() {
 void TimerWindow::checkForInactivity() {
   qDebug("checkForInactivity");
 
-  //TODO: keep one object level instance of settings for each of TimerWindow and NetworkClient
+  // TODO: keep one object level instance of settings for each of TimerWindow
+  // and NetworkClient
   QSettings settings;
   settings.setIniCodec("UTF-8");
 
   int inactivityLogout = 0;
   if (!settings.value("node/inactivityLogout").toString().isEmpty()) {
     inactivityLogout = settings.value("node/inactivityLogout").toInt();
-  }
-  else if (!settings.value("session/inactivityLogout").toString().isEmpty()) {
+  } else if (!settings.value("session/inactivityLogout").toString().isEmpty()) {
     inactivityLogout = settings.value("session/inactivityLogout").toInt();
   }
   qDebug() << "INACTIVIY LOGOUT: " << inactivityLogout;
 
-
   int inactivityWarning = 5;
   if (!settings.value("node/inactivityWarning").toString().isEmpty()) {
     inactivityWarning = settings.value("node/inactivityWarning").toInt();
-  }
-  else if (!settings.value("session/inactivityWarning").toString().isEmpty()) {
+  } else if (!settings.value("session/inactivityWarning")
+                  .toString()
+                  .isEmpty()) {
     inactivityWarning = settings.value("session/inactivityWarning").toInt();
   }
 
   qDebug() << "INACTIVIY WARNING: " << inactivityWarning;
 
-  if ( inactivityLogout > 0 ) {
-      QPoint pos = QCursor::pos();
-      int x = pos.x();
-      int y = pos.y();
+  if (inactivityLogout > 0) {
+    QPoint pos = QCursor::pos();
+    int x = pos.x();
+    int y = pos.y();
 
-      //TODO: Implement ranges to account for mouse wobble?
-      if ( prevMousePosX == x && prevMousePosY == y ) {
-          secondsSinceLastActivity += INACTIVITY_CHECK_INTERVAL;
-          qDebug() << "No activity detected. Seconds since last activity: " << secondsSinceLastActivity;
-      } else {
-          secondsSinceLastActivity = 0;
-          qDebug() << "Activity detected. Seconds since last activity: 0";
-      }
+    // TODO: Implement ranges to account for mouse wobble?
+    if (prevMousePosX == x && prevMousePosY == y) {
+      secondsSinceLastActivity += INACTIVITY_CHECK_INTERVAL;
+      qDebug() << "No activity detected. Seconds since last activity: "
+               << secondsSinceLastActivity;
+    } else {
+      secondsSinceLastActivity = 0;
+      qDebug() << "Activity detected. Seconds since last activity: 0";
+    }
 
-      if ( secondsSinceLastActivity / 60 >= inactivityWarning ) {
-          QString title   = tr("Inactivity detected");
-          QString message = tr("Please confirm you are still using this computer.");
+    if (secondsSinceLastActivity / 60 >= inactivityWarning) {
+      QString title = tr("Inactivity detected");
+      QString message = tr("Please confirm you are still using this computer.");
 
-          /* This would be useful if we could bring the timer window to the forefront, but there appears to be no way to do that
-           * QMessageBox* msgBox = new QMessageBox( this );
-           * msgBox->setAttribute( Qt::WA_DeleteOnClose ); //makes sure the msgbox is deleted automatically when closed
-           * msgBox->setStandardButtons( QMessageBox::Ok );
-           * msgBox->setWindowTitle( title );
-           * msgBox->setText( message );
-           * msgBox->setWindowState( (windowState() & ~Qt::WindowMinimized) | Qt::WindowActive);
-           * msgBox->raise();
-           * msgBox->activateWindow();
-           * msgBox->open();
-           */
+      /* This would be useful if we could bring the timer window to the
+       * forefront, but there appears to be no way to do that QMessageBox*
+       * msgBox = new QMessageBox( this ); msgBox->setAttribute(
+       * Qt::WA_DeleteOnClose ); //makes sure the msgbox is deleted
+       * automatically when closed msgBox->setStandardButtons( QMessageBox::Ok
+       * ); msgBox->setWindowTitle( title ); msgBox->setText( message );
+       * msgBox->setWindowState( (windowState() & ~Qt::WindowMinimized) |
+       * Qt::WindowActive); msgBox->raise(); msgBox->activateWindow();
+       * msgBox->open();
+       */
 
-          QCoreApplication::processEvents(); // Should clear out any previous system tray message
-          trayIcon->showMessage(title, message, QSystemTrayIcon::Critical, 100000);
-      }
+      QCoreApplication::processEvents();  // Should clear out any previous
+                                          // system tray message
+      trayIcon->showMessage(title, message, QSystemTrayIcon::Critical, 100000);
+    }
 
-      if ( secondsSinceLastActivity / 60 >= inactivityLogout ) {
-          emit requestLogout();
-      }
+    if (secondsSinceLastActivity / 60 >= inactivityLogout) {
+      emit requestLogout();
+    }
 
-      prevMousePosX = x;
-      prevMousePosY = y;
+    prevMousePosX = x;
+    prevMousePosY = y;
   }
 }
 
@@ -343,25 +346,26 @@ void TimerWindow::showMessage(QString message) {
 }
 
 void TimerWindow::lockSession() {
-    qDebug() << "TimerWindow::lockSession()";
+  qDebug() << "TimerWindow::lockSession()";
 
-    sessionLockedWindow = new SessionLockedWindow(0, username, password);
-    connect(sessionLockedWindow, SIGNAL(unlockSession()), this, SLOT(unlockSession()));
+  sessionLockedWindow = new SessionLockedWindow(0, username, password);
+  connect(sessionLockedWindow, SIGNAL(unlockSession()), this,
+          SLOT(unlockSession()));
 
-    QProcess::startDetached("windows/on_startup.exe");
-    this->hide();
-    sessionLockedWindow->show();
+  QProcess::startDetached("windows/on_startup.exe");
+  this->hide();
+  sessionLockedWindow->show();
 }
 
 void TimerWindow::unlockSession() {
-    qDebug() << "TimerWindow::unlockSession()";
+  qDebug() << "TimerWindow::unlockSession()";
 
-    QProcess::startDetached("windows/on_login.exe");
+  QProcess::startDetached("windows/on_login.exe");
 
-    sessionLockedWindow->hide();
-    this->show();
-    delete sessionLockedWindow;
-    sessionLockedWindow = Q_NULLPTR;
+  sessionLockedWindow->hide();
+  this->show();
+  delete sessionLockedWindow;
+  sessionLockedWindow = Q_NULLPTR;
 }
 
 void TimerWindow::getSettings() {}

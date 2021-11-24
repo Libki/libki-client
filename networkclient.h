@@ -21,42 +21,35 @@
 #define NETWORKCLIENT_H
 
 #include <QApplication>
-#include <QObject>
+#include <QDebug>
+#include <QEventLoop>
 #include <QHash>
+#include <QObject>
+#include <QProcess>
+#include <QSettings>
 #include <QTimer>
 #include <QUrl>
 #include <QUrlQuery>
-#include <QEventLoop>
 #include <QtNetwork/QNetworkAccessManager>
-#include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QNetworkReply>
-#include <QtScript/QScriptValue>
+#include <QtNetwork/QNetworkRequest>
 #include <QtScript/QScriptEngine>
-#include <QDebug>
-#include <QProcess>
-#include <QSettings>
+#include <QtScript/QScriptValue>
 
 namespace LogoutAction {
-enum Enum {
-  Logout,
-  Reboot,
-  NoAction
-};
+enum Enum { Logout, Reboot, NoAction };
 }
 
 class NetworkClient : public QObject {
   Q_OBJECT
 
-public:
-
+ public:
   NetworkClient();
 
-signals:
+ signals:
 
-  void loginSucceeded(const QString& username,
-                      const QString& password,
-                      const int    & minutes,
-                      const int    & hold_items_count);
+  void loginSucceeded(const QString &username, const QString &password,
+                      const int &minutes, const int &hold_items_count);
   void loginFailed(QString errorCode);
   void timeUpdatedFromServer(int minutes);
   void logoutSucceeded();
@@ -68,14 +61,13 @@ signals:
   void clientSuspended();
   void clientOnline();
 
-public slots:
+ public slots:
 
-  void attemptLogin(QString username,
-                    QString password);
+  void attemptLogin(QString username, QString password);
   void attemptLogout();
   void acknowledgeReservation(QString reserved_for);
 
-private slots:
+ private slots:
 
   void registerNode();
   void processRegisterNodeReply(QNetworkReply *reply);
@@ -94,10 +86,9 @@ private slots:
   void processAttemptLoginReply(QNetworkReply *reply);
   void processAttemptLogoutReply(QNetworkReply *reply);
 
-  void handleSslErrors(QNetworkReply* reply,QList<QSslError> error);
+  void handleSslErrors(QNetworkReply *reply, QList<QSslError> error);
 
-private:
-
+ private:
   QTimer *registerNodeTimer;
   QTimer *uploadPrintJobsTimer;
   QTimer *updateUserDataTimer;
@@ -119,11 +110,10 @@ private:
 
   int fileCounter;
 
-  void doLoginTasks(int units,
-                    int hold_items_count);
+  void doLoginTasks(int units, int hold_items_count);
   void doLogoutTasks();
 
   void wakeOnLan(QStringList MAC_addresses, QString host, qint64 port);
 };
 
-#endif // NETWORKCLIENT_H
+#endif  // NETWORKCLIENT_H

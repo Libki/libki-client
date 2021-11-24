@@ -17,11 +17,12 @@
  * along with Libki.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "loginwindow.h"
+
 #include <QCryptographicHash>
 #include <QMessageBox>
 #include <QTextEdit>
 
-#include "loginwindow.h"
 #include "utils.h"
 
 LoginWindow::LoginWindow(QWidget *parent) : QMainWindow(parent) {
@@ -35,18 +36,18 @@ LoginWindow::LoginWindow(QWidget *parent) : QMainWindow(parent) {
   this->setWindowIcon(libkiIcon);
 
   // Remove the maximize window button
-  setWindowFlags(
-    (windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
+  setWindowFlags((windowFlags() | Qt::CustomizeWindowHint) &
+                 ~Qt::WindowMaximizeButtonHint);
 
   // Remove the close window button
-  setWindowFlags(
-    (windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowSystemMenuHint);
-  setWindowFlags(
-    (windowFlags() | Qt::CustomizeWindowHint) & Qt::WindowStaysOnTopHint);
-  setWindowFlags(
-    (windowFlags() | Qt::CustomizeWindowHint) & Qt::X11BypassWindowManagerHint);
-  setWindowFlags(
-    (windowFlags() | Qt::CustomizeWindowHint) & Qt::FramelessWindowHint);
+  setWindowFlags((windowFlags() | Qt::CustomizeWindowHint) &
+                 ~Qt::WindowSystemMenuHint);
+  setWindowFlags((windowFlags() | Qt::CustomizeWindowHint) &
+                 Qt::WindowStaysOnTopHint);
+  setWindowFlags((windowFlags() | Qt::CustomizeWindowHint) &
+                 Qt::X11BypassWindowManagerHint);
+  setWindowFlags((windowFlags() | Qt::CustomizeWindowHint) &
+                 Qt::FramelessWindowHint);
 
   setupActions();
 
@@ -69,11 +70,9 @@ void LoginWindow::displayLoginWindow() {
 void LoginWindow::setupActions() {
   qDebug("LoginWindow::setupActions");
 
-  connect(loginButton,  SIGNAL(clicked()),
-          this, SLOT(attemptLogin()));
+  connect(loginButton, SIGNAL(clicked()), this, SLOT(attemptLogin()));
 
-  connect(cancelButton, SIGNAL(clicked()),
-          this, SLOT(resetLoginScreen()));
+  connect(cancelButton, SIGNAL(clicked()), this, SLOT(resetLoginScreen()));
 }
 
 void LoginWindow::getSettings() {
@@ -140,13 +139,12 @@ void LoginWindow::attemptLogin() {
   if (username.isEmpty()) {
     QSettings settings;
     settings.setIniCodec("UTF-8");
-    QString   md5FromIni = settings.value("node/password").toString();
+    QString md5FromIni = settings.value("node/password").toString();
 
     if (!md5FromIni.isEmpty()) {
       /* Check for shutdown password */
-      QString passwordMd5 =
-        QString(QCryptographicHash::hash(password,
-                                         QCryptographicHash::Md5).toHex());
+      QString passwordMd5 = QString(
+          QCryptographicHash::hash(password, QCryptographicHash::Md5).toHex());
       qDebug() << "Password: " << password;
       qDebug() << "Hashed Password: " << passwordMd5;
       qDebug() << "Hash from INI file: " << md5FromIni;
@@ -161,7 +159,7 @@ void LoginWindow::attemptLogin() {
         // limit mischief.
         QProcess::startDetached("c:/windows/explorer.exe");
         QProcess::startDetached("windows/on_login.exe");
-#endif // ifdef Q_OS_WIN
+#endif  // ifdef Q_OS_WIN
         exit(1);
       }
     }
@@ -170,24 +168,24 @@ void LoginWindow::attemptLogin() {
   QSettings settings;
   settings.setIniCodec("UTF-8");
   QString termsOfService = settings.value("session/TermsOfService").toString();
-  if ( termsOfService.length() > 4 ) {
-      QMessageBox msgBox;
-      msgBox.setText(tr("Do you accept the terms of service?"));
-      msgBox.setInformativeText(tr("Terms of Service"));
-      msgBox.setDetailedText(termsOfService);
-      if (Qt::mightBeRichText(termsOfService)) {
-        QTextEdit *detailedText = msgBox.findChild<QTextEdit *>();
-        detailedText->setHtml(termsOfService);
-      }
-      msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-      msgBox.setDefaultButton(QMessageBox::No);
-      msgBox.setButtonText(QMessageBox::Yes, tr("Yes"));
-      msgBox.setButtonText(QMessageBox::No, tr("No"));
-      int ret = msgBox.exec();
-      if( ret == QMessageBox::No ) {
-          resetLoginScreen();
-          return;
-      }
+  if (termsOfService.length() > 4) {
+    QMessageBox msgBox;
+    msgBox.setText(tr("Do you accept the terms of service?"));
+    msgBox.setInformativeText(tr("Terms of Service"));
+    msgBox.setDetailedText(termsOfService);
+    if (Qt::mightBeRichText(termsOfService)) {
+      QTextEdit *detailedText = msgBox.findChild<QTextEdit *>();
+      detailedText->setHtml(termsOfService);
+    }
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    msgBox.setDefaultButton(QMessageBox::No);
+    msgBox.setButtonText(QMessageBox::Yes, tr("Yes"));
+    msgBox.setButtonText(QMessageBox::No, tr("No"));
+    int ret = msgBox.exec();
+    if (ret == QMessageBox::No) {
+      resetLoginScreen();
+      return;
+    }
   }
 
   emit attemptLogin(username, password);
@@ -197,14 +195,14 @@ void LoginWindow::attemptLoginFailure(QString loginError) {
   qDebug() << "LoginWindow::attemptLoginFailure(" + loginError + ")";
 
   QString customErrorMessage = getLabel(loginError);
-  if (! customErrorMessage.isEmpty()) {
+  if (!customErrorMessage.isEmpty()) {
     errorLabel->setText(customErrorMessage);
   } else if ((loginError == "BAD_LOGIN") || (loginError == "INVALID_USER") ||
-      (loginError == "INVALID_PASSWORD")) {
+             (loginError == "INVALID_PASSWORD")) {
     errorLabel->setText(tr("Login Failed: Username and password do not match"));
   } else if (loginError == "AGE_MISMATCH") {
-    errorLabel->setText(tr(
-                          "Login Failed: You are not the correct age to use this client"));
+    errorLabel->setText(
+        tr("Login Failed: You are not the correct age to use this client"));
   } else if (loginError == "NO_TIME") {
     errorLabel->setText(tr("Login Failed: No time left"));
   } else if (loginError == "CLOSED") {
@@ -214,12 +212,13 @@ void LoginWindow::attemptLoginFailure(QString loginError) {
   } else if (loginError == "ACCOUNT_DISABLED") {
     errorLabel->setText(tr("Login Failed: Account is disabled"));
   } else if (loginError == "RESERVED_FOR_OTHER") {
-    errorLabel->setText(tr(
-                          "Login Failed: This kiosk is reserved for someone else"));
+    errorLabel->setText(
+        tr("Login Failed: This kiosk is reserved for someone else"));
   } else if (loginError == "RESERVATION_REQUIRED") {
     errorLabel->setText(tr("Login Failed: Reservation required"));
   } else if (loginError == "FEE_LIMIT") {
-    errorLabel->setText(tr("Login Failed: You have excessive outstanding fees"));
+    errorLabel->setText(
+        tr("Login Failed: You have excessive outstanding fees"));
   } else if (loginError == "CHARGE_PRIVILEGES_DENIED") {
     errorLabel->setText(tr("Login Failed: Charge privileges denied"));
   } else if (loginError == "RENEWAL_PRIVILEGES_DENIED") {
@@ -231,38 +230,42 @@ void LoginWindow::attemptLoginFailure(QString loginError) {
   } else if (loginError == "CARD_REPORTED_LOST") {
     errorLabel->setText(tr("Login Failed: Your card has been reported lost"));
   } else if (loginError == "TOO_MANY_ITEMS_CHARGED") {
-    errorLabel->setText(tr(
-                          "Login Failed: You have too many items charged to your account"));
+    errorLabel->setText(
+        tr("Login Failed: You have too many items charged to your account"));
   } else if (loginError == "TOO_MANY_ITEMS_OVERDUE") {
     errorLabel->setText(tr("Login Failed: You have too many items overdue"));
   } else if (loginError == "TOO_MANY_ITEMS_RENEWALS") {
-    errorLabel->setText(tr("Login Failed: You have renewed items too many times"));
+    errorLabel->setText(
+        tr("Login Failed: You have renewed items too many times"));
   } else if (loginError == "TOO_MANY_CLAIMS_OF_ITEMS_RETURNED") {
-    errorLabel->setText(tr(
-                          "Login Failed: You have claimed too many items as returned"));
+    errorLabel->setText(
+        tr("Login Failed: You have claimed too many items as returned"));
   } else if (loginError == "TOO_MANY_ITEMS_LOST") {
     errorLabel->setText(tr("Login Failed: You have have lost too many items"));
   } else if (loginError == "EXCESSIVE_OUTSTANDING_FINES") {
-    errorLabel->setText(tr("Login Failed: You have excessive outstanding fines"));
+    errorLabel->setText(
+        tr("Login Failed: You have excessive outstanding fines"));
   } else if (loginError == "EXCESSIVE_OUTSTANDING_FEES") {
-    errorLabel->setText(tr("Login Failed: You have excessive outstanding fees"));
+    errorLabel->setText(
+        tr("Login Failed: You have excessive outstanding fees"));
   } else if (loginError == "RECALL_OVERDUE") {
-    errorLabel->setText(tr(
-                          "Login Failed: You have a recalled item which is overdue"));
+    errorLabel->setText(
+        tr("Login Failed: You have a recalled item which is overdue"));
   } else if (loginError == "TOO_MANY_ITEMS_BILLED") {
-    errorLabel->setText(tr(
-                          "Login Failed: You have been billed for too many items"));
+    errorLabel->setText(
+        tr("Login Failed: You have been billed for too many items"));
   } else if (loginError == "INVALID_CLIENT") {
     errorLabel->setText(tr("Login Failed: Client not registered"));
   } else if (loginError == "CONNECTION_FAILURE") {
     errorLabel->setText(tr("Login Failed: Unable to connect to ILS"));
   } else if (loginError == "TOO_MANY_SESSIONS") {
-    errorLabel->setText(tr(
-                          "Login Failed: Too many concurrent sessions on this account"));
-  } else if (loginError == "EXPIRED_CARD"){
-    errorLabel->setText(tr(
-                          "Login Failed: Expired Membership. Please inquire at the circulation desk."));
-  }else {
+    errorLabel->setText(
+        tr("Login Failed: Too many concurrent sessions on this account"));
+  } else if (loginError == "EXPIRED_CARD") {
+    errorLabel->setText(
+        tr("Login Failed: Expired Membership. Please inquire at the "
+           "circulation desk."));
+  } else {
     errorLabel->setText(tr("Login Failed: ") + loginError);
   }
 
@@ -273,41 +276,44 @@ void LoginWindow::attemptLoginFailure(QString loginError) {
   usernameField->selectAll();
 }
 
-void LoginWindow::attemptLoginSuccess(QString username,
-                                      QString password,
-                                      int     minutes,
-                                      int     hold_items_count) {
+void LoginWindow::attemptLoginSuccess(QString username, QString password,
+                                      int minutes, int hold_items_count) {
   qDebug("LoginWindow::attemptLoginSuccess");
   resetLoginScreen();
 
   QProcess process;
   QSettings settings;
   QString runOnLogin = settings.value("node/run_on_login").toString();
-  if ( ! runOnLogin.isEmpty() ) {
-      QString passEnvToRunOnLogin = settings.value("node/pass_env_to_run_on_login").toString();
-      if ( ! passEnvToRunOnLogin.isEmpty() ) {
-          QStringList envVarsToPass = passEnvToRunOnLogin.split(',');
-          for (int i = 0; i < envVarsToPass.size(); ++i) {
-              // On Qt 5.5 there is no way to pass environment variables to a detached process,
-              // so we need to add the vars to the current environment with qputenv
-              if (envVarsToPass.at(i) == "username") {
-                // qputenv needs a QByteArray as second parameter, hence the call to toUtf8
-                qputenv("LIBKI_USER_NAME", username.toUtf8());
-              }
-              if (envVarsToPass.at(i) == "password") {
-                qputenv("LIBKI_USER_PASSWORD", password.toUtf8());
-              }
-              if (envVarsToPass.at(i) == "name") {
-                qputenv("LIBKI_CLIENT_NAME", settings.value("node/name").toString().toUtf8());
-              }
-              if (envVarsToPass.at(i) == "location") {
-                qputenv("LIBKI_CLIENT_LOCATION", settings.value("node/location").toString().toUtf8());
-              }
-          }
+  if (!runOnLogin.isEmpty()) {
+    QString passEnvToRunOnLogin =
+        settings.value("node/pass_env_to_run_on_login").toString();
+    if (!passEnvToRunOnLogin.isEmpty()) {
+      QStringList envVarsToPass = passEnvToRunOnLogin.split(',');
+      for (int i = 0; i < envVarsToPass.size(); ++i) {
+        // On Qt 5.5 there is no way to pass environment variables to a detached
+        // process, so we need to add the vars to the current environment with
+        // qputenv
+        if (envVarsToPass.at(i) == "username") {
+          // qputenv needs a QByteArray as second parameter, hence the call to
+          // toUtf8
+          qputenv("LIBKI_USER_NAME", username.toUtf8());
+        }
+        if (envVarsToPass.at(i) == "password") {
+          qputenv("LIBKI_USER_PASSWORD", password.toUtf8());
+        }
+        if (envVarsToPass.at(i) == "name") {
+          qputenv("LIBKI_CLIENT_NAME",
+                  settings.value("node/name").toString().toUtf8());
+        }
+        if (envVarsToPass.at(i) == "location") {
+          qputenv("LIBKI_CLIENT_LOCATION",
+                  settings.value("node/location").toString().toUtf8());
+        }
       }
+    }
 
-      // Yes, these quotes around the command within string are required, IKR?
-      QProcess::startDetached('"' + runOnLogin + '"');
+    // Yes, these quotes around the command within string are required, IKR?
+    QProcess::startDetached('"' + runOnLogin + '"');
   }
 
   emit loginSucceeded(username, password, minutes, hold_items_count);
@@ -375,7 +381,8 @@ void LoginWindow::handleReservationStatus(QString reserved_for) {
   } else {
     QSettings settings;
 
-    if (settings.value("session/ReservationShowUsername").toString() != "RSD" && !reserved_for.isEmpty() ) {
+    if (settings.value("session/ReservationShowUsername").toString() != "RSD" &&
+        !reserved_for.isEmpty()) {
       reservedLabel->setText(tr("Reserved: ") + reserved_for);
     } else {
       reservedLabel->setText(tr("Reserved"));
@@ -398,12 +405,12 @@ void LoginWindow::handleBanners() {
 
   palette.setBrush(QPalette::Base, Qt::transparent);
 
-  QString bannerTopUrl = "http://" +
-                         settings.value("session/BannerTopURL").toString();
+  QString bannerTopUrl =
+      "http://" + settings.value("session/BannerTopURL").toString();
 
-  if (bannerTopUrl!="http://") {
+  if (bannerTopUrl != "http://") {
     int bannerTopHeight = settings.value("session/BannerTopHeight").toInt();
-    int bannerTopWidth  = settings.value("session/BannerTopWidth").toInt();
+    int bannerTopWidth = settings.value("session/BannerTopWidth").toInt();
 
     bannerWebViewTop->setEnabled(true);
     bannerWebViewTop->page()->setPalette(palette);
@@ -415,21 +422,23 @@ void LoginWindow::handleBanners() {
     bannerWebViewTop->load(QUrl(bannerTopUrl));
   }
 
-  QString bannerBottomUrl = "http://" +
-                            settings.value("session/BannerBottomURL").toString();
+  QString bannerBottomUrl =
+      "http://" + settings.value("session/BannerBottomURL").toString();
 
-  if (bannerBottomUrl!="http://") {
-    int bannerBottomHeight = settings.value("session/BannerBottomHeight").toInt();
-    int bannerBottomWidth  = settings.value("session/BannerBottomWidth").toInt();
+  if (bannerBottomUrl != "http://") {
+    int bannerBottomHeight =
+        settings.value("session/BannerBottomHeight").toInt();
+    int bannerBottomWidth = settings.value("session/BannerBottomWidth").toInt();
 
     bannerWebViewBottom->setEnabled(true);
     bannerWebViewBottom->page()->setPalette(palette);
     bannerWebViewBottom->setAttribute(Qt::WA_OpaquePaintEvent, false);
 
-    if (bannerBottomHeight) bannerWebViewBottom->setMaximumHeight(
-        bannerBottomHeight);
+    if (bannerBottomHeight)
+      bannerWebViewBottom->setMaximumHeight(bannerBottomHeight);
 
-    if (bannerBottomWidth) bannerWebViewBottom->setMaximumWidth(bannerBottomWidth);
+    if (bannerBottomWidth)
+      bannerWebViewBottom->setMaximumWidth(bannerBottomWidth);
     bannerWebViewBottom->load(QUrl(bannerBottomUrl));
   }
 }

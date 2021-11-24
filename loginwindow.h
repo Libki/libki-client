@@ -21,55 +21,47 @@
 #define LOGINWINDOW_H
 
 #include <QMainWindow>
-#include <QtGui>
-#include <QtDebug>
 #include <QSettings>
-
-#include "ui_loginwindow.h"
+#include <QtDebug>
+#include <QtGui>
 
 #include "networkclient.h"
+#include "ui_loginwindow.h"
 
 class LoginWindow : public QMainWindow, public Ui::LoginWindow {
   Q_OBJECT
 
-public:
-
-  LoginWindow(QWidget *parent = 0);
+ public:
+  LoginWindow(QWidget* parent = 0);
   ~LoginWindow();
 
-  void closeEvent(QCloseEvent *event);
+  void closeEvent(QCloseEvent* event);
 
-signals:
+ signals:
 
-  void loginSucceeded(const QString& username,
-                      const QString& password,
-                      const int    & minutes,
-                      const int    & hold_items_count);
-  void attemptLogin(const QString& username,
-                    const QString& password);
+  void loginSucceeded(const QString& username, const QString& password,
+                      const int& minutes, const int& hold_items_count);
+  void attemptLogin(const QString& username, const QString& password);
   void displayingReservationMessage(QString reserved_for);
 
-public slots:
+ public slots:
 
   void setAllowClose(bool);
   void displayLoginWindow();
   void attemptLogin();
   void attemptLoginFailure(QString loginError);
-  void attemptLoginSuccess(QString username,
-                           QString password,
-                           int     minutes,
-                           int     hold_items_count);
+  void attemptLoginSuccess(QString username, QString password, int minutes,
+                           int hold_items_count);
   void handleReservationStatus(QString reserved_for);
   void handleBanners();
   void disableLogin();
   void enableLogin();
 
-private slots:
+ private slots:
 
   void resetLoginScreen();
 
-private:
-
+ private:
   QIcon libkiIcon;
 
   QString reservedFor;
@@ -83,4 +75,4 @@ private:
   void setButtonsEnabled(bool);
 };
 
-#endif // LOGINWINDOW_H
+#endif  // LOGINWINDOW_H

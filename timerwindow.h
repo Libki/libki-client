@@ -21,48 +21,43 @@
 #define LOGINWINDOW_H
 
 #include <QMainWindow>
-#include <QTimer>
-#include <QSystemTrayIcon>
-#include <QtGui>
-#include <QtDebug>
 #include <QMessageBox>
 #include <QSettings>
+#include <QSystemTrayIcon>
+#include <QTimer>
+#include <QtDebug>
+#include <QtGui>
 
-
-#include "ui_timerwindow.h"
-
-#include "sessionlockedwindow.h"
 #include "networkclient.h"
+#include "sessionlockedwindow.h"
+#include "ui_timerwindow.h"
 
 class TimerWindow : public QMainWindow, public Ui::TimerWindow {
   Q_OBJECT
 
-public:
-
+ public:
   TimerWindow(QWidget *parent = 0);
   ~TimerWindow();
   void closeEvent(QCloseEvent *event);
 
-signals:
+ signals:
 
   void requestLogout();
   void timerStopped();
   void serverAccountMinutesRequest();
 
-public slots:
+ public slots:
 
   void setAllowClose(bool);
-  void startTimer(QString username,
-                  QString password,
-                  int            minutes,
-                  int            hold_items_count);
+  void startTimer(QString username, QString password, int minutes,
+                  int hold_items_count);
   void stopTimer();
   void updateTimeLeft(int minutes);
   void showMessage(QString message);
   void lockSession();
   void unlockSession();
 
-private slots:
+ private slots:
 
   void doLogoutDialog();
   void restoreTimerWindow();
@@ -70,8 +65,7 @@ private slots:
   void showSystemTrayIconTimeLeftMessage();
   void checkForInactivity();
 
-private:
-
+ private:
   SessionLockedWindow *sessionLockedWindow;
   QString username;
   QString password;
@@ -100,4 +94,4 @@ private:
   void updateClock();
 };
 
-#endif // LOGINWINDOW_H
+#endif  // LOGINWINDOW_H

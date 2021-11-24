@@ -17,9 +17,10 @@
  * along with Libki. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QSettings>
-#include <QLocale>
 #include "utils.h"
+
+#include <QLocale>
+#include <QSettings>
 
 QString getLabel(QString labelcode) {
   QSettings settings;
@@ -28,10 +29,19 @@ QString getLabel(QString labelcode) {
   QString locale = QLocale::system().name();
   QString label = QString();
 
-  if (!settings.value("labels-" + locale + "/" + labelcode).toString().isEmpty()) {
+  if (!settings.value("labels-" + locale + "/" + labelcode)
+           .toString()
+           .isEmpty()) {
     label = settings.value("labels-" + locale + "/" + labelcode).toString();
-  } else if (!settings.value("labels-" + locale.left(locale.indexOf('_')) + "/" + labelcode).toString().isEmpty()) {
-    label = settings.value("labels-" + locale.left(locale.indexOf('_')) + "/" + labelcode).toString();
+  } else if (!settings
+                  .value("labels-" + locale.left(locale.indexOf('_')) + "/" +
+                         labelcode)
+                  .toString()
+                  .isEmpty()) {
+    label = settings
+                .value("labels-" + locale.left(locale.indexOf('_')) + "/" +
+                       labelcode)
+                .toString();
   } else if (!settings.value("labels/" + labelcode).toString().isEmpty()) {
     label = settings.value("labels/" + labelcode).toString();
   }

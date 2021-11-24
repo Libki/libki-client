@@ -1,10 +1,13 @@
+#include "sessionlockedwindow.h"
+
 #include <QCryptographicHash>
 #include <QMessageBox>
 
-#include "sessionlockedwindow.h"
 #include "utils.h"
 
-SessionLockedWindow::SessionLockedWindow(QWidget *parent, QString userUsername, QString userPassword) : QMainWindow(parent) {
+SessionLockedWindow::SessionLockedWindow(QWidget *parent, QString userUsername,
+                                         QString userPassword)
+    : QMainWindow(parent) {
   qDebug("SessionLockedWindow::SessionLockedWindow");
 
   username = userUsername;
@@ -18,18 +21,18 @@ SessionLockedWindow::SessionLockedWindow(QWidget *parent, QString userUsername, 
   this->setWindowIcon(libkiIcon);
 
   // Remove the maximize window button
-  setWindowFlags(
-    (windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
+  setWindowFlags((windowFlags() | Qt::CustomizeWindowHint) &
+                 ~Qt::WindowMaximizeButtonHint);
 
   // Remove the close window button
-  setWindowFlags(
-    (windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowSystemMenuHint);
-  setWindowFlags(
-    (windowFlags() | Qt::CustomizeWindowHint) & Qt::WindowStaysOnTopHint);
-  setWindowFlags(
-    (windowFlags() | Qt::CustomizeWindowHint) & Qt::X11BypassWindowManagerHint);
-  setWindowFlags(
-    (windowFlags() | Qt::CustomizeWindowHint) & Qt::FramelessWindowHint);
+  setWindowFlags((windowFlags() | Qt::CustomizeWindowHint) &
+                 ~Qt::WindowSystemMenuHint);
+  setWindowFlags((windowFlags() | Qt::CustomizeWindowHint) &
+                 Qt::WindowStaysOnTopHint);
+  setWindowFlags((windowFlags() | Qt::CustomizeWindowHint) &
+                 Qt::X11BypassWindowManagerHint);
+  setWindowFlags((windowFlags() | Qt::CustomizeWindowHint) &
+                 Qt::FramelessWindowHint);
 
   setupActions();
 
@@ -42,7 +45,7 @@ SessionLockedWindow::SessionLockedWindow(QWidget *parent, QString userUsername, 
   this->showFullScreen();
 }
 
-SessionLockedWindow::~SessionLockedWindow(){}
+SessionLockedWindow::~SessionLockedWindow() {}
 
 void SessionLockedWindow::setAllowClose(bool close) {
   qDebug("SessionLockedWindow::setAllowClose");
@@ -97,24 +100,23 @@ void SessionLockedWindow::getSettings() {
 }
 
 void SessionLockedWindow::attemptUnlock() {
-    qDebug("SessionLockedWindow::attemptUnlock");
+  qDebug("SessionLockedWindow::attemptUnlock");
 
-    QString passwordEntered = passwordField->text();
+  QString passwordEntered = passwordField->text();
 
-    if ( passwordEntered == password ) {
-        emit unlockSession();
-    } else {
-        messageLabel->setText(tr("Incorrect Password"));
-        passwordField->clear();
-    }
+  if (passwordEntered == password) {
+    emit unlockSession();
+  } else {
+    messageLabel->setText(tr("Incorrect Password"));
+    passwordField->clear();
+  }
 }
 
 void SessionLockedWindow::setupActions() {
   qDebug("SessionLockedWindow::setupActions");
 
-  connect(resumeButton, SIGNAL(clicked()),
-          this, SLOT(attemptUnlock()));
+  connect(resumeButton, SIGNAL(clicked()), this, SLOT(attemptUnlock()));
 
-//  connect(cancelButton, SIGNAL(clicked()),
-//          this, SLOT(resetSessionLockedScreen()));
+  //  connect(cancelButton, SIGNAL(clicked()),
+  //          this, SLOT(resetSessionLockedScreen()));
 }

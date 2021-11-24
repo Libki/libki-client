@@ -17,17 +17,17 @@
  * along with Libki.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <stdlib.h>
+
 #include <QApplication>
 #include <QProcess>
-#include <QWebView>
 #include <QSettings>
+#include <QWebView>
 
 #include "loginwindow.h"
-#include "timerwindow.h"
-#include "networkclient.h"
 #include "logutils.h"
-
-#include <stdlib.h>
+#include "networkclient.h"
+#include "timerwindow.h"
 
 int main(int argc, char *argv[]) {
   QApplication app(argc, argv);
@@ -38,15 +38,15 @@ int main(int argc, char *argv[]) {
 
 #ifdef Q_OS_WIN
   os_username = getenv("USERNAME");
-#endif // ifdef Q_OS_WIN
+#endif  // ifdef Q_OS_WIN
 #ifdef Q_OS_UNIX
   os_username = getenv("USER");
-#endif // ifdef Q_OS_UNIX
+#endif  // ifdef Q_OS_UNIX
 
   qDebug() << "OS Username: " << os_username;
 
   // Translate the application if the locale is available
-  QString locale   = QLocale::system().name();
+  QString locale = QLocale::system().name();
   QString filename = QString("languages/libkiclient_") + locale;
   qDebug() << "LOCALE: " << locale;
   qDebug() << "LOCALE FILE: " << filename;
@@ -55,7 +55,8 @@ int main(int argc, char *argv[]) {
   if (translator.load(filename, ":/")) {
     app.installTranslator(&translator);
     qDebug() << "Translation file loaded" << filename;
-  } else qDebug() << "Translation file not found:" << filename;
+  } else
+    qDebug() << "Translation file not found:" << filename;
 
   /* Apply the stylesheet */
   QFile qss("libki.qss");
@@ -82,9 +83,9 @@ int main(int argc, char *argv[]) {
   if (!onlyRunFor.isEmpty()) {
     if (onlyRunFor != os_username) {
       qDebug() << "onlyRunFor does not match OS username";
-      if(!startUserShell.isEmpty()) {
-          qDebug() << "running user shell " << startUserShell;
-          QProcess::startDetached('"' + startUserShell + '"');
+      if (!startUserShell.isEmpty()) {
+        qDebug() << "running user shell " << startUserShell;
+        QProcess::startDetached('"' + startUserShell + '"');
       }
       qDebug() << "exiting.";
       exit(1);
@@ -98,9 +99,9 @@ int main(int argc, char *argv[]) {
   if (!onlyStopFor.isEmpty()) {
     if (onlyStopFor == os_username) {
       qDebug() << "onlyStopFor matches OS username";
-      if(!startUserShell.isEmpty()) {
-          qDebug() << "running user shell " << startUserShell;
-          QProcess::startDetached('"' + startUserShell + '"');
+      if (!startUserShell.isEmpty()) {
+        qDebug() << "running user shell " << startUserShell;
+        QProcess::startDetached('"' + startUserShell + '"');
       }
       qDebug() << "exiting.";
       exit(1);
@@ -113,24 +114,23 @@ int main(int argc, char *argv[]) {
   // mischief.
   QProcess::startDetached("taskkill /f /im explorer.exe");
   QProcess::startDetached("windows/on_startup.exe");
-#endif // ifdef Q_OS_WIN
+#endif  // ifdef Q_OS_WIN
 
-  settings.setValue("session/ClientBehavior",          "");
+  settings.setValue("session/ClientBehavior", "");
   settings.setValue("session/ReservationShowUsername", "");
-  settings.setValue("session/LoggedInUser",            "");
+  settings.setValue("session/LoggedInUser", "");
 
   settings.sync();
 
-  LoginWindow   *loginWindow   = new LoginWindow();
-  TimerWindow   *timerWindow   = new TimerWindow();
+  LoginWindow *loginWindow = new LoginWindow();
+  TimerWindow *timerWindow = new TimerWindow();
   NetworkClient *networkClient = new NetworkClient();
 
   QObject::connect(
-    loginWindow,
-    SIGNAL(loginSucceeded(const QString&,const QString&,int,int)),
-    timerWindow,
-    SLOT(startTimer(const QString&,const QString&,int,int))
-    );
+      loginWindow,
+      SIGNAL(loginSucceeded(const QString &, const QString &, int, int)),
+      timerWindow,
+      SLOT(startTimer(const QString &, const QString &, int, int)));
 
   QObject::connect(timerWindow, SIGNAL(requestLogout()), networkClient,
                    SLOT(attemptLogout()));
@@ -141,80 +141,40 @@ int main(int argc, char *argv[]) {
                    SLOT(displayLoginWindow()));
 
   QObject::connect(
-    loginWindow,
-    SIGNAL(attemptLogin(const QString&,const QString&)),
-    networkClient,
-    SLOT(attemptLogin(const QString&,const QString&))
-    );
+      loginWindow, SIGNAL(attemptLogin(const QString &, const QString &)),
+      networkClient, SLOT(attemptLogin(const QString &, const QString &)));
 
   QObject::connect(
-    networkClient,
-    SIGNAL(loginSucceeded(QString,QString,int,int)),
-    loginWindow,
-    SLOT(attemptLoginSuccess(QString,QString,int,int))
-    );
+      networkClient, SIGNAL(loginSucceeded(QString, QString, int, int)),
+      loginWindow, SLOT(attemptLoginSuccess(QString, QString, int, int)));
 
-  QObject::connect(
-    networkClient,
-    SIGNAL(loginFailed(QString)),
-    loginWindow,
-    SLOT(attemptLoginFailure(QString))
-    );
+  QObject::connect(networkClient, SIGNAL(loginFailed(QString)), loginWindow,
+                   SLOT(attemptLoginFailure(QString)));
 
-  QObject::connect(
-    networkClient,
-    SIGNAL(setReservationStatus(QString)),
-    loginWindow,
-    SLOT(handleReservationStatus(QString))
-    );
+  QObject::connect(networkClient, SIGNAL(setReservationStatus(QString)),
+                   loginWindow, SLOT(handleReservationStatus(QString)));
 
-  QObject::connect(
-    loginWindow,
-    SIGNAL(displayingReservationMessage(QString)),
-    networkClient,
-    SLOT(acknowledgeReservation(QString))
-    );
+  QObject::connect(loginWindow, SIGNAL(displayingReservationMessage(QString)),
+                   networkClient, SLOT(acknowledgeReservation(QString)));
 
-  QObject::connect(
-    networkClient,
-    SIGNAL(handleBanners()),
-    loginWindow,
-    SLOT(handleBanners())
-    );
+  QObject::connect(networkClient, SIGNAL(handleBanners()), loginWindow,
+                   SLOT(handleBanners()));
 
-  QObject::connect(
-    networkClient,
-    SIGNAL(clientSuspended()),
-    loginWindow,
-    SLOT(disableLogin())
-    );
+  QObject::connect(networkClient, SIGNAL(clientSuspended()), loginWindow,
+                   SLOT(disableLogin()));
 
-  QObject::connect(
-    networkClient,
-    SIGNAL(clientOnline()),
-    loginWindow,
-    SLOT(enableLogin())
-    );
+  QObject::connect(networkClient, SIGNAL(clientOnline()), loginWindow,
+                   SLOT(enableLogin()));
 
-  QObject::connect(
-    networkClient,
-    SIGNAL(timeUpdatedFromServer(int)),
-    timerWindow,
-    SLOT(updateTimeLeft(int))
-    );
+  QObject::connect(networkClient, SIGNAL(timeUpdatedFromServer(int)),
+                   timerWindow, SLOT(updateTimeLeft(int)));
 
-  QObject::connect(networkClient,
-                   SIGNAL(messageRecieved(QString)),
-                   timerWindow,
+  QObject::connect(networkClient, SIGNAL(messageRecieved(QString)), timerWindow,
                    SLOT(showMessage(QString)));
 
-  QObject::connect(networkClient,
-                   SIGNAL(allowClose(bool)),
-                   loginWindow,
+  QObject::connect(networkClient, SIGNAL(allowClose(bool)), loginWindow,
                    SLOT(setAllowClose(bool)));
-  QObject::connect(networkClient,
-                   SIGNAL(allowClose(bool)),
-                   timerWindow,
+  QObject::connect(networkClient, SIGNAL(allowClose(bool)), timerWindow,
                    SLOT(setAllowClose(bool)));
 
   loginWindow->show();

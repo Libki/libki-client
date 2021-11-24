@@ -21,37 +21,36 @@
 #define SESSIONLOCKEDWINDOW_H
 
 #include <QMainWindow>
-#include <QtGui>
-#include <QtDebug>
 #include <QSettings>
+#include <QtDebug>
+#include <QtGui>
 
 #include "ui_sessionlockedwindow.h"
 
 class SessionLockedWindow : public QMainWindow, public Ui::SessionLockedWindow {
   Q_OBJECT
 
-public:
-
-  SessionLockedWindow(QWidget *parent = 0, QString userUsername = "", QString userPassowrd = "");
+ public:
+  SessionLockedWindow(QWidget *parent = 0, QString userUsername = "",
+                      QString userPassowrd = "");
   ~SessionLockedWindow();
 
   void closeEvent(QCloseEvent *event);
 
-signals:
+ signals:
 
   void unlockSession();
 
-public slots:
+ public slots:
 
   void setAllowClose(bool);
-//void displaySessionLockedWindow();
+  // void displaySessionLockedWindow();
 
-private slots:
+ private slots:
 
   void attemptUnlock();
 
-private:
-
+ private:
   QIcon libkiIcon;
 
   QString username;
@@ -66,4 +65,4 @@ private:
   void setButtonsEnabled(bool);
 };
 
-#endif // SESSIONLOCKEDWINDOW_H
+#endif  // SESSIONLOCKEDWINDOW_H
