@@ -44,7 +44,7 @@ class NetworkClient : public QObject {
   Q_OBJECT
 
  public:
-  NetworkClient();
+  NetworkClient(QApplication *app);
 
  signals:
 
@@ -89,6 +89,8 @@ class NetworkClient : public QObject {
   void handleSslErrors(QNetworkReply *reply, QList<QSslError> error);
 
  private:
+  QApplication *app;
+
   QTimer *registerNodeTimer;
   QTimer *uploadPrintJobsTimer;
   QTimer *updateUserDataTimer;

@@ -124,7 +124,7 @@ int main(int argc, char *argv[]) {
 
   LoginWindow *loginWindow = new LoginWindow();
   TimerWindow *timerWindow = new TimerWindow();
-  NetworkClient *networkClient = new NetworkClient();
+  NetworkClient *networkClient = new NetworkClient( &app );
 
   QObject::connect(
       loginWindow,

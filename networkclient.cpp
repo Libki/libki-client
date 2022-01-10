@@ -30,7 +30,9 @@
 #include <QUdpSocket>
 #include <QtNetwork/QHostInfo>
 
-NetworkClient::NetworkClient() : QObject() {
+NetworkClient::NetworkClient(QApplication *app) : QObject() {
+  this->app = app;
+
   qDebug("NetworkClient::NetworkClient");
   qDebug() << "SSL version use for build: "
            << QSslSocket::sslLibraryBuildVersionString();
@@ -536,6 +538,11 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
         sc.property("wol_mac_addresses"));
     wakeOnLan(MAC_addresses, sc.property("wol_host").toString(),
               sc.property("wol_port").toInteger());
+  }
+
+  QString styleSheet = sc.property("ClientStyleSheet").toString();
+  if (!styleSheet.isEmpty()) {
+      this->app->setStyleSheet(styleSheet);
   }
 
   QSettings settings;
