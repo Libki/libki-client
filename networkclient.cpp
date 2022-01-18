@@ -560,6 +560,8 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
                     sc.property("EnableClientSessionLocking").toString());
   settings.setValue("session/TermsOfService",
                     sc.property("TermsOfService").toString());
+  settings.setValue("session/TermsOfServiceDetails",
+                    sc.property("TermsOfServiceDetails").toString());
 
   settings.setValue("session/BannerTopURL",
                     sc.property("BannerTopURL").toString());

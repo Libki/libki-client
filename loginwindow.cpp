@@ -168,15 +168,28 @@ void LoginWindow::attemptLogin() {
   QSettings settings;
   settings.setIniCodec("UTF-8");
   QString termsOfService = settings.value("session/TermsOfService").toString();
-  if (termsOfService.length() > 4) {
+  QString termsOfServiceDetails = settings.value("session/TermsOfServiceDetails").toString();
+
+  if (termsOfService.length() || termsOfServiceDetails.length() ) {
     QMessageBox msgBox;
+
     msgBox.setText(tr("Do you accept the terms of service?"));
-    msgBox.setInformativeText(tr("Terms of Service"));
-    msgBox.setDetailedText(termsOfService);
-    if (Qt::mightBeRichText(termsOfService)) {
-      QTextEdit *detailedText = msgBox.findChild<QTextEdit *>();
-      detailedText->setHtml(termsOfService);
+
+    if ( termsOfService.length() ) {
+        msgBox.setInformativeText(termsOfService);
+    } else {
+        msgBox.setInformativeText(tr("Terms of Service"));
     }
+
+    qDebug() << "TERMS OF SERIVICE DETAILS: " << termsOfServiceDetails;
+    if ( termsOfServiceDetails.length() ) {
+        msgBox.setDetailedText(termsOfServiceDetails);
+        if (Qt::mightBeRichText(termsOfServiceDetails)) {
+          QTextEdit *detailedText = msgBox.findChild<QTextEdit *>();
+          detailedText->setHtml(termsOfServiceDetails);
+        }
+    }
+
     msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
     msgBox.setDefaultButton(QMessageBox::No);
     msgBox.setButtonText(QMessageBox::Yes, tr("Yes"));
