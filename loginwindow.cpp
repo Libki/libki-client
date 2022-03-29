@@ -90,6 +90,7 @@ void LoginWindow::getSettings() {
     passwordLabel->setText(label);
   }
 
+  /* For when logo is specificed in ini file */
   if (!settings.value("images/logo").toString().isEmpty()) {
     logo->hide();
 
@@ -453,6 +454,34 @@ void LoginWindow::handleBanners() {
     if (bannerBottomWidth)
       bannerWebViewBottom->setMaximumWidth(bannerBottomWidth);
     bannerWebViewBottom->load(QUrl(bannerBottomUrl));
+  }
+
+  /* For when logo is specificed in server side setting */
+  if (!settings.value("images/logo").toString().isEmpty()) {
+    logo->hide();
+
+    QPalette palette = logoWebView->palette();
+    palette.setBrush(QPalette::Base, Qt::transparent);
+
+    QString logoUrl = settings.value("images/logo").toString();
+    qDebug() << "Logo URL: " << logoUrl;
+
+    if (!logoUrl.isEmpty()) {
+      int logoWidth = settings.value("images/logo_width").toInt();
+
+      if (logoWidth) logoWebView->setMaximumWidth(logoWidth);
+
+      int logoHeight = settings.value("images/logo_height").toInt();
+
+      if (logoHeight) logoWebView->setMaximumHeight(logoHeight);
+
+      logoWebView->setEnabled(true);
+      logoWebView->page()->setPalette(palette);
+      logoWebView->setAttribute(Qt::WA_OpaquePaintEvent, false);
+      logoWebView->load(QUrl(logoUrl));
+    }
+  } else {
+    logoWebView->hide();
   }
 }
 

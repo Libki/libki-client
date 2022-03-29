@@ -582,10 +582,25 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
   settings.setValue("session/inactivityWarning",
                     sc.property("inactivityWarning").toString());
 
+  QString logoURL = settings.value("images/logo").toString();
+  if ( ! sc.property("Logo").toString().isEmpty() ) {
+    settings.setValue("images/logo",
+                      sc.property("Logo").toString());
+
+    settings.setValue("images/logo_height",
+                      sc.property("LogoHeight").toString());
+
+    settings.setValue("images/logo_width",
+                      sc.property("LogoWidth").toString());
+  }
+
   settings.sync();
 
-  if ((bannerTopURL != sc.property("BannerTopURL").toString()) ||
-      (bannerBottomURL != sc.property("BannerBottomURL").toString())) {
+  if (
+      (logoURL != sc.property("Logo").toString()) ||
+      (bannerTopURL != sc.property("BannerTopURL").toString()) ||
+      (bannerBottomURL != sc.property("BannerBottomURL").toString()) ||
+  ) {
     emit handleBanners();  // TODO: Emit only if a banner url has changed
   }
 
