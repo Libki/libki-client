@@ -113,9 +113,12 @@ void LoginWindow::getSettings() {
       logoWebView->page()->setPalette(palette);
       logoWebView->setAttribute(Qt::WA_OpaquePaintEvent, false);
       logoWebView->load(QUrl(logoUrl));
+
+      watermark->show();
     }
   } else {
     logoWebView->hide();
+    watermark->hide();
   }
 
   /* Hide Password Field */

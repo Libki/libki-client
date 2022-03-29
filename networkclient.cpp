@@ -599,7 +599,7 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
   if (
       (logoURL != sc.property("Logo").toString()) ||
       (bannerTopURL != sc.property("BannerTopURL").toString()) ||
-      (bannerBottomURL != sc.property("BannerBottomURL").toString()) ||
+      (bannerBottomURL != sc.property("BannerBottomURL").toString())
   ) {
     emit handleBanners();  // TODO: Emit only if a banner url has changed
   }
