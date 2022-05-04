@@ -27,9 +27,9 @@
 #include <QTimer>
 #include <QtDebug>
 #include <QtGui>
-#include <QSplashScreen>
 
 #include "networkclient.h"
+#include "timesplash.h"
 #include "sessionlockedwindow.h"
 #include "ui_timerwindow.h"
 
@@ -76,7 +76,7 @@ class TimerWindow : public QMainWindow, public Ui::TimerWindow {
   QIcon libkiIcon;
   QSystemTrayIcon *trayIcon;
   QMenu *trayIconMenu;
-  QSplashScreen *timeSplash;
+  TimeSplash *timeSplash;
 
   QTimer *trayIconPopupTimer;
   QTimer *inactivityTimer;

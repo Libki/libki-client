@@ -23,11 +23,11 @@
 #include <QPainter>
 #include <QPixmap>
 #include <QIcon>
-#include <QSplashScreen>
 #include <QScreen>
 
 #include "sessionlockedwindow.h"
 #include "utils.h"
+#include "timesplash.h"
 
 #define INACTIVITY_CHECK_INTERVAL 10
 
@@ -58,7 +58,7 @@ TimerWindow::TimerWindow(QWidget *parent) : QMainWindow(parent) {
 
   // Set up the timer splash
   QPixmap pixmap(":/images/images/time_splash_background.png");
-  timeSplash = new QSplashScreen(pixmap, Qt::WindowStaysOnTopHint );
+  timeSplash = new TimeSplash( pixmap, Qt::WindowStaysOnTopHint );
 
   trayIconPopupTimer = new QTimer(this);
   connect(trayIconPopupTimer, SIGNAL(timeout()), this,
@@ -208,6 +208,7 @@ void TimerWindow::updateClock() {
       timeSplash->setPixmap(pixmap);
       timeSplash->move(screenrect.right() -  timeSplash->width(), screenrect.bottom() - timeSplash->height());
       timeSplash->show();
+      timeSplash->raise(); // Some X11 window managers do not support the "stays on top" flag. A solution is to set up a timer that periodically calls raise() on the splash screen to simulate the "stays on top" effect.
 
       QCoreApplication::processEvents();
   }
