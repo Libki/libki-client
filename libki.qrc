@@ -2,12 +2,15 @@
     <qresource prefix="/images">
         <file>images/libki.png</file>
         <file>images/libki_clock.png</file>
+        <file>images/tray.png</file>
+        <file>images/time_splash_background.png</file>
     </qresource>
     <qresource prefix="/icons">
         <file>images/icons/sign-out-alt-solid.svg</file>
         <file>images/icons/sign-in-alt-solid.svg</file>
         <file>images/icons/lock-solid.svg</file>
         <file>images/icons/ban-solid.svg</file>
+        <file>images/icons/libki.ico</file>
     </qresource>
     <qresource prefix="/">
         <file>languages/libkiclient_fr.qm</file>

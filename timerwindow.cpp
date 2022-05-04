@@ -20,6 +20,11 @@
 #include "timerwindow.h"
 
 #include <QtWidgets/qdesktopwidget.h>
+#include <QPainter>
+#include <QPixmap>
+#include <QIcon>
+#include <QSplashScreen>
+#include <QScreen>
 
 #include "sessionlockedwindow.h"
 #include "utils.h"
@@ -50,6 +55,10 @@ TimerWindow::TimerWindow(QWidget *parent) : QMainWindow(parent) {
 
   setupActions();
   setupTrayIcon();
+
+  // Set up the timer splash
+  QPixmap pixmap(":/images/images/time_splash_background.png");
+  timeSplash = new QSplashScreen(pixmap, Qt::WindowStaysOnTopHint );
 
   trayIconPopupTimer = new QTimer(this);
   connect(trayIconPopupTimer, SIGNAL(timeout()), this,
@@ -132,6 +141,9 @@ void TimerWindow::stopTimer() {
 void TimerWindow::updateClock() {
   qDebug("TimerWindow::updateClock");
 
+  QSettings settings;
+  settings.setIniCodec("UTF-8");
+
   /* Convert minutes remaining into Hours::Minutes */
   int hours = minutesRemaining / 60;
   int minutes = minutesRemaining % 60;
@@ -146,10 +158,60 @@ void TimerWindow::updateClock() {
   progressBar->setRange(0, minutesAtStart);
   progressBar->setValue(minutesRemaining);
 
-  trayIcon->setToolTip(QString::number(minutesRemaining) + " " +
+  QString minutesString = QString::number(minutesRemaining);
+
+  trayIcon->setToolTip( minutesString + " " +
                        tr("Minutes Left"));
 
   this->setWindowTitle("Libki " + time);
+
+  if ( settings.value("node/showTimeRemainingInTray").toInt() == 1 ) {
+      // Update the system tray icon
+      QPixmap libkiIcon = QPixmap(":/images/images/tray.png");
+      QPainter painter(&libkiIcon);
+      QFont font = painter.font() ;
+      font.setBold(true);
+      if ( minutesRemaining < 10 ) {
+        font.setPointSize(14);
+      } else if ( minutesRemaining < 100 ) {
+        font.setPointSize(11);
+      } else {
+        font.setPointSize(9);
+      }
+      painter.setFont(font);
+
+      if ( this->swapColors ) {
+          painter.setPen(QColor(Qt::black));
+      } else {
+          painter.setPen(QColor(Qt::white));
+      }
+      this->swapColors = !this->swapColors;
+      painter.drawText(libkiIcon.rect(), Qt::AlignCenter, minutesString);
+
+      trayIcon->setIcon(libkiIcon);
+  }
+
+  if ( settings.value("node/showTimeRemainingInSplash").toInt() == 1 ) {
+      // Update the time splash
+      QScreen* screen = QGuiApplication::screens()[0];
+      QRect screenrect = screen->availableGeometry();
+
+      QPixmap pixmap(":/images/images/time_splash_background.png");
+
+      QPainter painter(&pixmap);
+      QFont font = painter.font() ;
+      font.setBold(true);
+      font.setPointSize(30);
+      painter.setFont(font);
+      painter.drawText(pixmap.rect(), Qt::AlignCenter, minutesString);
+
+      timeSplash->setPixmap(pixmap);
+      timeSplash->move(screenrect.right() -  timeSplash->width(), screenrect.bottom() - timeSplash->height());
+      timeSplash->show();
+
+      QCoreApplication::processEvents();
+  }
+
 }
 
 void TimerWindow::updateTimeLeft(int minutes) {
@@ -206,6 +268,8 @@ void TimerWindow::setupTrayIcon() {
 
   trayIcon = new QSystemTrayIcon(this);
   trayIcon->setContextMenu(trayIconMenu);
+
+  QPixmap libkiIcon = QPixmap(":/icons/images/icons/libki.ico");
   trayIcon->setIcon(libkiIcon);
 
   connect(trayIcon, SIGNAL(messageClicked()), this, SLOT(restoreTimerWindow()));

@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 - Add logging to file in user roaming appdata directory
 - Add ability to set custom text for Terms of Service on the message and in the "Show Details" section
+- Add ability to show time in system try icon and/or a "splash" in the corner of the screen
 
 ## [2.2.5]
 - Update the installer to add the Windows 10 delayed loading registry edit fix: https://thegeekpage.com/startupdelayinmsec/

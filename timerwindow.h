@@ -27,6 +27,7 @@
 #include <QTimer>
 #include <QtDebug>
 #include <QtGui>
+#include <QSplashScreen>
 
 #include "networkclient.h"
 #include "sessionlockedwindow.h"
@@ -75,6 +76,7 @@ class TimerWindow : public QMainWindow, public Ui::TimerWindow {
   QIcon libkiIcon;
   QSystemTrayIcon *trayIcon;
   QMenu *trayIconMenu;
+  QSplashScreen *timeSplash;
 
   QTimer *trayIconPopupTimer;
   QTimer *inactivityTimer;
@@ -84,6 +86,8 @@ class TimerWindow : public QMainWindow, public Ui::TimerWindow {
   int secondsSinceLastActivity;
   int prevMousePosX;
   int prevMousePosY;
+
+  bool swapColors;
 
   void setupActions();
 

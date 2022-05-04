@@ -32,3 +32,6 @@ TRANSLATIONS = languages/libkiclient_fr.ts \
         languages/libkiclient_nb_NO.ts \
         languages/libkiclient_pt.ts
 OTHER_FILES +=
+
+DISTFILES += \
+    images/icons/libki.ico
