@@ -29,9 +29,9 @@
 #include <QtGui>
 
 #include "networkclient.h"
-#include "timesplash.h"
 #include "sessionlockedwindow.h"
 #include "ui_timerwindow.h"
+#include "timesplash.h"
 
 class TimerWindow : public QMainWindow, public Ui::TimerWindow {
   Q_OBJECT

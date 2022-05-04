@@ -58,7 +58,7 @@ TimerWindow::TimerWindow(QWidget *parent) : QMainWindow(parent) {
 
   // Set up the timer splash
   QPixmap pixmap(":/images/images/time_splash_background.png");
-  timeSplash = new TimeSplash( pixmap, Qt::WindowStaysOnTopHint );
+  timeSplash = new TimeSplash( this, pixmap, Qt::WindowStaysOnTopHint );
 
   trayIconPopupTimer = new QTimer(this);
   connect(trayIconPopupTimer, SIGNAL(timeout()), this,
