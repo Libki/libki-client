@@ -191,7 +191,9 @@ void TimerWindow::updateClock() {
       trayIcon->setIcon(libkiIcon);
   }
 
-  if ( settings.value("node/showTimeRemainingInSplash").toInt() == 1 ) {
+  bool showSplash = settings.value("node/showTimeRemainingInSplash").toInt() == 1;
+  if ( sessionLockedWindow && sessionLockedWindow->isVisible() ) showSplash = false;
+  if ( showSplash ) {
       // Update the time splash
       QScreen* screen = QGuiApplication::screens()[0];
       QRect screenrect = screen->availableGeometry();
@@ -211,6 +213,8 @@ void TimerWindow::updateClock() {
       timeSplash->raise(); // Some X11 window managers do not support the "stays on top" flag. A solution is to set up a timer that periodically calls raise() on the splash screen to simulate the "stays on top" effect.
 
       QCoreApplication::processEvents();
+  } else {
+      timeSplash->hide();
   }
 
 }
@@ -419,6 +423,7 @@ void TimerWindow::lockSession() {
 
   QProcess::startDetached("windows/on_startup.exe");
   this->hide();
+  timeSplash->hide();
   sessionLockedWindow->show();
 }
 
