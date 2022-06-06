@@ -67,16 +67,6 @@ TimerWindow::TimerWindow(QWidget *parent) : QMainWindow(parent) {
   inactivityTimer = new QTimer(this);
   connect(inactivityTimer, SIGNAL(timeout()), this, SLOT(checkForInactivity()));
 
-  sessionLockedWindow = Q_NULLPTR;
-  QSettings settings;
-  settings.setIniCodec("UTF-8");
-  if (settings.value("session/EnableClientSessionLocking").toBool()) {
-    connect(lockSessionButton, SIGNAL(clicked(bool)), this,
-            SLOT(lockSession()));
-  } else {
-    lockSessionButton->hide();
-  }
-
   this->move(QApplication::desktop()->screen()->rect().center() -
              this->rect().center());
 
@@ -105,6 +95,14 @@ void TimerWindow::startTimer(QString newUsername, QString newPassword,
 
   QSettings settings;
   settings.setIniCodec("UTF-8");
+
+  sessionLockedWindow = Q_NULLPTR;
+  if (settings.value("session/EnableClientSessionLocking").toBool()) {
+    connect(lockSessionButton, SIGNAL(clicked(bool)), this,
+            SLOT(lockSession()));
+  } else {
+    lockSessionButton->hide();
+  }
 
   QString waiting_holds_message =
       tr("You have one or more items on hold waiting for pickup. Please "
