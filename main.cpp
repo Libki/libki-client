@@ -72,16 +72,17 @@ int main(int argc, char *argv[]) {
   QSettings settings;
   settings.setIniCodec("UTF-8");
 
-  QString onlyRunFor;
-  onlyRunFor = settings.value("node/onlyRunFor").toString();
-  qDebug() << "onlyRunFor: " << onlyRunFor;
-
   QString startUserShell;
   startUserShell = settings.value("node/start_user_shell").toString();
   qDebug() << "start_user_shell: " << startUserShell;
 
+  QString onlyRunFor;
+  onlyRunFor = settings.value("node/onlyRunFor").toString();
+  qDebug() << "onlyRunFor: " << onlyRunFor;
+
   if (!onlyRunFor.isEmpty()) {
-    if (onlyRunFor != os_username) {
+    QStringList usernames = onlyRunFor.split(",");
+    if ( ! usernames.contains(os_username) ) {
       qDebug() << "onlyRunFor does not match OS username";
       if (!startUserShell.isEmpty()) {
         qDebug() << "running user shell " << startUserShell;
@@ -97,15 +98,16 @@ int main(int argc, char *argv[]) {
   qDebug() << "onlyStopFor: " << onlyStopFor;
 
   if (!onlyStopFor.isEmpty()) {
-    if (onlyStopFor == os_username) {
-      qDebug() << "onlyStopFor matches OS username";
-      if (!startUserShell.isEmpty()) {
-        qDebug() << "running user shell " << startUserShell;
-        QProcess::startDetached('"' + startUserShell + '"');
+      QStringList usernames = onlyStopFor.split(",");
+      if ( usernames.contains(os_username) ) {
+          qDebug() << "onlyStopFor matches OS username: " << os_username;
+          if (!startUserShell.isEmpty()) {
+              qDebug() << "running user shell " << startUserShell;
+              QProcess::startDetached('"' + startUserShell + '"');
+          }
+          qDebug() << "exiting.";
+          exit(1);
       }
-      qDebug() << "exiting.";
-      exit(1);
-    }
   }
 
 #ifdef Q_OS_WIN
