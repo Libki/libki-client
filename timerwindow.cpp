@@ -32,7 +32,7 @@
 #define INACTIVITY_CHECK_INTERVAL 10
 
 TimerWindow::TimerWindow(QWidget *parent) : QMainWindow(parent) {
-  qDebug("TimerWindow::TimerWindow");
+  qDebug("ENTER TimerWindow::TimerWindow");
 
   setAllowClose(false);
 
@@ -71,13 +71,15 @@ TimerWindow::TimerWindow(QWidget *parent) : QMainWindow(parent) {
              this->rect().center());
 
   this->hide();
+
+  qDebug("LEAVE TimerWindow::TimerWindow");
 }
 
 TimerWindow::~TimerWindow() {}
 
 void TimerWindow::startTimer(QString newUsername, QString newPassword,
                              int minutes, int hold_items_count) {
-  qDebug("TimerWindow::startTimer");
+  qDebug("ENTER TimerWindow::startTimer");
 
   username = newUsername;
   password = newPassword;
@@ -116,10 +118,12 @@ void TimerWindow::startTimer(QString newUsername, QString newPassword,
   if (hold_items_count > 0) {
     this->showMessage(waiting_holds_message);
   }
+
+  qDebug("LEAVE TimerWindow::startTimer");
 }
 
 void TimerWindow::stopTimer() {
-  qDebug("TimerWindow::stopTimer");
+  qDebug("ENTER TimerWindow::stopTimer");
 
   inactivityTimer->stop();
 
@@ -134,10 +138,12 @@ void TimerWindow::stopTimer() {
   }
 
   emit timerStopped();
+
+  qDebug("LEAVE TimerWindow::stopTimer");
 }
 
 void TimerWindow::updateClock() {
-  qDebug("TimerWindow::updateClock");
+  qDebug("ENTER TimerWindow::updateClock");
 
   QSettings settings;
   settings.setIniCodec("UTF-8");
@@ -215,10 +221,11 @@ void TimerWindow::updateClock() {
       timeSplash->hide();
   }
 
+  qDebug("LEAVE TimerWindow::updateClock");
 }
 
 void TimerWindow::updateTimeLeft(int minutes) {
-  qDebug() << "TimerWindow::updateTimeLeft( " << minutes << " )";
+  qDebug("ENTER TimerWindow::updateTimeLeft( " << minutes << " )");
 
   minutesRemaining = minutes;
   updateClock();
@@ -226,9 +233,13 @@ void TimerWindow::updateTimeLeft(int minutes) {
   if (minutesRemaining <= 0) {
     emit requestLogout();
   }
+
+  qDebug("LEAVE TimerWindow::updateTimeLeft( " << minutes << " )");
 }
 
 void TimerWindow::doLogoutDialog() {
+  qDebug("ENTER TimerWindow::doLogoutDialog");
+
   QMessageBox msgBox;
 
   msgBox.setWindowIcon(libkiIcon);
@@ -252,15 +263,20 @@ void TimerWindow::doLogoutDialog() {
     default:
       break;
   }
+
+  qDebug("LEAVE TimerWindow::doLogoutDialog");
 }
 
 void TimerWindow::setupActions() {
-  qDebug("TimerWindow::setupActions");
+  qDebug("ENTER TimerWindow::setupActions");
+
   connect(logoutButton, SIGNAL(clicked()), this, SLOT(doLogoutDialog()));
+
+  qDebug("LEAVE TimerWindow::setupActions");
 }
 
 void TimerWindow::setupTrayIcon() {
-  qDebug("TimerWindow::setupTrayIcon()");
+  qDebug("ENTER TimerWindow::setupTrayIcon");
 
   trayIconMenu = new QMenu(this);
 
@@ -279,9 +295,13 @@ void TimerWindow::setupTrayIcon() {
 
   connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this,
           SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
+
+  qDebug("LEAVE TimerWindow::setupTrayIcon");
 }
 
 void TimerWindow::iconActivated(QSystemTrayIcon::ActivationReason reason) {
+  qDebug("ENTER TimerWindow::iconActivated");
+
   switch (reason) {
     case QSystemTrayIcon::Trigger:
       break;
@@ -301,10 +321,12 @@ void TimerWindow::iconActivated(QSystemTrayIcon::ActivationReason reason) {
     default:
       break;
   }
+
+  qDebug("LEAVE TimerWindow::iconActivated");
 }
 
 void TimerWindow::restoreTimerWindow() {
-  qDebug("TimerWindow::restoreTimerWindow");
+  qDebug("ENTER TimerWindow::restoreTimerWindow");
 
   // TODO: TimerWindow will not come to front if behind other windows. Needed
   // for showMessage().
@@ -312,10 +334,12 @@ void TimerWindow::restoreTimerWindow() {
   this->activateWindow();
   this->raise();
   this->showNormal();
+
+  qDebug("LEAVE TimerWindow::restoreTimerWindow");
 }
 
 void TimerWindow::showSystemTrayIconTimeLeftMessage() {
-  qDebug("showSystemTrayIconTimeLeftMessage");
+  qDebug("ENTER TimerWindow::showSystemTrayIconTimeLeftMessage");
 
   QString title = tr("Time Remaining");
   QString message =
@@ -326,10 +350,12 @@ void TimerWindow::showSystemTrayIconTimeLeftMessage() {
   } else if (minutesRemaining <= 5) {
     trayIcon->showMessage(title, message, QSystemTrayIcon::Warning, 1000);
   }
+
+  qDebug("LEAVE TimerWindow::showSystemTrayIconTimeLeftMessage");
 }
 
 void TimerWindow::checkForInactivity() {
-  qDebug("checkForInactivity");
+  qDebug("ENTER TimerWindow::checkForInactivity");
 
   // TODO: keep one object level instance of settings for each of TimerWindow
   // and NetworkClient
@@ -397,10 +423,12 @@ void TimerWindow::checkForInactivity() {
     prevMousePosX = x;
     prevMousePosY = y;
   }
+
+  qDebug("LEAVE TimerWindow::checkForInactivity");
 }
 
 void TimerWindow::showMessage(QString message) {
-  qDebug() << "TimerWindow::showMessage(" << message << ")";
+  qDebug("ENTER TimerWindow::showMessage(" + message + ")");
 
   QMessageBox msgBox;
   msgBox.setWindowIcon(libkiIcon);
@@ -410,10 +438,12 @@ void TimerWindow::showMessage(QString message) {
 
   this->restoreTimerWindow();
   msgBox.exec();
+
+  qDebug("LEAVE TimerWindow::showMessage(" + message + ")");
 }
 
 void TimerWindow::lockSession() {
-  qDebug() << "TimerWindow::lockSession()";
+  qDebug("ENTER TimerWindow::lockSession()");
 
   sessionLockedWindow = new SessionLockedWindow(0, username, password);
   connect(sessionLockedWindow, SIGNAL(unlockSession()), this,
@@ -423,10 +453,12 @@ void TimerWindow::lockSession() {
   this->hide();
   timeSplash->hide();
   sessionLockedWindow->show();
+
+  qDebug("LEAVE TimerWindow::lockSession()");
 }
 
 void TimerWindow::unlockSession() {
-  qDebug() << "TimerWindow::unlockSession()";
+  qDebug("ENTER TimerWindow::unlockSession");
 
   QProcess::startDetached("windows/on_login.exe");
 
@@ -434,20 +466,29 @@ void TimerWindow::unlockSession() {
   this->show();
   delete sessionLockedWindow;
   sessionLockedWindow = Q_NULLPTR;
+
+  qDebug("LEAVE TimerWindow::unlockSession");
 }
 
 void TimerWindow::getSettings() {}
 
 void TimerWindow::setAllowClose(bool close) {
-  qDebug("TimerWindow::setAllowClose");
+  qDebug("ENTER TimerWindow::setAllowClose");
+
   allowClose = close;
+
+  qDebug("LEAVE TimerWindow::setAllowClose");
 }
 
 /* Reimplemented closeEvent to prevent application from being closed. */
 void TimerWindow::closeEvent(QCloseEvent *event) {
+  qDebug("ENTER TimerWindow::closeEvent");
+
   if (allowClose) {
     event->accept();
   } else {
     event->ignore();
   }
+
+  qDebug("LEAVE TimerWindow::closeEvent");
 }
