@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.10]
+### Added
+- Added more thorough debugging / logging statements to almost all methods
+
 ## [2.2.9]
 ### Added
 - Add the ability to specify multiple usernames for onlyRunFor and OnlyStopFor. List should be comma delimited e.g. "Name1,Name2,Name3"
