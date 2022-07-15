@@ -31,9 +31,9 @@
 #include <QtNetwork/QHostInfo>
 
 NetworkClient::NetworkClient(QApplication *app) : QObject() {
+  qDebug("ENTER NetworkClient::NetworkClient");
   this->app = app;
 
-  qDebug("NetworkClient::NetworkClient");
   qDebug() << "SSL version use for build: "
            << QSslSocket::sslLibraryBuildVersionString();
   qDebug() << "SSL version use for run-time: "
@@ -110,10 +110,12 @@ NetworkClient::NetworkClient(QApplication *app) : QObject() {
   updateUserDataTimer = new QTimer(this);
   connect(updateUserDataTimer, SIGNAL(timeout()), this,
           SLOT(getUserDataUpdate()));
+
+  qDebug("LEAVE NetworkClient::NetworkClient");
 }
 
 void NetworkClient::attemptLogin(QString aUsername, QString aPassword) {
-  qDebug("NetworkClient::attemptLogin");
+  qDebug("ENTER NetworkClient::attemptLogin");
 
   username = aUsername;
   password = aPassword;
@@ -137,10 +139,11 @@ void NetworkClient::attemptLogin(QString aUsername, QString aPassword) {
       SLOT(handleSslErrors(QNetworkReply *, const QList<QSslError> &)));
 
   /*QNetworkReply* reply = */ nam->get(QNetworkRequest(url));
+  qDebug("LEAVE NetworkClient::attemptLogin");
 }
 
 void NetworkClient::processAttemptLoginReply(QNetworkReply *reply) {
-  qDebug("NetworkClient::processAttemptLogoutReply");
+  qDebug("ENTER NetworkClient::processAttemptLogoutReply");
 
   QByteArray result;
   result = reply->readAll();
@@ -171,10 +174,12 @@ void NetworkClient::processAttemptLoginReply(QNetworkReply *reply) {
   reply->abort();
   reply->deleteLater();
   reply->manager()->deleteLater();
+
+  qDebug("LEAVE NetworkClient::processAttemptLogoutReply");
 }
 
 void NetworkClient::attemptLogout() {
-  qDebug("NetworkClient::attemptLogout");
+  qDebug("ENTER NetworkClient::attemptLogout");
 
   QNetworkAccessManager *nam;
   nam = new QNetworkAccessManager(this);
@@ -192,10 +197,12 @@ void NetworkClient::attemptLogout() {
   url.setQuery(query);
 
   /*QNetworkReply* reply =*/nam->get(QNetworkRequest(url));
+
+  qDebug("LEAVE NetworkClient::attemptLogout");
 }
 
 void NetworkClient::processAttemptLogoutReply(QNetworkReply *reply) {
-  qDebug("NetworkClient::processAttemptLogoutReply");
+  qDebug("ENTER NetworkClient::processAttemptLogoutReply");
 
   QByteArray result;
   result = reply->readAll();
@@ -213,10 +220,12 @@ void NetworkClient::processAttemptLogoutReply(QNetworkReply *reply) {
   reply->abort();
   reply->deleteLater();
   reply->manager()->deleteLater();
+
+  qDebug("LEAVE NetworkClient::processAttemptLogoutReply");
 }
 
 void NetworkClient::getUserDataUpdate() {
-  qDebug("NetworkClient::getUserDataUpdate");
+  qDebug("ENTER NetworkClient::getUserDataUpdate");
 
   QNetworkAccessManager *nam = new QNetworkAccessManager(this);
   QObject::connect(nam, SIGNAL(finished(QNetworkReply *)), this,
@@ -233,10 +242,12 @@ void NetworkClient::getUserDataUpdate() {
   url.setQuery(query);
 
   /*QNetworkReply* reply =*/nam->get(QNetworkRequest(url));
+
+  qDebug("LEAVE NetworkClient::getUserDataUpdate");
 }
 
 void NetworkClient::processGetUserDataUpdateReply(QNetworkReply *reply) {
-  qDebug("NetworkClient::processGetUserDataUpdateReply");
+  qDebug("ENTER NetworkClient::processGetUserDataUpdateReply");
 
   QByteArray result;
   result = reply->readAll();
@@ -283,6 +294,8 @@ void NetworkClient::processGetUserDataUpdateReply(QNetworkReply *reply) {
   reply->abort();
   reply->deleteLater();
   reply->manager()->deleteLater();
+
+  qDebug("LEAVE NetworkClient::processGetUserDataUpdateReply");
 }
 
 void NetworkClient::uploadPrintJobs() {
@@ -401,6 +414,8 @@ void NetworkClient::uploadPrintJobs() {
               SLOT(handleUploadProgress(qint64, qint64)));
     }
   }
+
+  qDebug() << "LEAVE NetworkClient::uploadPrintJobs";
 }
 
 void NetworkClient::handleUploadProgress(qint64 bytesSent, qint64 bytesTotal) {
@@ -408,7 +423,7 @@ void NetworkClient::handleUploadProgress(qint64 bytesSent, qint64 bytesTotal) {
 }
 
 void NetworkClient::uploadPrintJobReply(QNetworkReply *reply) {
-  qDebug("NetworkClient::uploadPrintJobReply");
+  qDebug("ENTER NetworkClient::uploadPrintJobReply");
 
   if (reply->error() == QNetworkReply::NoError) {
     reply->abort();
@@ -438,10 +453,12 @@ void NetworkClient::uploadPrintJobReply(QNetworkReply *reply) {
     connect(reply, SIGNAL(uploadProgress(qint64, qint64)), this,
             SLOT(handleUploadProgress(qint64, qint64)));
   };
+
+  qDebug("LEAVE NetworkClient::uploadPrintJobReply");
 }
 
 void NetworkClient::registerNode() {
-  qDebug("NetworkClient::registerNode");
+  qDebug("ENTER NetworkClient::registerNode");
 
   QNetworkAccessManager *nam;
   nam = new QNetworkAccessManager(this);
@@ -461,16 +478,19 @@ void NetworkClient::registerNode() {
   url.setQuery(query);
 
   /*QNetworkReply* reply =*/nam->get(QNetworkRequest(url));
+
+  qDebug("LEAVE NetworkClient::registerNode");
 }
 
 void NetworkClient::handleSslErrors(QNetworkReply *reply,
                                     QList<QSslError> error) {
-  qDebug("NetworkClient::handleSslErrors");
+  qDebug("ENTER NetworkClient::handleSslErrors");
   reply->ignoreSslErrors(error);
+  qDebug("LEAVE NetworkClient::handleSslErrors");
 }
 
 void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
-  qDebug("NetworkClient::processRegisterNodeReply");
+  qDebug("ENTER NetworkClient::processRegisterNodeReply");
 
   QByteArray result;
   result = reply->readAll();
@@ -620,10 +640,13 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
   reply->abort();
   reply->deleteLater();
   reply->manager()->deleteLater();
+
+  qDebug("LEAVE NetworkClient::processRegisterNodeReply");
 }
 
 void NetworkClient::clearMessage() {
-  qDebug("NetworkClient::clearMessage");
+  qDebug("ENTER NetworkClient::clearMessage");
+
   QNetworkAccessManager *nam = new QNetworkAccessManager(this);
   QObject::connect(nam, SIGNAL(finished(QNetworkReply *)), this,
                    SLOT(ignoreNetworkReply(QNetworkReply *)));
@@ -637,10 +660,13 @@ void NetworkClient::clearMessage() {
   query.addQueryItem("password", password);
   url.setQuery(query);
   nam->get(QNetworkRequest(url));
+
+  qDebug("LEAVE NetworkClient::clearMessage");
 }
 
 void NetworkClient::acknowledgeReservation(QString reserved_for) {
-  qDebug("NetworkClient::acknowledgeReservation");
+  qDebug("ENTER NetworkClient::acknowledgeReservation");
+
   QNetworkAccessManager *nam = new QNetworkAccessManager(this);
   QObject::connect(nam, SIGNAL(finished(QNetworkReply *)), this,
                    SLOT(ignoreNetworkReply(QNetworkReply *)));
@@ -654,17 +680,23 @@ void NetworkClient::acknowledgeReservation(QString reserved_for) {
   url.setQuery(query);
 
   nam->get(QNetworkRequest(url));
+
+  qDebug("LEAVE NetworkClient::acknowledgeReservation");
 }
 
 void NetworkClient::ignoreNetworkReply(QNetworkReply *reply) {
-  qDebug("NetworkClient::ignoreNetworkReply");
+  qDebug("ENTER NetworkClient::ignoreNetworkReply");
 
   reply->abort();
   reply->deleteLater();
   reply->manager()->deleteLater();
+
+  qDebug("LEAVE NetworkClient::ignoreNetworkReply");
 }
 
 void NetworkClient::doLoginTasks(int units, int hold_items_count) {
+  qDebug("ENTER NetworkClient::doLoginTasks");
+
 #ifdef Q_OS_WIN
   // FIXME: We should delete print jobs at login as well in case a client crash
   // prevented the print jobs for getting cleaned up at logout time
@@ -687,10 +719,12 @@ void NetworkClient::doLoginTasks(int units, int hold_items_count) {
     QProcess::startDetached(settings.value("scriptlogin/script").toString());
   }
   emit loginSucceeded(username, password, units, hold_items_count);
+
+  qDebug("ENTER NetworkClient::doLoginTasks");
 }
 
 void NetworkClient::doLogoutTasks() {
-  qDebug("NetworkClient::doLogoutTasks");
+  qDebug("ENTER NetworkClient::doLogoutTasks");
 
   QSettings settings;
   settings.setIniCodec("UTF-8");
@@ -774,10 +808,14 @@ void NetworkClient::doLogoutTasks() {
     QProcess::startDetached(settings.value("scriptlogout/script").toString());
   }
   emit logoutSucceeded();
+
+  qDebug("LEAVE NetworkClient::doLogoutTasks");
 }
 
 void NetworkClient::wakeOnLan(QStringList MAC_addresses, QString host,
                               qint64 port) {
+  qDebug("ENTER NetworkClient::wakeOnLan");
+
   QHostAddress host_address;
   host_address.setAddress(host);
 
@@ -798,4 +836,6 @@ void NetworkClient::wakeOnLan(QStringList MAC_addresses, QString host,
     QUdpSocket udpSocket;
     udpSocket.writeDatagram(packet, 102, host_address, port);
   }
+
+  qDebug("LEAVE NetworkClient::wakeOnLan");
 }
