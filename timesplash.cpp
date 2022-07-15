@@ -7,20 +7,27 @@
 
 TimeSplash::TimeSplash(TimerWindow* tw, const QPixmap &pixmap, Qt::WindowFlags f)
 {
+    qDebug("ENTER TimeSplash::TimeSplash");
+
     timerwindow = tw;
     this->setPixmap(pixmap);
     this->setWindowFlags(this->windowFlags() | Qt::WindowStaysOnTopHint);
 
     this->installEventFilter(this);
+
+    qDebug("LEAVE TimeSplash::TimeSplash");
 }
 
 bool TimeSplash::eventFilter(QObject *target, QEvent *event)
 {
-    Q_UNUSED(target)
+    qDebug("ENTER TimeSplash::eventFilter");
 
+    Q_UNUSED(target)
 
     if( event->type() == QEvent::MouseButtonDblClick ){
         timerwindow->setWindowState(Qt::WindowMinimized);
+
+        qDebug("LEAVE TimeSplash::eventFilter - Return false");
         return false;
     }
 
@@ -28,6 +35,7 @@ bool TimeSplash::eventFilter(QObject *target, QEvent *event)
         timerwindow->setWindowState(Qt::WindowActive);
         timerwindow->show();
         timerwindow->raise();
+        qDebug("LEAVE TimeSplash::eventFilter - Return true");
         return true;
     }
 
@@ -36,8 +44,10 @@ bool TimeSplash::eventFilter(QObject *target, QEvent *event)
        (event->type() == QEvent::KeyPress) ||
        (event->type() == QEvent::KeyRelease)
     ) {
+        qDebug("LEAVE TimeSplash::eventFilter - Return true");
         return true;
     }
 
+    qDebug("LEAVE TimeSplash::eventFilter - Return false");
     return false;
 }
