@@ -8,7 +8,7 @@
 SessionLockedWindow::SessionLockedWindow(QWidget *parent, QString userUsername,
                                          QString userPassword)
     : QMainWindow(parent) {
-  qDebug("SessionLockedWindow::SessionLockedWindow");
+  qDebug("ENTER SessionLockedWindow::SessionLockedWindow");
 
   username = userUsername;
   password = userPassword;
@@ -43,25 +43,36 @@ SessionLockedWindow::SessionLockedWindow(QWidget *parent, QString userUsername,
   this->show();
   this->showMaximized();
   this->showFullScreen();
+
+  qDebug("LEAVE SessionLockedWindow::SessionLockedWindow");
 }
 
 SessionLockedWindow::~SessionLockedWindow() {}
 
 void SessionLockedWindow::setAllowClose(bool close) {
-  qDebug("SessionLockedWindow::setAllowClose");
+  qDebug("ENTER SessionLockedWindow::setAllowClose");
+
   allowClose = close;
+
+  qDebug("LEAVE SessionLockedWindow::setAllowClose");
 }
 
 /* Reimplemented closeEvent to prevent application from being closed. */
 void SessionLockedWindow::closeEvent(QCloseEvent *event) {
+  qDebug("ENTER SessionLockedWindow::closeEvent");
+
   if (allowClose) {
     event->accept();
   } else {
     event->ignore();
   }
+
+  qDebug("LEAVE SessionLockedWindow::closeEvent");
 }
 
 void SessionLockedWindow::getSettings() {
+  qDebug("ENTER SessionLockedWindow::getSettings");
+
   /* Set Labels */
   QSettings settings;
   settings.setIniCodec("UTF-8");
@@ -97,10 +108,12 @@ void SessionLockedWindow::getSettings() {
   } else {
     logoWebView->hide();
   }
+
+  qDebug("LEAVE SessionLockedWindow::getSettings");
 }
 
 void SessionLockedWindow::attemptUnlock() {
-  qDebug("SessionLockedWindow::attemptUnlock");
+  qDebug("ENTER SessionLockedWindow::attemptUnlock");
 
   QString passwordEntered = passwordField->text();
 
@@ -110,13 +123,17 @@ void SessionLockedWindow::attemptUnlock() {
     messageLabel->setText(tr("Incorrect Password"));
     passwordField->clear();
   }
+
+  qDebug("LEAVE SessionLockedWindow::attemptUnlock");
 }
 
 void SessionLockedWindow::setupActions() {
-  qDebug("SessionLockedWindow::setupActions");
+  qDebug("ENTER SessionLockedWindow::setupActions");
 
   connect(resumeButton, SIGNAL(clicked()), this, SLOT(attemptUnlock()));
 
   //  connect(cancelButton, SIGNAL(clicked()),
   //          this, SLOT(resetSessionLockedScreen()));
+
+  qDebug("LEAVE SessionLockedWindow::setupActions");
 }
