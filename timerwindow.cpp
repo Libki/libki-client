@@ -225,7 +225,7 @@ void TimerWindow::updateClock() {
 }
 
 void TimerWindow::updateTimeLeft(int minutes) {
-  qDebug("ENTER TimerWindow::updateTimeLeft( " << minutes << " )");
+  qDebug() << QString("ENTER TimerWindow::updateTimeLeft(%1)").arg(minutes);
 
   minutesRemaining = minutes;
   updateClock();
@@ -234,7 +234,7 @@ void TimerWindow::updateTimeLeft(int minutes) {
     emit requestLogout();
   }
 
-  qDebug("LEAVE TimerWindow::updateTimeLeft( " << minutes << " )");
+  qDebug() << QString("LEAVE TimerWindow::updateTimeLeft(%1)").arg(minutes);
 }
 
 void TimerWindow::doLogoutDialog() {
@@ -428,7 +428,7 @@ void TimerWindow::checkForInactivity() {
 }
 
 void TimerWindow::showMessage(QString message) {
-  qDebug("ENTER TimerWindow::showMessage(" + message + ")");
+  qDebug() << QString("ENTER TimerWindow::showMessage(%1)").arg(message);
 
   QMessageBox msgBox;
   msgBox.setWindowIcon(libkiIcon);
@@ -439,7 +439,7 @@ void TimerWindow::showMessage(QString message) {
   this->restoreTimerWindow();
   msgBox.exec();
 
-  qDebug("LEAVE TimerWindow::showMessage(" + message + ")");
+  qDebug() << QString("LEAVE TimerWindow::showMessage(%1)").arg(message);
 }
 
 void TimerWindow::lockSession() {

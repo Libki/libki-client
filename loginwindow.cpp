@@ -222,7 +222,7 @@ void LoginWindow::attemptLogin() {
 }
 
 void LoginWindow::attemptLoginFailure(QString loginError) {
-  qDebug("ENTER LoginWindow::attemptLoginFailure('" + loginError + "'')");
+  qDebug() << QString("ENTER LoginWindow::attemptLoginFailure('%1')").arg(loginError);
 
   QString customErrorMessage = getLabel(loginError);
   if (!customErrorMessage.isEmpty()) {
@@ -305,7 +305,7 @@ void LoginWindow::attemptLoginFailure(QString loginError) {
   usernameField->setFocus();
   usernameField->selectAll();
 
-  qDebug("LEAVE LoginWindow::attemptLoginFailure");
+  qDebug() << QString("LEAVE LoginWindow::attemptLoginFailure('%1')").arg(loginError);
 }
 
 void LoginWindow::attemptLoginSuccess(QString username, QString password,
