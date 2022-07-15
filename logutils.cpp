@@ -15,6 +15,8 @@ static QString logFolderName;
 static QFile* logFile;
 
 void initLogFileName() {
+  qDebug("ENTER LogUtils::iniLogFileName");
+
   QString path =
       QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
   if (path.isEmpty()) qFatal("Cannot determine settings storage location");
@@ -32,9 +34,13 @@ void initLogFileName() {
 
   d.mkpath(logFolderName);
   qDebug() << "LOG DIR EXISTS: " << QDir(logFolderName).exists();
+
+  qDebug("LEAVE LogUtils::iniLogFileName");
 }
 
 void deleteOldLogs() {
+  qDebug("ENTER LogUtils::deleteOldLogs");
+
   QDir dir;
   dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
   dir.setSorting(QDir::Time | QDir::Reversed);
@@ -50,10 +56,12 @@ void deleteOldLogs() {
       file.remove();
     }
   }
+
+  qDebug("LEAVE LogUtils::deleteOldLogs");
 }
 
 bool initLogging() {
-  qDebug() << "LogUtils::initLogging()";
+  qDebug("ENTER LogUtils::initLogging");
   // Create folder for logfiles if not exists
   if (!QDir(logFolderName).exists()) {
     qDebug() << "Creating directory " << logFolderName;
@@ -66,8 +74,11 @@ bool initLogging() {
   logFile = new QFile(logFileName);
   if (logFile->open(QIODevice::WriteOnly | QIODevice::Append)) {
     qInstallMessageHandler(LogUtils::myMessageHandler);
+
+    qDebug("LEAVE LogUtils::initLogging - Return true");
     return true;
   } else {
+    qDebug("LEAVE LogUtils::initLogging - Return false");
     return false;
   }
 }
