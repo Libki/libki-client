@@ -26,7 +26,7 @@
 #include "utils.h"
 
 LoginWindow::LoginWindow(QWidget *parent) : QMainWindow(parent) {
-  qDebug("LoginWindow::LoginWindow");
+  qDebug("ENTER LoginWindow::LoginWindow");
 
   setAllowClose(false);
 
@@ -58,24 +58,32 @@ LoginWindow::LoginWindow(QWidget *parent) : QMainWindow(parent) {
   handleBanners();
 
   showMe();
+
+  qDebug("LEAVE LoginWindow::LoginWindow");
 }
 
 LoginWindow::~LoginWindow() {}
 
 void LoginWindow::displayLoginWindow() {
-  qDebug("LoginWindow::displayLoginWindow");
+  qDebug("ENTER LoginWindow::displayLoginWindow");
+
   showMe();
+
+  qDebug("LEAVE LoginWindow::displayLoginWindow");
 }
 
 void LoginWindow::setupActions() {
-  qDebug("LoginWindow::setupActions");
+  qDebug("ENTER LoginWindow::setupActions");
 
   connect(loginButton, SIGNAL(clicked()), this, SLOT(attemptLogin()));
-
   connect(cancelButton, SIGNAL(clicked()), this, SLOT(resetLoginScreen()));
+
+  qDebug("LEAVE LoginWindow::setupActions");
 }
 
 void LoginWindow::getSettings() {
+  qDebug("ENTER LoginWindow::getSettings");
+
   /* Set Labels */
   QSettings settings;
   settings.setIniCodec("UTF-8");
@@ -127,11 +135,14 @@ void LoginWindow::getSettings() {
     passwordLabel->hide();
     passwordField->hide();
   }
+
+  qDebug("LEAVE LoginWindow::getSettings");
 }
 
 /* Protected Slots */
 void LoginWindow::attemptLogin() {
-  qDebug("LoginWindow::attemptLogin");
+  qDebug("ENTER LoginWindow::attemptLogin");
+
   QString username = usernameField->text();
   QByteArray password;
   password.append(passwordField->text());
@@ -206,10 +217,12 @@ void LoginWindow::attemptLogin() {
   }
 
   emit attemptLogin(username, password);
+
+  qDebug("LEAVE LoginWindow::attemptLogin");
 }
 
 void LoginWindow::attemptLoginFailure(QString loginError) {
-  qDebug() << "LoginWindow::attemptLoginFailure(" + loginError + ")";
+  qDebug("ENTER LoginWindow::attemptLoginFailure('" + loginError + "'')");
 
   QString customErrorMessage = getLabel(loginError);
   if (!customErrorMessage.isEmpty()) {
@@ -291,14 +304,16 @@ void LoginWindow::attemptLoginFailure(QString loginError) {
   passwordField->clear();
   usernameField->setFocus();
   usernameField->selectAll();
+
+  qDebug("LEAVE LoginWindow::attemptLoginFailure");
 }
 
 void LoginWindow::attemptLoginSuccess(QString username, QString password,
                                       int minutes, int hold_items_count) {
-  qDebug("LoginWindow::attemptLoginSuccess");
+  qDebug("ENTER LoginWindow::attemptLoginSuccess");
   resetLoginScreen();
 
-  QProcess process;
+  //QProcess process;
   QSettings settings;
   QString runOnLogin = settings.value("node/run_on_login").toString();
   if (!runOnLogin.isEmpty()) {
@@ -337,20 +352,24 @@ void LoginWindow::attemptLoginSuccess(QString username, QString password,
   this->hide();
 
   isHidden = true;
+
+  qDebug("LEAVE LoginWindow::attemptLoginSuccess");
 }
 
 void LoginWindow::resetLoginScreen() {
-  qDebug() << "LoginWindow::resetLoginScreen()";
+  qDebug("ENTER LoginWindow::resetLoginScreen");
 
   this->setButtonsEnabled(true);
   usernameField->clear();
   passwordField->clear();
   errorLabel->setText("");
   usernameField->setFocus();
+
+  qDebug("LEAVE LoginWindow::resetLoginScreen");
 }
 
 void LoginWindow::showMe() {
-  qDebug() << "LoginWindow::showMe()";
+  qDebug("ENTER LoginWindow::showMe");
 
   this->show();
   this->showMaximized();
@@ -367,31 +386,44 @@ void LoginWindow::showMe() {
   if (!reservedFor.isEmpty()) {
     handleReservationStatus(reservedFor);
   }
+
+  qDebug("LEAVE LoginWindow::showMe");
 }
 
 void LoginWindow::setButtonsEnabled(bool b) {
+  qDebug("ENTER LoginWindow::setButtonsEnabled");
+
   usernameField->setEnabled(b);
   passwordField->setEnabled(b);
   cancelButton->setEnabled(b);
   loginButton->setEnabled(b);
+
+  qDebug("LEAVE LoginWindow::setButtonsEnabled");
 }
 
 void LoginWindow::setAllowClose(bool close) {
-  qDebug("LoginWindow::setAllowClose");
+  qDebug("ENTER LoginWindow::setAllowClose");
   allowClose = close;
+  qDebug("LEAVE LoginWindow::setAllowClose");
 }
 
 /* Reimplemented closeEvent to prevent application from being closed. */
 void LoginWindow::closeEvent(QCloseEvent *event) {
+  qDebug("ENTER LoginWindow::closeEvent");
+
   if (allowClose) {
+    qDebug("Close Accepted");
     event->accept();
   } else {
+    qDebug("Close Ignored");
     event->ignore();
   }
+
+  qDebug("LEAVE LoginWindow::closeEvent");
 }
 
 void LoginWindow::handleReservationStatus(QString reserved_for) {
-  qDebug("LoginWindow::handleReservationStatus");
+  qDebug("ENTER LoginWindow::handleReservationStatus");
 
   if (reserved_for.isEmpty()) {
     reservedLabel->hide();
@@ -412,9 +444,13 @@ void LoginWindow::handleReservationStatus(QString reserved_for) {
   }
 
   reservedFor = reserved_for;
+
+  qDebug("LEAVE LoginWindow::handleReservationStatus");
 }
 
 void LoginWindow::handleBanners() {
+  qDebug("ENTER LoginWindow::handleBanners");
+
   QSettings settings;
   settings.setIniCodec("UTF-8");
 
@@ -486,17 +522,25 @@ void LoginWindow::handleBanners() {
   } else {
     logoWebView->hide();
   }
+
+  qDebug("LEAVE LoginWindow::handleBanners");
 }
 
 void LoginWindow::disableLogin() {
-  qDebug("LoginWindow::disableLogin");
+  qDebug("ENTER LoginWindow::disableLogin");
+
   this->setButtonsEnabled(false);
   messageLabel->setVisible(false);
   errorLabel->setText(tr("This kiosk is out of order."));
+
+  qDebug("LEAVE LoginWindow::disableLogin");
 }
 
 void LoginWindow::enableLogin() {
-  qDebug("LoginWindow::enableLogin");
+  qDebug("ENTER LoginWindow::enableLogin");
+
   this->resetLoginScreen();
   messageLabel->setVisible(true);
+
+  qDebug("LEAVE LoginWindow::enableLogin");
 }
