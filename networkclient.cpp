@@ -103,6 +103,11 @@ NetworkClient::NetworkClient(QApplication *app) : QObject() {
   connect(registerNodeTimer, SIGNAL(timeout()), this, SLOT(registerNode()));
   registerNodeTimer->start(1000 * 10);
 
+  checkForInternetConnectivity();
+  checkForInternetConnectivityTimer = new QTimer(this);
+  connect(checkForInternetConnectivityTimer, SIGNAL(timeout()), this, SLOT(checkForInternetConnectivity()));
+  checkForInternetConnectivityTimer->start(1000 * 10);
+
   uploadPrintJobsTimer = new QTimer(this);
   connect(uploadPrintJobsTimer, SIGNAL(timeout()), this,
           SLOT(uploadPrintJobs()));
@@ -144,6 +149,8 @@ void NetworkClient::attemptLogin(QString aUsername, QString aPassword) {
 
 void NetworkClient::processAttemptLoginReply(QNetworkReply *reply) {
   qDebug("ENTER NetworkClient::processAttemptLogoutReply");
+
+  if ( reply->error() ) emit serverAccessWarning(reply->errorString());
 
   QByteArray result;
   result = reply->readAll();
@@ -204,6 +211,8 @@ void NetworkClient::attemptLogout() {
 void NetworkClient::processAttemptLogoutReply(QNetworkReply *reply) {
   qDebug("ENTER NetworkClient::processAttemptLogoutReply");
 
+  if ( reply->error() ) emit serverAccessWarning(reply->errorString());
+
   QByteArray result;
   result = reply->readAll();
 
@@ -248,6 +257,8 @@ void NetworkClient::getUserDataUpdate() {
 
 void NetworkClient::processGetUserDataUpdateReply(QNetworkReply *reply) {
   qDebug("ENTER NetworkClient::processGetUserDataUpdateReply");
+
+  if ( reply->error() ) emit serverAccessWarning(reply->errorString());
 
   QByteArray result;
   result = reply->readAll();
@@ -425,6 +436,8 @@ void NetworkClient::handleUploadProgress(qint64 bytesSent, qint64 bytesTotal) {
 void NetworkClient::uploadPrintJobReply(QNetworkReply *reply) {
   qDebug("ENTER NetworkClient::uploadPrintJobReply");
 
+  if ( reply->error() ) emit serverAccessWarning(reply->errorString());
+
   if (reply->error() == QNetworkReply::NoError) {
     reply->abort();
     reply->deleteLater();
@@ -485,12 +498,15 @@ void NetworkClient::registerNode() {
 void NetworkClient::handleSslErrors(QNetworkReply *reply,
                                     QList<QSslError> error) {
   qDebug("ENTER NetworkClient::handleSslErrors");
+  if ( reply->error() ) emit serverAccessWarning(reply->errorString());
   reply->ignoreSslErrors(error);
   qDebug("LEAVE NetworkClient::handleSslErrors");
 }
 
 void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
   qDebug("ENTER NetworkClient::processRegisterNodeReply");
+
+  if ( reply->error() ) emit serverAccessWarning(reply->errorString());
 
   QByteArray result;
   result = reply->readAll();
@@ -644,6 +660,36 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
   qDebug("LEAVE NetworkClient::processRegisterNodeReply");
 }
 
+void NetworkClient::checkForInternetConnectivity() {
+  qDebug("ENTER NetworkClient::checkForInternetConnectivity");
+
+  // Select a URL from the list at random to test connectivity
+  QList<QString> list;
+  list << "http://1.1.1.1" << "http://1.0.0.1";
+  QString url = list.at(qrand() % list.size());
+
+  QNetworkAccessManager *nam;
+  nam = new QNetworkAccessManager(this);
+  QObject::connect(nam, SIGNAL(finished(QNetworkReply *)), this,
+                   SLOT(processCheckForInternetConnectivityReply(QNetworkReply *)));
+
+  nam->get(QNetworkRequest(QUrl(url)));
+
+  qDebug("LEAVE NetworkClient::checkForInternetConnectivity");
+}
+
+void NetworkClient::processCheckForInternetConnectivityReply(QNetworkReply *reply) {
+  qDebug("ENTER NetworkClient::processCheckForInternetConnectivityReply");
+
+  if ( reply->error() != QNetworkReply::NoError ) {
+      emit internetAccessWarning(reply->errorString());
+  } else {
+      emit internetAccessWarning("");
+  }
+
+  qDebug("LEAVE NetworkClient::processCheckForInternetConnectivityReply");
+}
+
 void NetworkClient::clearMessage() {
   qDebug("ENTER NetworkClient::clearMessage");
 
@@ -686,6 +732,12 @@ void NetworkClient::acknowledgeReservation(QString reserved_for) {
 
 void NetworkClient::ignoreNetworkReply(QNetworkReply *reply) {
   qDebug("ENTER NetworkClient::ignoreNetworkReply");
+
+  if ( reply->error() != QNetworkReply::NoError ) {
+      emit serverAccessWarning(reply->errorString());
+  } else {
+      emit serverAccessWarning("");
+  }
 
   reply->abort();
   reply->deleteLater();

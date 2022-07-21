@@ -60,6 +60,8 @@ class NetworkClient : public QObject {
   void handleBanners();
   void clientSuspended();
   void clientOnline();
+  void serverAccessWarning(QString);
+  void internetAccessWarning(QString);
 
  public slots:
 
@@ -88,12 +90,16 @@ class NetworkClient : public QObject {
 
   void handleSslErrors(QNetworkReply *reply, QList<QSslError> error);
 
+  void checkForInternetConnectivity();
+  void processCheckForInternetConnectivityReply(QNetworkReply *reply);
+
  private:
   QApplication *app;
 
   QTimer *registerNodeTimer;
   QTimer *uploadPrintJobsTimer;
   QTimer *updateUserDataTimer;
+  QTimer *checkForInternetConnectivityTimer;
 
   QUrl serviceURL;
   QUrlQuery urlQuery;

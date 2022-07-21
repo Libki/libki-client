@@ -57,6 +57,9 @@ class LoginWindow : public QMainWindow, public Ui::LoginWindow {
   void disableLogin();
   void enableLogin();
 
+  void showServerAccessWarning(QString message);
+  void showInternetAccessWarning(QString message);
+
  private slots:
 
   void resetLoginScreen();

@@ -54,6 +54,8 @@ LoginWindow::LoginWindow(QWidget *parent) : QMainWindow(parent) {
   getSettings();
 
   reservedLabel->hide();
+  serverAccessWarning->hide();
+  internetAccessWarning->hide();
 
   handleBanners();
 
@@ -543,4 +545,30 @@ void LoginWindow::enableLogin() {
   messageLabel->setVisible(true);
 
   qDebug("LEAVE LoginWindow::enableLogin");
+}
+
+void LoginWindow::showServerAccessWarning(QString message) {
+  qDebug() << QString("ENTER LoginWindow::showServerAccessWarning(%1)").arg(message);
+
+  if ( message.length() > 0 ) {
+    serverAccessWarning->setText(tr("Error connecting to server: ") + message);
+    serverAccessWarning->show();
+  } else {
+    serverAccessWarning->hide();
+  }
+
+  qDebug("LEAVE LoginWindow::showServerAccessWarning");
+}
+
+void LoginWindow::showInternetAccessWarning(QString message) {
+  qDebug() << QString("ENTER LoginWindow::showInternetAccessWarning(%1)").arg(message);
+
+  if ( message.length() > 0 ) {
+    internetAccessWarning->setText(tr("Error connecting to Internet: ") + message);
+    internetAccessWarning->show();
+  } else {
+    internetAccessWarning->hide();
+  }
+
+  qDebug("LEAVE LoginWindow::showInternetAccessWarning");
 }
