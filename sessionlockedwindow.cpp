@@ -44,6 +44,10 @@ SessionLockedWindow::SessionLockedWindow(QWidget *parent, QString userUsername,
   this->showMaximized();
   this->showFullScreen();
 
+  this->setWindowState( (windowState() & ~Qt::WindowMinimized) | Qt::WindowActive);
+  this->raise();  // for MacOS
+  this->activateWindow(); // for Windows
+
   qDebug("LEAVE SessionLockedWindow::SessionLockedWindow");
 }
 

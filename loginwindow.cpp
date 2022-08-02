@@ -377,6 +377,10 @@ void LoginWindow::showMe() {
   this->showMaximized();
   this->showFullScreen();
 
+  this->setWindowState( (windowState() & ~Qt::WindowMinimized) | Qt::WindowActive);
+  this->raise();  // for MacOS
+  this->activateWindow(); // for Windows
+
   /* FIXME: For some reason, setFixedSize is preventing the window from being
      fullscreen. Why? */
 
