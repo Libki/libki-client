@@ -34,8 +34,6 @@
 TimerWindow::TimerWindow(QWidget *parent) : QMainWindow(parent) {
   qDebug("ENTER TimerWindow::TimerWindow");
 
-  sessionLockedWindow = Q_NULLPTR;
-
   setAllowClose(false);
 
   setupUi(this);
@@ -85,6 +83,11 @@ void TimerWindow::startTimer(QString newUsername, QString newPassword,
 
   username = newUsername;
   password = newPassword;
+
+  sessionLockedWindow = new SessionLockedWindow(0, username, password);
+  connect(sessionLockedWindow, SIGNAL(unlockSession()), this,
+          SLOT(unlockSession()));
+  sessionLockedWindow->hide();
 
   trayIconPopupTimer->start(1000 * 60);  // Fire once a minute
 
@@ -446,10 +449,6 @@ void TimerWindow::showMessage(QString message) {
 void TimerWindow::lockSession() {
   qDebug("ENTER TimerWindow::lockSession()");
 
-  sessionLockedWindow = new SessionLockedWindow(0, username, password);
-  connect(sessionLockedWindow, SIGNAL(unlockSession()), this,
-          SLOT(unlockSession()));
-
   QProcess::startDetached("windows/on_startup.exe");
   this->hide();
   timeSplash->hide();
@@ -465,8 +464,6 @@ void TimerWindow::unlockSession() {
 
   sessionLockedWindow->hide();
   this->show();
-  delete sessionLockedWindow;
-  sessionLockedWindow = Q_NULLPTR;
 
   qDebug("LEAVE TimerWindow::unlockSession");
 }

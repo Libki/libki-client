@@ -118,6 +118,7 @@ void SessionLockedWindow::attemptUnlock() {
   QString passwordEntered = passwordField->text();
 
   if (passwordEntered == password) {
+    passwordField->clear();
     emit unlockSession();
   } else {
     messageLabel->setText(tr("Incorrect Password"));
