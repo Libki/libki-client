@@ -377,7 +377,6 @@ void LoginWindow::showMe() {
   this->showMaximized();
   this->showFullScreen();
 
-  this->setWindowState(Qt::WindowActive);
   this->raise();  // for MacOS
   this->activateWindow(); // for Windows
 
