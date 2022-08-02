@@ -505,7 +505,7 @@
        <enum>Qt::RightToLeft</enum>
       </property>
       <property name="text">
-       <string>2.2.11</string>
+       <string>2.2.13</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
