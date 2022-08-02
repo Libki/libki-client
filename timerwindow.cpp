@@ -34,6 +34,8 @@
 TimerWindow::TimerWindow(QWidget *parent) : QMainWindow(parent) {
   qDebug("ENTER TimerWindow::TimerWindow");
 
+  sessionLockedWindow = Q_NULLPTR;
+
   setAllowClose(false);
 
   setupUi(this);
@@ -98,7 +100,6 @@ void TimerWindow::startTimer(QString newUsername, QString newPassword,
   QSettings settings;
   settings.setIniCodec("UTF-8");
 
-  sessionLockedWindow = Q_NULLPTR;
   if (settings.value("session/EnableClientSessionLocking").toBool()) {
     connect(lockSessionButton, SIGNAL(clicked(bool)), this,
             SLOT(lockSession()));
