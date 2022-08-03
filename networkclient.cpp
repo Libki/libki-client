@@ -497,10 +497,8 @@ void NetworkClient::registerNode() {
 
 void NetworkClient::handleSslErrors(QNetworkReply *reply,
                                     QList<QSslError> error) {
-  qDebug("ENTER NetworkClient::handleSslErrors");
   if ( reply->error() ) emit serverAccessWarning(reply->errorString());
   reply->ignoreSslErrors(error);
-  qDebug("LEAVE NetworkClient::handleSslErrors");
 }
 
 void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
