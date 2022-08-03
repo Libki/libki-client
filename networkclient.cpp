@@ -487,7 +487,7 @@ void NetworkClient::registerNode() {
   query.addQueryItem("action", "register_node");
   query.addQueryItem("node_name", nodeName);
   query.addQueryItem("age_limit", nodeAgeLimit);
-  query.addQueryItem("version", "2.2.14");
+  query.addQueryItem("version", "2.2.15");
   url.setQuery(query);
 
   /*QNetworkReply* reply =*/nam->get(QNetworkRequest(url));
@@ -618,6 +618,9 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
   settings.setValue("session/inactivityWarning",
                     sc.property("inactivityWarning").toString());
 
+  settings.setValue("session/InternetConnectivityURLs",
+                    sc.property("InternetConnectivityURLs").toString());
+
   QString logoURL = settings.value("images/logo").toString();
   if ( ! sc.property("Logo").toString().isEmpty() ) {
     settings.setValue("images/logo",
@@ -663,17 +666,33 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
 void NetworkClient::checkForInternetConnectivity() {
   qDebug("ENTER NetworkClient::checkForInternetConnectivity");
 
-  // Select a URL from the list at random to test connectivity
   QList<QString> list;
-  list << "http://1.1.1.1" << "http://1.0.0.1";
-  QString url = list.at(qrand() % list.size());
 
-  QNetworkAccessManager *nam;
-  nam = new QNetworkAccessManager(this);
-  QObject::connect(nam, SIGNAL(finished(QNetworkReply *)), this,
-                   SLOT(processCheckForInternetConnectivityReply(QNetworkReply *)));
+  QSettings settings;
+  settings.setIniCodec("UTF-8");
+  QString internetConnectivityURLs = settings.value("session/InternetConnectivityURLs").toString();
+  //qDebug() << "URLS: " << internetConnectivityURLs;
+  if ( internetConnectivityURLs != "null" ) {
+      list = internetConnectivityURLs.split(QRegExp("[\r\n]"),QString::SkipEmptyParts);
+  }
+  //qDebug() << "URLS LIST: " << list.join(" ");
 
-  nam->get(QNetworkRequest(QUrl(url)));
+  if ( list.size() ) {
+      // Select a URL from the list at random to test connectivity
+      QString url = list.at(qrand() % list.size());
+
+      qDebug() << "CHECKING URL: " << url;
+
+      QNetworkAccessManager *nam;
+      nam = new QNetworkAccessManager(this);
+      QObject::connect(nam, SIGNAL(finished(QNetworkReply *)), this,
+               SLOT(processCheckForInternetConnectivityReply(QNetworkReply *)));
+      QObject::connect(
+          nam, SIGNAL(sslErrors(QNetworkReply *, const QList<QSslError> &)), this,
+          SLOT(handleSslErrors(QNetworkReply *, const QList<QSslError> &)));
+
+      nam->get(QNetworkRequest(QUrl(url)));
+  }
 
   qDebug("LEAVE NetworkClient::checkForInternetConnectivity");
 }
@@ -683,6 +702,7 @@ void NetworkClient::processCheckForInternetConnectivityReply(QNetworkReply *repl
 
   if ( reply->error() != QNetworkReply::NoError ) {
       emit internetAccessWarning(reply->errorString());
+      qDebug() << "NetworkClient::processCheckForInternetConnectivityReply Network Reply Error: " << reply->errorString();
   } else {
       emit internetAccessWarning("");
   }
