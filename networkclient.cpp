@@ -487,7 +487,7 @@ void NetworkClient::registerNode() {
   query.addQueryItem("action", "register_node");
   query.addQueryItem("node_name", nodeName);
   query.addQueryItem("age_limit", nodeAgeLimit);
-  query.addQueryItem("version", "2.2.15");
+  query.addQueryItem("version", "2.2.16");
   url.setQuery(query);
 
   /*QNetworkReply* reply =*/nam->get(QNetworkRequest(url));
@@ -706,6 +706,10 @@ void NetworkClient::processCheckForInternetConnectivityReply(QNetworkReply *repl
   } else {
       emit internetAccessWarning("");
   }
+
+  reply->abort();
+  reply->deleteLater();
+  reply->manager()->deleteLater();
 
   qDebug("LEAVE NetworkClient::processCheckForInternetConnectivityReply");
 }

@@ -4,13 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.2.14]
-### Changed
--  Move internet connectivity sites list to a server side setting
+## [2.2.16]
+### Fixed
+- Fix possible memory leak caused by Internet connectivity checker
 
-## [2.2.13]
+## [2.2.15]
+### Changed
+- Move internet connectivity sites list to a server side setting
+
+## [2.2.14]
 ### Fixed
 - Remove windows standard window bar from Libki login screen introduced in 2.2.12
+
+## [2.2.13]
+### Added
+- Improve keeping guard screens at the forefront
 
 ## [2.2.12]
 ### Fixed
