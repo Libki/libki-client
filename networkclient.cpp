@@ -150,7 +150,10 @@ void NetworkClient::attemptLogin(QString aUsername, QString aPassword) {
 void NetworkClient::processAttemptLoginReply(QNetworkReply *reply) {
   qDebug("ENTER NetworkClient::processAttemptLogoutReply");
 
-  if ( reply->error() ) emit serverAccessWarning(reply->errorString());
+  if ( reply->error() ) {
+      qDebug() << "ERROR: Server Access Warning: " << reply->errorString();
+      emit serverAccessWarning(reply->errorString());
+  }
 
   QByteArray result;
   result = reply->readAll();
@@ -211,7 +214,10 @@ void NetworkClient::attemptLogout() {
 void NetworkClient::processAttemptLogoutReply(QNetworkReply *reply) {
   qDebug("ENTER NetworkClient::processAttemptLogoutReply");
 
-  if ( reply->error() ) emit serverAccessWarning(reply->errorString());
+  if ( reply->error() ) {
+      qDebug() << "ERROR: Server Access Warning: " << reply->errorString();
+      emit serverAccessWarning(reply->errorString());
+  }
 
   QByteArray result;
   result = reply->readAll();
@@ -258,7 +264,10 @@ void NetworkClient::getUserDataUpdate() {
 void NetworkClient::processGetUserDataUpdateReply(QNetworkReply *reply) {
   qDebug("ENTER NetworkClient::processGetUserDataUpdateReply");
 
-  if ( reply->error() ) emit serverAccessWarning(reply->errorString());
+  if ( reply->error() ) {
+      qDebug() << "ERROR: Server Access Warning: " << reply->errorString();
+      emit serverAccessWarning(reply->errorString());
+  }
 
   QByteArray result;
   result = reply->readAll();
@@ -436,7 +445,10 @@ void NetworkClient::handleUploadProgress(qint64 bytesSent, qint64 bytesTotal) {
 void NetworkClient::uploadPrintJobReply(QNetworkReply *reply) {
   qDebug("ENTER NetworkClient::uploadPrintJobReply");
 
-  if ( reply->error() ) emit serverAccessWarning(reply->errorString());
+  if ( reply->error() ) {
+      qDebug() << "ERROR: Server Access Warning: " << reply->errorString();
+      emit serverAccessWarning(reply->errorString());
+  }
 
   if (reply->error() == QNetworkReply::NoError) {
     reply->abort();
@@ -497,14 +509,16 @@ void NetworkClient::registerNode() {
 
 void NetworkClient::handleSslErrors(QNetworkReply *reply,
                                     QList<QSslError> error) {
-  if ( reply->error() ) emit serverAccessWarning(reply->errorString());
   reply->ignoreSslErrors(error);
 }
 
 void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
   qDebug("ENTER NetworkClient::processRegisterNodeReply");
 
-  if ( reply->error() ) emit serverAccessWarning(reply->errorString());
+  if ( reply->error() ) {
+      qDebug() << "ERROR: Server Access Warning: " << reply->errorString();
+      emit serverAccessWarning(reply->errorString());
+  }
 
   QByteArray result;
   result = reply->readAll();
@@ -756,6 +770,7 @@ void NetworkClient::ignoreNetworkReply(QNetworkReply *reply) {
   qDebug("ENTER NetworkClient::ignoreNetworkReply");
 
   if ( reply->error() != QNetworkReply::NoError ) {
+      qDebug() << "ERROR: Server Access Warning: " << reply->errorString();
       emit serverAccessWarning(reply->errorString());
   } else {
       emit serverAccessWarning("");
