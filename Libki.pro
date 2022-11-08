@@ -15,7 +15,8 @@ QT += webkitwidgets
 HEADERS += loginwindow.h networkclient.h timerwindow.h \
     sessionlockedwindow.h \
     logutils.h \
-    timesplash.h
+    timesplash.h \
+    utils.h
 FORMS += loginwindow.ui timerwindow.ui \
     sessionlockedwindow.ui
 RESOURCES += libki.qrc

@@ -504,6 +504,9 @@
       <property name="layoutDirection">
        <enum>Qt::RightToLeft</enum>
       </property>
+      <property name="styleSheet">
+       <string notr="true">padding-right: 25px</string>
+      </property>
       <property name="text">
        <string>2.2.16</string>
       </property>
@@ -585,6 +588,19 @@ color: red;</string>
        </widget>
       </item>
      </layout>
+    </item>
+    <item row="1" column="2">
+     <widget class="QLabel" name="clientNameLabel">
+      <property name="styleSheet">
+       <string notr="true">padding-right: 25px</string>
+      </property>
+      <property name="text">
+       <string notr="true"/>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>

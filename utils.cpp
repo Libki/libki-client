@@ -19,9 +19,10 @@
 
 #include "utils.h"
 
-#include <QLocale>
-#include <QSettings>
 #include <QDebug>
+#include <QLocale>
+#include <QtNetwork/QHostInfo>
+#include <QSettings>
 
 QString getLabel(QString labelcode) {
   qDebug("ENTER utils/getLabel");
@@ -51,4 +52,43 @@ QString getLabel(QString labelcode) {
 
   qDebug("LEAVE utils/getLabel");
   return label;
+}
+
+QString clientName = "";
+QString getClientName() {
+    qDebug("ENTER utils/getClientName");
+
+    if ( clientName.length() == 0 ) {
+        QSettings settings;
+        settings.setIniCodec("UTF-8");
+
+
+        QString os_username;
+#ifdef Q_OS_WIN
+        os_username = getenv("USERNAME");
+#endif  // ifdef Q_OS_WIN
+#ifdef Q_OS_UNIX
+        os_username = getenv("USER");
+#endif  // ifdef Q_OS_UNIX
+
+        clientName = settings.value("node/name").toString();
+
+        qDebug() << "OS USERNAME: " << os_username;
+        qDebug() << "CONFIG NODE NAME: " << clientName;
+
+        if (clientName == "OS_USERNAME") {
+          clientName = os_username;
+        }
+
+        // Fail over to hostname if node name isn't defined.
+        if (clientName.isEmpty()) {
+          QHostInfo hostInfo;
+          hostInfo = QHostInfo::fromName(QHostInfo::localHostName());
+          clientName = QHostInfo::localHostName();
+        }
+        qDebug() << "NODE NAME: " << clientName;
+    }
+
+    qDebug("LEAVE utils/getClientName");
+    return clientName;
 }

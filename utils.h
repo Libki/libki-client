@@ -24,4 +24,6 @@
 
 QString getLabel(QString labelcode);
 
+QString getClientName();
+
 #endif  // UTILS_H
