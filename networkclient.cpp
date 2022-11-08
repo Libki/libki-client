@@ -18,6 +18,7 @@
  */
 
 #include "networkclient.h"
+#include "utils.h"
 
 #include <QDir>
 #include <QHttpMultiPart>
@@ -28,7 +29,6 @@
 #include <QList>
 #include <QSslError>
 #include <QUdpSocket>
-#include <QtNetwork/QHostInfo>
 
 NetworkClient::NetworkClient(QApplication *app) : QObject() {
   qDebug("ENTER NetworkClient::NetworkClient");
@@ -41,33 +41,10 @@ NetworkClient::NetworkClient(QApplication *app) : QObject() {
 
   fileCounter = 0;
 
-  QString os_username;
-#ifdef Q_OS_WIN
-  os_username = getenv("USERNAME");
-#endif  // ifdef Q_OS_WIN
-#ifdef Q_OS_UNIX
-  os_username = getenv("USER");
-#endif  // ifdef Q_OS_UNIX
-
   QSettings settings;
   settings.setIniCodec("UTF-8");
 
-  nodeName = settings.value("node/name").toString();
-
-  qDebug() << "OS USERNAME: " << os_username;
-  qDebug() << "CONFIG NODE NAME: " << nodeName;
-
-  if (nodeName == "OS_USERNAME") {
-    nodeName = os_username;
-  }
-
-  // Fail over to hostname if node name isn't defined.
-  if (nodeName.isEmpty()) {
-    QHostInfo hostInfo;
-    hostInfo = QHostInfo::fromName(QHostInfo::localHostName());
-    nodeName = QHostInfo::localHostName();
-  }
-  qDebug() << "NODE NAME: " << nodeName;
+  nodeName = getClientName();
 
   nodeLocation = settings.value("node/location").toString();
   qDebug() << "LOCATION: " << nodeLocation;

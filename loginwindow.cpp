@@ -57,6 +57,8 @@ LoginWindow::LoginWindow(QWidget *parent) : QMainWindow(parent) {
   serverAccessWarning->hide();
   internetAccessWarning->hide();
 
+  clientNameLabel->setText(getClientName());
+
   handleBanners();
 
   showMe();
