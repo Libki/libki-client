@@ -1,5 +1,6 @@
 QLabel#headerLabel {
 	font: bold 20pt;
+	color: red;
 }
 
 QLabel#messageLabel {

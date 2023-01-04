@@ -129,7 +129,7 @@ void NetworkClient::processAttemptLoginReply(QNetworkReply *reply) {
 
   if ( reply->error() ) {
       qDebug() << "ERROR: Server Access Warning: " << reply->errorString();
-      emit serverAccessWarning(reply->error());
+      emit serverAccessWarning(QString(reply->error()));
   }
 
   QByteArray result;
@@ -193,7 +193,7 @@ void NetworkClient::processAttemptLogoutReply(QNetworkReply *reply) {
 
   if ( reply->error() ) {
       qDebug() << "ERROR: Server Access Warning: " << reply->errorString();
-      emit serverAccessWarning(reply->error());
+      emit serverAccessWarning(QString(reply->error()));
   }
 
   QByteArray result;
@@ -243,7 +243,7 @@ void NetworkClient::processGetUserDataUpdateReply(QNetworkReply *reply) {
 
   if ( reply->error() ) {
       qDebug() << "ERROR: Server Access Warning: " << reply->errorString();
-      emit serverAccessWarning(reply->error());
+      emit serverAccessWarning(QString(reply->error()));
   }
 
   QByteArray result;
@@ -424,7 +424,7 @@ void NetworkClient::uploadPrintJobReply(QNetworkReply *reply) {
 
   if ( reply->error() ) {
       qDebug() << "ERROR: Server Access Warning: " << reply->errorString();
-      emit serverAccessWarning(reply->error());
+      emit serverAccessWarning(QString(reply->error()));
   }
 
   if (reply->error() == QNetworkReply::NoError) {
@@ -494,7 +494,7 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
 
   if ( reply->error() ) {
       qDebug() << "ERROR: Server Access Warning: " << reply->errorString();
-      emit serverAccessWarning(reply->error());
+      emit serverAccessWarning(QString(reply->error()));
   }
 
   QByteArray result;
@@ -748,7 +748,7 @@ void NetworkClient::ignoreNetworkReply(QNetworkReply *reply) {
 
   if ( reply->error() != QNetworkReply::NoError ) {
       qDebug() << "ERROR: Server Access Warning: " << reply->errorString();
-      emit serverAccessWarning(reply->error());
+      emit serverAccessWarning(QString(reply->error()));
   } else {
       emit serverAccessWarning("");
   }
