@@ -129,7 +129,7 @@ void NetworkClient::processAttemptLoginReply(QNetworkReply *reply) {
 
   if ( reply->error() ) {
       qDebug() << "ERROR: Server Access Warning: " << reply->errorString();
-      emit serverAccessWarning(reply->errorString());
+      emit serverAccessWarning(reply->error());
   }
 
   QByteArray result;
@@ -193,7 +193,7 @@ void NetworkClient::processAttemptLogoutReply(QNetworkReply *reply) {
 
   if ( reply->error() ) {
       qDebug() << "ERROR: Server Access Warning: " << reply->errorString();
-      emit serverAccessWarning(reply->errorString());
+      emit serverAccessWarning(reply->error());
   }
 
   QByteArray result;
@@ -243,7 +243,7 @@ void NetworkClient::processGetUserDataUpdateReply(QNetworkReply *reply) {
 
   if ( reply->error() ) {
       qDebug() << "ERROR: Server Access Warning: " << reply->errorString();
-      emit serverAccessWarning(reply->errorString());
+      emit serverAccessWarning(reply->error());
   }
 
   QByteArray result;
@@ -424,7 +424,7 @@ void NetworkClient::uploadPrintJobReply(QNetworkReply *reply) {
 
   if ( reply->error() ) {
       qDebug() << "ERROR: Server Access Warning: " << reply->errorString();
-      emit serverAccessWarning(reply->errorString());
+      emit serverAccessWarning(reply->error());
   }
 
   if (reply->error() == QNetworkReply::NoError) {
@@ -476,7 +476,7 @@ void NetworkClient::registerNode() {
   query.addQueryItem("action", "register_node");
   query.addQueryItem("node_name", nodeName);
   query.addQueryItem("age_limit", nodeAgeLimit);
-  query.addQueryItem("version", "2.2.17");
+  query.addQueryItem("version", "2.2.18");
   url.setQuery(query);
 
   /*QNetworkReply* reply =*/nam->get(QNetworkRequest(url));
@@ -494,7 +494,7 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
 
   if ( reply->error() ) {
       qDebug() << "ERROR: Server Access Warning: " << reply->errorString();
-      emit serverAccessWarning(reply->errorString());
+      emit serverAccessWarning(reply->error());
   }
 
   QByteArray result;
@@ -748,7 +748,7 @@ void NetworkClient::ignoreNetworkReply(QNetworkReply *reply) {
 
   if ( reply->error() != QNetworkReply::NoError ) {
       qDebug() << "ERROR: Server Access Warning: " << reply->errorString();
-      emit serverAccessWarning(reply->errorString());
+      emit serverAccessWarning(reply->error());
   } else {
       emit serverAccessWarning("");
   }

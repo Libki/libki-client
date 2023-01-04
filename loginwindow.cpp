@@ -556,7 +556,7 @@ void LoginWindow::showServerAccessWarning(QString message) {
   qDebug() << QString("ENTER LoginWindow::showServerAccessWarning(%1)").arg(message);
 
   if ( message.length() > 0 ) {
-    serverAccessWarning->setText(tr("Error connecting to server: ") + message);
+    serverAccessWarning->setText(tr("Error connecting to server. Verify Libki server is accessible from this network. Error Code: ")  + message );
     serverAccessWarning->show();
   } else {
     serverAccessWarning->hide();
