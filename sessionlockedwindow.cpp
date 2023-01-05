@@ -38,6 +38,8 @@ SessionLockedWindow::SessionLockedWindow(QWidget *parent, QString userUsername,
 
   getSettings();
 
+  clientNameLabel->setText(getClientName());
+
   // handleBanners(); // Do we really want banners on the lock screen?
 
   this->show();
