@@ -102,23 +102,26 @@ void LoginWindow::getSettings() {
     passwordLabel->setText(label);
   }
 
-  /* For when logo is specificed in ini file */
-  if (!settings.value("images/logo").toString().isEmpty()) {
-    logo->hide();
+  // Check for a local logo URL, then a server transmitted logo URL
+  QString logoUrl = settings.value("images/logo").toString();
+  int logoWidth = settings.value("images/logo_width").toInt();
+  int logoHeight = settings.value("images/logo_height").toInt();
 
-    QPalette palette = logoWebView->palette();
-    palette.setBrush(QPalette::Base, Qt::transparent);
+  if ( logoUrl.isEmpty() ) {
+    logoUrl = settings.value("session/LogoURL").toString();
+    logoWidth = settings.value("session/LogoWidth").toInt();
+    logoHeight = settings.value("session/LogoHeight").toInt();
+  }
 
-    QString logoUrl = settings.value("images/logo").toString();
-    qDebug() << "Logo URL: " << logoUrl;
+  if (!logoUrl.isEmpty()) {
+      qDebug() << "Logo URL: " << logoUrl;
 
-    if (!logoUrl.isEmpty()) {
-      int logoWidth = settings.value("images/logo_width").toInt();
+      logo->hide();
+
+      QPalette palette = logoWebView->palette();
+      palette.setBrush(QPalette::Base, Qt::transparent);
 
       if (logoWidth) logoWebView->setMaximumWidth(logoWidth);
-
-      int logoHeight = settings.value("images/logo_height").toInt();
-
       if (logoHeight) logoWebView->setMaximumHeight(logoHeight);
 
       logoWebView->setEnabled(true);
@@ -127,10 +130,9 @@ void LoginWindow::getSettings() {
       logoWebView->load(QUrl(logoUrl));
 
       watermark->show();
-    }
   } else {
-    logoWebView->hide();
-    watermark->hide();
+      logoWebView->hide();
+      watermark->hide();
   }
 
   /* Hide Password Field */
