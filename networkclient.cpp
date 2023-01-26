@@ -602,6 +602,13 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
   settings.setValue("session/BannerBottomHeight",
                     sc.property("BannerBottomHeight").toString());
 
+  settings.setValue("session/LogoURL",
+                    sc.property("LogoURL").toString());
+  settings.setValue("session/LogoWidth",
+                    sc.property("LogoWidth").toString());
+  settings.setValue("session/LogoHeight",
+                    sc.property("LogoHeight").toString());
+
   settings.setValue("session/inactivityLogout",
                     sc.property("inactivityLogout").toString());
   settings.setValue("session/inactivityWarning",
