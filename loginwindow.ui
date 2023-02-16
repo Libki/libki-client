@@ -21,7 +21,7 @@
        <widget class="QLabel" name="headerLabel">
         <property name="font">
          <font>
-          <pointsize>18</pointsize>
+          <pointsize>19</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -117,7 +117,7 @@
             <property name="font">
              <font>
               <family>Bitstream Charter</family>
-              <pointsize>18</pointsize>
+              <pointsize>19</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -508,7 +508,7 @@
        <string notr="true">padding-right: 25px</string>
       </property>
       <property name="text">
-       <string>2.2.18</string>
+       <string>2.2.19</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
