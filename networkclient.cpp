@@ -519,6 +519,8 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
   }
 
   if (sc.property("shutdown").toBoolean()) {
+    qDebug("Received shutdown message from server");
+
     emit allowClose(true);
 
 #ifdef Q_OS_WIN
