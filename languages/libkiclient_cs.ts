@@ -6,12 +6,12 @@
     <message>
         <location filename="../loginwindow.ui" line="14"/>
         <source>Libki Kiosk System</source>
-        <translation>Internetový kiosek Libki</translation>
+        <translation>Internetová stanice Libki</translation>
     </message>
     <message>
         <location filename="../loginwindow.ui" line="56"/>
         <source>Internet Kiosk</source>
-        <translation>Internetový kiosek</translation>
+        <translation>Internetová stanice</translation>
     </message>
     <message>
         <location filename="../loginwindow.ui" line="85"/>
@@ -54,7 +54,7 @@
     <message>
         <location filename="../loginwindow.cpp" line="138"/>
         <source>Please Wait...</source>
-        <translation>Prosím počkejte...</translation>
+        <translation>Vydržte prosím...</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="176"/>
@@ -79,7 +79,7 @@
     <message>
         <location filename="../loginwindow.cpp" line="206"/>
         <source>Login Failed: You are not the correct age to use this client</source>
-        <translation>Přihlášení se nezdařilo: Nemáte dostatečný věk pro používání tohoto klienta</translation>
+        <translation>Přihlášení se nezdařilo: Nemáte dostatečný věk pro používání této stanice</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="209"/>
@@ -89,7 +89,7 @@
     <message>
         <location filename="../loginwindow.cpp" line="211"/>
         <source>Login Failed: This kiosk is closed for the day</source>
-        <translation>Přihlášení se nezdařilo: Tento kiosek je dnes uzavřen</translation>
+        <translation>Přihlášení se nezdařilo: Tato stanice je dnes uzavřena</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="213"/>
@@ -104,7 +104,7 @@
     <message>
         <location filename="../loginwindow.cpp" line="217"/>
         <source>Login Failed: This kiosk is reserved for someone else</source>
-        <translation>Přihlášení se nezdařilo: Tento kiosek je rezervován pro někoho jiného</translation>
+        <translation>Přihlášení se nezdařilo: Tato stanice je rezervována pro někoho jiného</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="220"/>
@@ -185,7 +185,7 @@
     <message>
         <location filename="../loginwindow.cpp" line="256"/>
         <source>Login Failed: Client not registered</source>
-        <translation>Přihlášení se nezdařilo: Klient není registrován</translation>
+        <translation>Přihlášení se nezdařilo: Stanice není registrována</translation>
     </message>
     <message>
         <location filename="../loginwindow.cpp" line="258"/>
@@ -218,12 +218,12 @@
     <message>
         <location filename="../sessionlockedwindow.ui" line="14"/>
         <source>Libki Kiosk System</source>
-        <translation>Libky systém pro kiosky</translation>
+        <translation>Libki systém pro spravu stanic</translation>
     </message>
     <message>
         <location filename="../sessionlockedwindow.ui" line="56"/>
         <source>Internet Kiosk</source>
-        <translation>Internetový kiosek</translation>
+        <translation>Internetová stanice</translation>
     </message>
     <message>
         <location filename="../sessionlockedwindow.ui" line="85"/>
@@ -258,7 +258,7 @@
     <message>
         <location filename="../timerwindow.ui" line="14"/>
         <source>Libki Kiosk System</source>
-        <translation>Internetový kiosek Libki</translation>
+        <translation>Internetová stanice Libki</translation>
     </message>
     <message>
         <location filename="../timerwindow.ui" line="107"/>
@@ -294,7 +294,7 @@
     <message>
         <location filename="../timerwindow.cpp" line="164"/>
         <source>Are you sure you want to log out?</source>
-        <translation>¿Está seguro de que desea cerrar sesión?</translation>
+        <translation>Opravdu se chcete odhlásit?</translation>
     </message>
     <message>
         <location filename="../timerwindow.cpp" line="167"/>
