@@ -345,13 +345,27 @@ void TimerWindow::restoreTimerWindow() {
 void TimerWindow::showSystemTrayIconTimeLeftMessage() {
   qDebug("ENTER TimerWindow::showSystemTrayIconTimeLeftMessage");
 
+  QSettings settings;
+  settings.setIniCodec("UTF-8");
+
+  int clientTimeNotificationFrequency = 5;
+  if (!settings.value("session/ClientTimeNotificationFrequency").toString().isEmpty()) {
+    clientTimeNotificationFrequency = settings.value("session/ClientTimeNotificationFrequency").toInt();
+  }
+
+  int clientTimeWarningThreshold = 5;
+  if (!settings.value("session/ClientTimeWarningThreshold").toString().isEmpty()) {
+    clientTimeWarningThreshold = settings.value("session/ClientTimeWarningThreshold").toInt();
+  }
+
+
   QString title = tr("Time Remaining");
   QString message =
       QString::number(minutesRemaining) + " " + tr("Minutes Left");
 
-  if (!(minutesRemaining % 5)) {
+  if (!(minutesRemaining % clientTimeNotificationFrequency)) {
     trayIcon->showMessage(title, message, QSystemTrayIcon::Information, 1000);
-  } else if (minutesRemaining <= 5) {
+  } else if (minutesRemaining <= clientTimeWarningThreshold) {
     trayIcon->showMessage(title, message, QSystemTrayIcon::Warning, 1000);
   }
 

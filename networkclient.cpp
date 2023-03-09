@@ -619,6 +619,11 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
   settings.setValue("session/InternetConnectivityURLs",
                     sc.property("InternetConnectivityURLs").toString());
 
+  settings.setValue("session/ClientTimeNotificationFrequency",
+                    sc.property("ClientTimeNotificationFrequency").toString());
+  settings.setValue("session/ClientTimeWarningThreshold",
+                    sc.property("ClientTimeWarningThreshold").toString());
+
   QString logoURL = settings.value("images/logo").toString();
   if ( ! sc.property("Logo").toString().isEmpty() ) {
     settings.setValue("images/logo",
