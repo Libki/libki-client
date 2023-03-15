@@ -29,7 +29,7 @@
 #include "utils.h"
 #include "timesplash.h"
 
-#define INACTIVITY_CHECK_INTERVAL 1
+#define INACTIVITY_CHECK_INTERVAL 10
 
 TimerWindow::TimerWindow(QWidget *parent) : QMainWindow(parent) {
   qDebug("ENTER TimerWindow::TimerWindow");
@@ -404,9 +404,7 @@ void TimerWindow::checkForInactivity() {
     int x = pos.x();
     int y = pos.y();
 
-    //qDebug() << "X: " << x;
-    //qDebug() << "Y: " << y;
-
+    // TODO: Implement ranges to account for mouse wobble?
     if (prevMousePosX == x && prevMousePosY == y) {
       secondsSinceLastActivity += INACTIVITY_CHECK_INTERVAL;
       qDebug() << "No activity detected. Seconds since last activity: "
