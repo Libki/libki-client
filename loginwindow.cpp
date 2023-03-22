@@ -445,6 +445,20 @@ void LoginWindow::handleReservationStatus(QString reserved_for) {
   qDebug("LEAVE LoginWindow::handleReservationStatus");
 }
 
+void LoginWindow::updateBannerTop( QNetworkReply * reply ) {
+  qDebug("ENTER LoginWindow::updateBannerTop");
+
+  QImage i;
+  if ( i.loadFromData(reply->readAll())) {
+    bannerTop->setPixmap( QPixmap::fromImage(i));
+  }
+
+  reply->deleteLater();
+  reply->manager()->deleteLater();
+
+  qDebug("ENTER LoginWindow::updateBannerTop");
+}
+
 void LoginWindow::handleBanners() {
   qDebug("ENTER LoginWindow::handleBanners");
 
@@ -456,11 +470,19 @@ void LoginWindow::handleBanners() {
   //palette.setBrush(QPalette::Base, Qt::transparent);
 
   QString bannerTopUrl =
-      "http://" + settings.value("session/BannerTopURL").toString();
+      settings.value("session/BannerTopURL").toString();
 
-  if (bannerTopUrl != "http://") {
+  if (!bannerTopUrl.isEmpty()) {
+    qDebug() << "TOP URL BANNER: " << bannerTopUrl;
+
     int bannerTopHeight = settings.value("session/BannerTopHeight").toInt();
     int bannerTopWidth = settings.value("session/BannerTopWidth").toInt();
+
+    QNetworkAccessManager *nam;
+    nam = new QNetworkAccessManager(this);
+    QObject::connect(nam, SIGNAL(finished(QNetworkReply *)), this,
+             SLOT(updateBannerTop(QNetworkReply*)));
+    nam->get(QNetworkRequest(QUrl(bannerTopUrl)));
 
 //    bannerWebViewTop->setEnabled(true);
 //    bannerWebViewTop->page()->setPalette(palette);

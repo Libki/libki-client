@@ -53,7 +53,10 @@ class LoginWindow : public QMainWindow, public Ui::LoginWindow {
   void attemptLoginSuccess(QString username, QString password, int minutes,
                            int hold_items_count);
   void handleReservationStatus(QString reserved_for);
+
   void handleBanners();
+  void updateBannerTop(QNetworkReply*);
+
   void disableLogin();
   void enableLogin();
 
