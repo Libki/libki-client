@@ -22,7 +22,6 @@
 #include <QApplication>
 #include <QProcess>
 #include <QSettings>
-#include <QWebView>
 
 #include "loginwindow.h"
 #include "logutils.h"
@@ -70,7 +69,7 @@ int main(int argc, char *argv[]) {
   QSettings::setDefaultFormat(QSettings::IniFormat);
 
   QSettings settings;
-  settings.setIniCodec("UTF-8");
+  //settings.setIniCodec("UTF-8");
 
   QString startUserShell;
   startUserShell = settings.value("node/start_user_shell").toString();

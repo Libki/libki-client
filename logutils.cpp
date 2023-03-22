@@ -142,10 +142,10 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext& context,
                      .arg(QDateTime::currentDateTime().toString(Qt::ISODate));
 
   // Output to console
-  QTextStream(stdout) << text << endl;
+  Qt::endl(QTextStream(stdout) << text);
 
   // Output to log file
   QTextStream ts(logFile);
-  ts << text << endl;
+  Qt::endl(ts << text);
 }
 }  // namespace LogUtils

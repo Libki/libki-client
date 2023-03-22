@@ -28,7 +28,7 @@ QString getLabel(QString labelcode) {
   qDebug("ENTER utils/getLabel");
 
   QSettings settings;
-  settings.setIniCodec("UTF-8");
+  //settings.setIniCodec("UTF-8");
 
   QString locale = QLocale::system().name();
   QString label = QString();
@@ -60,7 +60,7 @@ QString getClientName() {
 
     if ( clientName.length() == 0 ) {
         QSettings settings;
-        settings.setIniCodec("UTF-8");
+        //settings.setIniCodec("UTF-8");
 
 
         QString os_username;

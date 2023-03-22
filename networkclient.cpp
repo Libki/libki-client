@@ -29,6 +29,8 @@
 #include <QList>
 #include <QSslError>
 #include <QUdpSocket>
+#include <QRegularExpression>
+#include <QRandomGenerator>
 
 #define VERSION "2.2.26"
 
@@ -44,7 +46,7 @@ NetworkClient::NetworkClient(QApplication *app) : QObject() {
   fileCounter = 0;
 
   QSettings settings;
-  settings.setIniCodec("UTF-8");
+  //settings.setIniCodec("UTF-8");
 
   nodeName = getClientName();
 
@@ -132,24 +134,22 @@ void NetworkClient::processAttemptLoginReply(QNetworkReply *reply) {
 
   handleNetworkReplyErrors(reply);
 
-  QByteArray result;
-  result = reply->readAll();
+  QString strReply = (QString)reply->readAll();
+  qDebug() << "Server Result: " << strReply;
+  QJsonDocument jsonResponse = QJsonDocument::fromJson(strReply.toUtf8());
+  QJsonObject serverResponse= jsonResponse.object();
 
-  QScriptValue sc;
-  QScriptEngine engine;
-  sc = engine.evaluate("(" + QString(result) + ")");
-
-  if (sc.property("authenticated").toBoolean() == true) {
+  if (serverResponse["authenticated"].toInt()) {
     qDebug("Login Authenticated");
 
-    int units = sc.property("units").toInteger();
-    int hold_items_count = sc.property("hold_items_count").toInteger();
+    int units = serverResponse["units"].toInt();
+    int hold_items_count = serverResponse["hold_items_count"].toInt();
 
     doLoginTasks(units, hold_items_count);
   } else {
     qDebug("Login Failed");
 
-    QString errorCode = sc.property("error").toString();
+    QString errorCode = serverResponse["error"].toString();
     qDebug() << "Error Code: " << errorCode;
 
     username.clear();
@@ -194,14 +194,12 @@ void NetworkClient::processAttemptLogoutReply(QNetworkReply *reply) {
 
   handleNetworkReplyErrors(reply);
 
-  QByteArray result;
-  result = reply->readAll();
+  QString strReply = (QString)reply->readAll();
+  qDebug() << "Server Result: " << strReply;
+  QJsonDocument jsonResponse = QJsonDocument::fromJson(strReply.toUtf8());
+  QJsonObject serverResponse = jsonResponse.object();
 
-  QScriptValue sc;
-  QScriptEngine engine;
-  sc = engine.evaluate("(" + QString(result) + ")");
-
-  if (sc.property("logged_out").toBoolean() == true) {
+  if (serverResponse["logged_out"].toInt()) {
     doLogoutTasks();
   } else {
     emit logoutFailed();
@@ -359,7 +357,7 @@ void NetworkClient::uploadPrintJobs() {
       clientNamePart.setHeader(QNetworkRequest::ContentDispositionHeader,
                                QVariant("form-data; name=client_name"));
       QByteArray clientNameQBA;
-      clientNameQBA.append(nodeName);
+      clientNameQBA.append(nodeName.toUtf8());
       clientNamePart.setBody(clientNameQBA);
       multiPart->append(clientNamePart);
 
@@ -367,7 +365,7 @@ void NetworkClient::uploadPrintJobs() {
       userNamePart.setHeader(QNetworkRequest::ContentDispositionHeader,
                              QVariant("form-data; name=username"));
       QByteArray userNameQBA;
-      userNameQBA.append(username);
+      userNameQBA.append(username.toUtf8());
       userNamePart.setBody(userNameQBA);
       multiPart->append(userNamePart);
 
@@ -375,7 +373,7 @@ void NetworkClient::uploadPrintJobs() {
       printerNamePart.setHeader(QNetworkRequest::ContentDispositionHeader,
                                 QVariant("form-data; name=printer"));
       QByteArray printerNameQBA;
-      printerNameQBA.append(printer);
+      printerNameQBA.append(printer.toUtf8());
       printerNamePart.setBody(printerNameQBA);
       multiPart->append(printerNamePart);
 
@@ -390,7 +388,7 @@ void NetworkClient::uploadPrintJobs() {
       fileNamePart.setHeader(QNetworkRequest::ContentDispositionHeader,
                              QVariant("form-data; name=filename"));
       QByteArray fileNameQBA;
-      fileNameQBA.append(fileName);
+      fileNameQBA.append(fileName.toUtf8());
       fileNamePart.setBody(fileNameQBA);
       multiPart->append(fileNamePart);
 
@@ -495,28 +493,25 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
 
   handleNetworkReplyErrors(reply);
 
-  QByteArray result;
-  result = reply->readAll();
+  QString strReply = (QString)reply->readAll();
+  qDebug() << "Server Result: " << strReply;
+  QJsonDocument jsonResponse = QJsonDocument::fromJson(strReply.toUtf8());
+  QJsonObject serverResponse = jsonResponse.object();
 
-  qDebug() << "Server Result: " << result;
-
-  QScriptValue sc;
-  QScriptEngine engine;
-  sc = engine.evaluate("(" + QString(result) + ")");
-
-  if (!sc.property("registered").toBoolean()) {
+  if (!serverResponse["registered"].toInt()) {
     qDebug("Node Registration FAILED");
   }
 
   // TODO: Rename this to something like 'auto-login guest session'
   //  This feature is not related to session locking
-  if (sc.property("unlock").toBoolean()) {
+  if (serverResponse["unlock"].toInt()) {
     qDebug("Unlocking...");
-    username = sc.property("username").toString();
-    doLoginTasks(sc.property("minutes").toInteger(), 0);
+    username = serverResponse["username"].toString();
+    int minutes = serverResponse["minutes"].toInt();
+    doLoginTasks(minutes, 0);
   }
 
-  if (sc.property("shutdown").toBoolean()) {
+  if (serverResponse["shutdown"].toInt()) {
     qDebug("Received shutdown message from server");
 
     emit allowClose(true);
@@ -533,7 +528,7 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
 #endif  // ifdef Q_OS_UNIX
   }
 
-  if (sc.property("suspend").toBoolean()) {
+  if (serverResponse["suspend"].toInt()) {
 #ifdef Q_OS_WIN
     QProcess::startDetached("rundll32.exe powrprof.dll,SetSuspendState 0,1,0");
 #endif  // ifdef Q_OS_WIN
@@ -543,7 +538,7 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
 #endif  // ifdef Q_OS_UNIX
   }
 
-  if (sc.property("restart").toBoolean()) {
+  if (serverResponse["restart"].toInt()) {
     emit allowClose(true);
 
 #ifdef Q_OS_WIN
@@ -558,98 +553,100 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
 #endif  // ifdef Q_OS_UNIX
   }
 
-  if (sc.property("wakeup").toBoolean()) {
-    QStringList MAC_addresses = sc.engine()->fromScriptValue<QStringList>(
-        sc.property("wol_mac_addresses"));
-    wakeOnLan(MAC_addresses, sc.property("wol_host").toString(),
-              sc.property("wol_port").toInteger());
+  if (serverResponse["wakeup"].toInt()) {
+    QString macString = serverResponse.value("wol_mac_addresses").toString();
+    QJsonDocument docJSON(QJsonDocument::fromJson(macString.toLatin1()));
+    QStringList macAddresses( docJSON.toVariant().toStringList());
+
+    wakeOnLan(macAddresses, serverResponse.value("wol_host").toString(),
+              serverResponse.value("wol_port").toInteger());
   }
 
-  QString styleSheet = sc.property("ClientStyleSheet").toString();
+  QString styleSheet = serverResponse["ClientStyleSheet"].toString();
   if (!styleSheet.isEmpty()) {
       this->app->setStyleSheet(styleSheet);
   }
 
   QSettings settings;
-  settings.setIniCodec("UTF-8");
+  //settings.setIniCodec("UTF-8");
 
   QString bannerTopURL = settings.value("session/BannerTopURL").toString();
   QString bannerBottomURL =
       settings.value("session/BannerBottomURL").toString();
 
   settings.setValue("session/ClientBehavior",
-                    sc.property("ClientBehavior").toString());
+                    serverResponse["ClientBehavior"].toString());
   settings.setValue("session/ReservationShowUsername",
-                    sc.property("ReservationShowUsername").toString());
+                    serverResponse["ReservationShowUsername"].toString());
   settings.setValue("session/EnableClientSessionLocking",
-                    sc.property("EnableClientSessionLocking").toString());
+                    serverResponse["EnableClientSessionLocking"].toString());
   settings.setValue("session/EnableClientPasswordlessMode",
-                    sc.property("EnableClientPasswordlessMode").toString());
+                    serverResponse["EnableClientPasswordlessMode"].toString());
   settings.setValue("session/TermsOfService",
-                    sc.property("TermsOfService").toString());
+                    serverResponse["TermsOfService"].toString());
   settings.setValue("session/TermsOfServiceDetails",
-                    sc.property("TermsOfServiceDetails").toString());
+                    serverResponse["TermsOfServiceDetails"].toString());
 
   settings.setValue("session/BannerTopURL",
-                    sc.property("BannerTopURL").toString());
+                    serverResponse["BannerTopURL"].toString());
   settings.setValue("session/BannerTopWidth",
-                    sc.property("BannerTopWidth").toString());
+                    serverResponse["BannerTopWidth"].toString());
   settings.setValue("session/BannerTopHeight",
-                    sc.property("BannerTopHeight").toString());
+                    serverResponse["BannerTopHeight"].toString());
 
   settings.setValue("session/BannerBottomURL",
-                    sc.property("BannerBottomURL").toString());
+                    serverResponse["BannerBottomURL"].toString());
   settings.setValue("session/BannerBottomWidth",
-                    sc.property("BannerBottomWidth").toString());
+                    serverResponse["BannerBottomWidth"].toString());
   settings.setValue("session/BannerBottomHeight",
-                    sc.property("BannerBottomHeight").toString());
+                    serverResponse["BannerBottomHeight"].toString());
 
   settings.setValue("session/LogoURL",
-                    sc.property("LogoURL").toString());
+                    serverResponse["LogoURL"].toString());
   settings.setValue("session/LogoWidth",
-                    sc.property("LogoWidth").toString());
+                    serverResponse["LogoWidth"].toString());
   settings.setValue("session/LogoHeight",
-                    sc.property("LogoHeight").toString());
+                    serverResponse["LogoHeight"].toString());
 
   settings.setValue("session/inactivityLogout",
-                    sc.property("inactivityLogout").toString());
+                    serverResponse["inactivityLogout"].toString());
   settings.setValue("session/inactivityWarning",
-                    sc.property("inactivityWarning").toString());
+                    serverResponse["inactivityWarning"].toString());
 
   settings.setValue("session/InternetConnectivityURLs",
-                    sc.property("InternetConnectivityURLs").toString());
+                    serverResponse["InternetConnectivityURLs"].toString());
 
   settings.setValue("session/ClientTimeNotificationFrequency",
-                    sc.property("ClientTimeNotificationFrequency").toString());
+                    serverResponse["ClientTimeNotificationFrequency"].toString());
   settings.setValue("session/ClientTimeWarningThreshold",
-                    sc.property("ClientTimeWarningThreshold").toString());
+                    serverResponse["ClientTimeWarningThreshold"].toString());
 
   QString logoURL = settings.value("images/logo").toString();
-  if ( ! sc.property("Logo").toString().isEmpty() ) {
+  if ( ! serverResponse.value("Logo").toString().isEmpty() ) {
     settings.setValue("images/logo",
-                      sc.property("Logo").toString());
+                      serverResponse["Logo"].toString());
 
     settings.setValue("images/logo_height",
-                      sc.property("LogoHeight").toString());
+                      serverResponse["LogoHeight"].toString());
 
     settings.setValue("images/logo_width",
-                      sc.property("LogoWidth").toString());
+                      serverResponse["LogoWidth"].toString());
   }
 
   settings.sync();
 
   if (
-      (logoURL != sc.property("Logo").toString()) ||
-      (bannerTopURL != sc.property("BannerTopURL").toString()) ||
-      (bannerBottomURL != sc.property("BannerBottomURL").toString())
+      (logoURL != serverResponse["Logo"].toString()) ||
+      (bannerTopURL != serverResponse["BannerTopURL"].toString()) ||
+      (bannerBottomURL != serverResponse["BannerBottomURL"].toString())
   ) {
     emit handleBanners();  // TODO: Emit only if a banner url has changed
   }
 
-  QString reserved_for = sc.property("reserved_for").toString();
+  QString reserved_for = serverResponse["reserved_for"].toString();
   emit setReservationStatus(reserved_for);
 
-  QString status = sc.property("status").toString();
+  QString status = serverResponse["status"].toString();
   if (status != clientStatus) {
     if (status == "suspended") {
       emit clientSuspended();
@@ -672,17 +669,17 @@ void NetworkClient::checkForInternetConnectivity() {
   QList<QString> list;
 
   QSettings settings;
-  settings.setIniCodec("UTF-8");
+  //settings.setIniCodec("UTF-8");
   QString internetConnectivityURLs = settings.value("session/InternetConnectivityURLs").toString();
   //qDebug() << "URLS: " << internetConnectivityURLs;
   if ( internetConnectivityURLs != "null" ) {
-      list = internetConnectivityURLs.split(QRegExp("[\r\n]"),QString::SkipEmptyParts);
+      list = internetConnectivityURLs.split(QRegularExpression("[\r\n]"),Qt::SkipEmptyParts);
   }
   //qDebug() << "URLS LIST: " << list.join(" ");
 
   if ( list.size() ) {
       // Select a URL from the list at random to test connectivity
-      QString url = list.at(qrand() % list.size());
+      QString url = list.at(QRandomGenerator::global()->generate() % list.size());
 
       qDebug() << "CHECKING URL: " << url;
 
@@ -788,7 +785,7 @@ void NetworkClient::doLoginTasks(int units, int hold_items_count) {
   updateUserDataTimer->start(1000 * 10);
 
   QSettings settings;
-  settings.setIniCodec("UTF-8");
+  //settings.setIniCodec("UTF-8");
   settings.setValue("session/LoggedInUser", username);
   settings.sync();
   qDebug() << "SCRIPTLOGIN:" << settings.value("scriptlogin/enable").toString();
@@ -804,7 +801,7 @@ void NetworkClient::doLogoutTasks() {
   qDebug("ENTER NetworkClient::doLogoutTasks");
 
   QSettings settings;
-  settings.setIniCodec("UTF-8");
+  //settings.setIniCodec("UTF-8");
   settings.setValue("session/LoggedInUser", "");
   settings.sync();
 

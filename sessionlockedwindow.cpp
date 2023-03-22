@@ -80,7 +80,7 @@ void SessionLockedWindow::getSettings() {
 
   /* Set Labels */
   QSettings settings;
-  settings.setIniCodec("UTF-8");
+  //settings.setIniCodec("UTF-8");
 
   QString label = getLabel("password");
   if (!label.isEmpty()) {
@@ -90,28 +90,17 @@ void SessionLockedWindow::getSettings() {
   if (!settings.value("images/logo").toString().isEmpty()) {
     logo->hide();
 
-    QPalette palette = logoWebView->palette();
-    palette.setBrush(QPalette::Base, Qt::transparent);
+    //QPalette palette = logoWebView->palette();
+    //palette.setBrush(QPalette::Base, Qt::transparent);
 
     QString logoUrl = settings.value("images/logo").toString();
     qDebug() << "Logo URL: " << logoUrl;
 
     if (!logoUrl.isEmpty()) {
-      int logoWidth = settings.value("images/logo_width").toInt();
-
-      if (logoWidth) logoWebView->setMaximumWidth(logoWidth);
-
-      int logoHeight = settings.value("images/logo_height").toInt();
-
-      if (logoHeight) logoWebView->setMaximumHeight(logoHeight);
-
-      logoWebView->setEnabled(true);
-      logoWebView->page()->setPalette(palette);
-      logoWebView->setAttribute(Qt::WA_OpaquePaintEvent, false);
-      logoWebView->load(QUrl(logoUrl));
+        //TODO: Make with label or something
     }
   } else {
-    logoWebView->hide();
+    //logoWebView->hide();
   }
 
   qDebug("LEAVE SessionLockedWindow::getSettings");

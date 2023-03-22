@@ -19,7 +19,6 @@
 
 #include "timerwindow.h"
 
-#include <QtWidgets/qdesktopwidget.h>
 #include <QPainter>
 #include <QPixmap>
 #include <QIcon>
@@ -67,8 +66,9 @@ TimerWindow::TimerWindow(QWidget *parent) : QMainWindow(parent) {
   inactivityTimer = new QTimer(this);
   connect(inactivityTimer, SIGNAL(timeout()), this, SLOT(checkForInactivity()));
 
-  this->move(QApplication::desktop()->screen()->rect().center() -
-             this->rect().center());
+//FIXME
+//  this->move(QApplication::desktop()->screen()->rect().center() -
+//             this->rect().center());
 
   this->hide();
 
@@ -101,7 +101,7 @@ void TimerWindow::startTimer(QString newUsername, QString newPassword,
   updateClock();
 
   QSettings settings;
-  settings.setIniCodec("UTF-8");
+  //settings.setIniCodec("UTF-8");
 
   if (settings.value("session/EnableClientSessionLocking").toBool()) {
     connect(lockSessionButton, SIGNAL(clicked(bool)), this,
@@ -150,7 +150,7 @@ void TimerWindow::updateClock() {
   qDebug("ENTER TimerWindow::updateClock");
 
   QSettings settings;
-  settings.setIniCodec("UTF-8");
+  //settings.setIniCodec("UTF-8");
 
   /* Convert minutes remaining into Hours::Minutes */
   int hours = minutesRemaining / 60;
@@ -346,7 +346,7 @@ void TimerWindow::showSystemTrayIconTimeLeftMessage() {
   qDebug("ENTER TimerWindow::showSystemTrayIconTimeLeftMessage");
 
   QSettings settings;
-  settings.setIniCodec("UTF-8");
+  //settings.setIniCodec("UTF-8");
 
   int clientTimeNotificationFrequency = 5;
   if (!settings.value("session/ClientTimeNotificationFrequency").toString().isEmpty()) {
@@ -380,7 +380,7 @@ void TimerWindow::checkForInactivity() {
   // TODO: keep one object level instance of settings for each of TimerWindow
   // and NetworkClient
   QSettings settings;
-  settings.setIniCodec("UTF-8");
+  //settings.setIniCodec("UTF-8");
 
   int inactivityLogout = 0;
   if (!settings.value("node/inactivityLogout").toString().isEmpty()) {

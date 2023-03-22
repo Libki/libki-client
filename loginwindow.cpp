@@ -90,7 +90,7 @@ void LoginWindow::getSettings() {
 
   /* Set Labels */
   QSettings settings;
-  settings.setIniCodec("UTF-8");
+  //settings.setIniCodec("UTF-8");
 
   QString label = getLabel("username");
   if (!label.isEmpty()) {
@@ -114,24 +114,9 @@ void LoginWindow::getSettings() {
   }
 
   if (!logoUrl.isEmpty()) {
-      qDebug() << "Logo URL: " << logoUrl;
-
-      logo->hide();
-
-      QPalette palette = logoWebView->palette();
-      palette.setBrush(QPalette::Base, Qt::transparent);
-
-      if (logoWidth) logoWebView->setMaximumWidth(logoWidth);
-      if (logoHeight) logoWebView->setMaximumHeight(logoHeight);
-
-      logoWebView->setEnabled(true);
-      logoWebView->page()->setPalette(palette);
-      logoWebView->setAttribute(Qt::WA_OpaquePaintEvent, false);
-      logoWebView->load(QUrl(logoUrl));
-
+      //TODO Download image and set for label
       watermark->show();
   } else {
-      logoWebView->hide();
       watermark->hide();
   }
 
@@ -154,7 +139,7 @@ void LoginWindow::attemptLogin() {
 
   QString username = usernameField->text();
   QByteArray password;
-  password.append(passwordField->text());
+  password.append(passwordField->text().toUtf8());
 
   this->setButtonsEnabled(false);
 
@@ -162,7 +147,7 @@ void LoginWindow::attemptLogin() {
 
   if (username.isEmpty()) {
     QSettings settings;
-    settings.setIniCodec("UTF-8");
+    //settings.setIniCodec("UTF-8");
     QString md5FromIni = settings.value("node/password").toString();
 
     if (!md5FromIni.isEmpty()) {
@@ -190,7 +175,7 @@ void LoginWindow::attemptLogin() {
   }
 
   QSettings settings;
-  settings.setIniCodec("UTF-8");
+  //settings.setIniCodec("UTF-8");
   QString termsOfService = settings.value("session/TermsOfService").toString();
   QString termsOfServiceDetails = settings.value("session/TermsOfServiceDetails").toString();
 
@@ -464,11 +449,11 @@ void LoginWindow::handleBanners() {
   qDebug("ENTER LoginWindow::handleBanners");
 
   QSettings settings;
-  settings.setIniCodec("UTF-8");
+  //settings.setIniCodec("UTF-8");
 
-  QPalette palette = bannerWebViewTop->palette();
+  //QPalette palette = bannerWebViewTop->palette();
 
-  palette.setBrush(QPalette::Base, Qt::transparent);
+  //palette.setBrush(QPalette::Base, Qt::transparent);
 
   QString bannerTopUrl =
       "http://" + settings.value("session/BannerTopURL").toString();
@@ -477,62 +462,51 @@ void LoginWindow::handleBanners() {
     int bannerTopHeight = settings.value("session/BannerTopHeight").toInt();
     int bannerTopWidth = settings.value("session/BannerTopWidth").toInt();
 
-    bannerWebViewTop->setEnabled(true);
-    bannerWebViewTop->page()->setPalette(palette);
-    bannerWebViewTop->setAttribute(Qt::WA_OpaquePaintEvent, false);
+//    bannerWebViewTop->setEnabled(true);
+//    bannerWebViewTop->page()->setPalette(palette);
+//    bannerWebViewTop->setAttribute(Qt::WA_OpaquePaintEvent, false);
 
-    if (bannerTopHeight) bannerWebViewTop->setMaximumHeight(bannerTopHeight);
+//    if (bannerTopHeight) bannerWebViewTop->setMaximumHeight(bannerTopHeight);
 
-    if (bannerTopWidth) bannerWebViewTop->setMaximumWidth(bannerTopWidth);
-    bannerWebViewTop->load(QUrl(bannerTopUrl));
+//    if (bannerTopWidth) bannerWebViewTop->setMaximumWidth(bannerTopWidth);
+//    bannerWebViewTop->load(QUrl(bannerTopUrl));
   }
 
   QString bannerBottomUrl =
       "http://" + settings.value("session/BannerBottomURL").toString();
 
   if (bannerBottomUrl != "http://") {
-    int bannerBottomHeight =
-        settings.value("session/BannerBottomHeight").toInt();
-    int bannerBottomWidth = settings.value("session/BannerBottomWidth").toInt();
+//    int bannerBottomHeight =
+//        settings.value("session/BannerBottomHeight").toInt();
+//    int bannerBottomWidth = settings.value("session/BannerBottomWidth").toInt();
 
-    bannerWebViewBottom->setEnabled(true);
-    bannerWebViewBottom->page()->setPalette(palette);
-    bannerWebViewBottom->setAttribute(Qt::WA_OpaquePaintEvent, false);
+//    bannerWebViewBottom->setEnabled(true);
+//    bannerWebViewBottom->page()->setPalette(palette);
+//    bannerWebViewBottom->setAttribute(Qt::WA_OpaquePaintEvent, false);
 
-    if (bannerBottomHeight)
-      bannerWebViewBottom->setMaximumHeight(bannerBottomHeight);
+//    if (bannerBottomHeight)
+//      bannerWebViewBottom->setMaximumHeight(bannerBottomHeight);
 
-    if (bannerBottomWidth)
-      bannerWebViewBottom->setMaximumWidth(bannerBottomWidth);
-    bannerWebViewBottom->load(QUrl(bannerBottomUrl));
+//    if (bannerBottomWidth)
+//      bannerWebViewBottom->setMaximumWidth(bannerBottomWidth);
+//    bannerWebViewBottom->load(QUrl(bannerBottomUrl));
   }
 
   /* For when logo is specificed in server side setting */
   if (!settings.value("images/logo").toString().isEmpty()) {
-    logo->hide();
+    //logo->hide();
 
-    QPalette palette = logoWebView->palette();
-    palette.setBrush(QPalette::Base, Qt::transparent);
+    //QPalette palette = logoWebView->palette();
+    //palette.setBrush(QPalette::Base, Qt::transparent);
 
     QString logoUrl = settings.value("images/logo").toString();
     qDebug() << "Logo URL: " << logoUrl;
 
     if (!logoUrl.isEmpty()) {
-      int logoWidth = settings.value("images/logo_width").toInt();
-
-      if (logoWidth) logoWebView->setMaximumWidth(logoWidth);
-
-      int logoHeight = settings.value("images/logo_height").toInt();
-
-      if (logoHeight) logoWebView->setMaximumHeight(logoHeight);
-
-      logoWebView->setEnabled(true);
-      logoWebView->page()->setPalette(palette);
-      logoWebView->setAttribute(Qt::WA_OpaquePaintEvent, false);
-      logoWebView->load(QUrl(logoUrl));
+        //TODO: Make work with label or soemthing
     }
   } else {
-    logoWebView->hide();
+    //logoWebView->hide();
   }
 
   qDebug("LEAVE LoginWindow::handleBanners");

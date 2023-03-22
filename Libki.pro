@@ -6,8 +6,8 @@ INCLUDEPATH += .
 QT += core
 QT += gui
 QT += network
-QT += script
-QT += webkitwidgets
+QT += widgets
+QT += qml
 
 #CONFIG += console
 

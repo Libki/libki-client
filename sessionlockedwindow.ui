@@ -48,7 +48,6 @@
         <property name="font">
          <font>
           <pointsize>18</pointsize>
-          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -77,15 +76,6 @@
            </size>
           </property>
          </spacer>
-        </item>
-        <item>
-         <widget class="QWebView" name="logoWebView">
-          <property name="url">
-           <url>
-            <string>about:blank</string>
-           </url>
-          </property>
-         </widget>
         </item>
         <item>
          <spacer name="horizontalSpacer_12">
@@ -144,7 +134,6 @@
              <font>
               <family>Bitstream Charter</family>
               <pointsize>18</pointsize>
-              <weight>75</weight>
               <bold>true</bold>
              </font>
             </property>
@@ -161,7 +150,6 @@
             <property name="font">
              <font>
               <pointsize>14</pointsize>
-              <weight>75</weight>
               <bold>true</bold>
              </font>
             </property>
@@ -420,13 +408,6 @@
    </property>
   </widget>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>QWebView</class>
-   <extends>QWidget</extends>
-   <header>QtWebKitWidgets/QWebView</header>
-  </customwidget>
- </customwidgets>
  <tabstops>
   <tabstop>passwordField</tabstop>
   <tabstop>resumeButton</tabstop>
