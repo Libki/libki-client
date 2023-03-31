@@ -93,6 +93,8 @@ class NetworkClient : public QObject {
   void checkForInternetConnectivity();
   void processCheckForInternetConnectivityReply(QNetworkReply *reply);
 
+  void handleNetworkReplyErrors(QNetworkReply *reply);
+
  private:
   QApplication *app;
 

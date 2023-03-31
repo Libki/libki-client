@@ -127,10 +127,7 @@ void NetworkClient::attemptLogin(QString aUsername, QString aPassword) {
 void NetworkClient::processAttemptLoginReply(QNetworkReply *reply) {
   qDebug("ENTER NetworkClient::processAttemptLogoutReply");
 
-  if ( reply->error() ) {
-      qDebug() << "ERROR: Server Access Warning: " << reply->errorString();
-      emit serverAccessWarning(QString(reply->error()));
-  }
+  handleNetworkReplyErrors(reply);
 
   QByteArray result;
   result = reply->readAll();
@@ -191,10 +188,7 @@ void NetworkClient::attemptLogout() {
 void NetworkClient::processAttemptLogoutReply(QNetworkReply *reply) {
   qDebug("ENTER NetworkClient::processAttemptLogoutReply");
 
-  if ( reply->error() ) {
-      qDebug() << "ERROR: Server Access Warning: " << reply->errorString();
-      emit serverAccessWarning(QString(reply->error()));
-  }
+  handleNetworkReplyErrors(reply);
 
   QByteArray result;
   result = reply->readAll();
@@ -241,10 +235,7 @@ void NetworkClient::getUserDataUpdate() {
 void NetworkClient::processGetUserDataUpdateReply(QNetworkReply *reply) {
   qDebug("ENTER NetworkClient::processGetUserDataUpdateReply");
 
-  if ( reply->error() ) {
-      qDebug() << "ERROR: Server Access Warning: " << reply->errorString();
-      emit serverAccessWarning(QString(reply->error()));
-  }
+  handleNetworkReplyErrors(reply);
 
   QByteArray result;
   result = reply->readAll();
@@ -422,10 +413,7 @@ void NetworkClient::handleUploadProgress(qint64 bytesSent, qint64 bytesTotal) {
 void NetworkClient::uploadPrintJobReply(QNetworkReply *reply) {
   qDebug("ENTER NetworkClient::uploadPrintJobReply");
 
-  if ( reply->error() ) {
-      qDebug() << "ERROR: Server Access Warning: " << reply->errorString();
-      emit serverAccessWarning(QString(reply->error()));
-  }
+  handleNetworkReplyErrors(reply);
 
   if (reply->error() == QNetworkReply::NoError) {
     reply->abort();
@@ -476,7 +464,7 @@ void NetworkClient::registerNode() {
   query.addQueryItem("action", "register_node");
   query.addQueryItem("node_name", nodeName);
   query.addQueryItem("age_limit", nodeAgeLimit);
-  query.addQueryItem("version", "2.2.20");
+  query.addQueryItem("version", "2.2.21");
   url.setQuery(query);
 
   /*QNetworkReply* reply =*/nam->get(QNetworkRequest(url));
@@ -492,10 +480,7 @@ void NetworkClient::handleSslErrors(QNetworkReply *reply,
 void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
   qDebug("ENTER NetworkClient::processRegisterNodeReply");
 
-  if ( reply->error() ) {
-      qDebug() << "ERROR: Server Access Warning: " << reply->errorString();
-      emit serverAccessWarning(QString(reply->error()));
-  }
+  handleNetworkReplyErrors(reply);
 
   QByteArray result;
   result = reply->readAll();
@@ -760,12 +745,7 @@ void NetworkClient::acknowledgeReservation(QString reserved_for) {
 void NetworkClient::ignoreNetworkReply(QNetworkReply *reply) {
   qDebug("ENTER NetworkClient::ignoreNetworkReply");
 
-  if ( reply->error() != QNetworkReply::NoError ) {
-      qDebug() << "ERROR: Server Access Warning: " << reply->errorString();
-      emit serverAccessWarning(QString(reply->error()));
-  } else {
-      emit serverAccessWarning("");
-  }
+  handleNetworkReplyErrors(reply);
 
   reply->abort();
   reply->deleteLater();
@@ -918,4 +898,14 @@ void NetworkClient::wakeOnLan(QStringList MAC_addresses, QString host,
   }
 
   qDebug("LEAVE NetworkClient::wakeOnLan");
+}
+
+void NetworkClient::handleNetworkReplyErrors(QNetworkReply *reply) {
+  if ( reply->error() != QNetworkReply::NoError ) {
+      QString e = QString::number(reply->error());
+      qDebug() << "ERROR: Server Access Warning: " << e << " :: " << reply->errorString();
+      serverAccessWarning(e);
+  } else {
+      serverAccessWarning("");
+  }
 }
