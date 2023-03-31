@@ -4,9 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.22]
+### Added
+- Hide password field if server setting EnableClientPasswordlessMode is enabled
+
 ## [2.2.21]
 ### Changed
-- Centralized error message display logic in network client. Error message will now go away when network error is resolved.
+- Centralized error message display logic in network client. Error message will now go away when network error is resolved
 
 ## [2.2.20]
 ### Added

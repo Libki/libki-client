@@ -137,7 +137,10 @@ void LoginWindow::getSettings() {
 
   /* Hide Password Field */
 
-  if (settings.value("node/no_passwords").toString().toInt()) {
+  if (
+    settings.value("node/no_passwords").toString().toInt()
+    || settings.value("session/EnableClientPasswordlessMode").toString().toInt()
+  ) {
     passwordLabel->hide();
     passwordField->hide();
   }

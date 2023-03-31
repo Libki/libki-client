@@ -464,7 +464,7 @@ void NetworkClient::registerNode() {
   query.addQueryItem("action", "register_node");
   query.addQueryItem("node_name", nodeName);
   query.addQueryItem("age_limit", nodeAgeLimit);
-  query.addQueryItem("version", "2.2.21");
+  query.addQueryItem("version", "2.2.22");
   url.setQuery(query);
 
   /*QNetworkReply* reply =*/nam->get(QNetworkRequest(url));
@@ -570,6 +570,8 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
                     sc.property("ReservationShowUsername").toString());
   settings.setValue("session/EnableClientSessionLocking",
                     sc.property("EnableClientSessionLocking").toString());
+  settings.setValue("session/EnableClientPasswordlessMode",
+                    sc.property("EnableClientPasswordlessMode").toString());
   settings.setValue("session/TermsOfService",
                     sc.property("TermsOfService").toString());
   settings.setValue("session/TermsOfServiceDetails",
