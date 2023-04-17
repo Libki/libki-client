@@ -906,7 +906,9 @@ void NetworkClient::handleNetworkReplyErrors(QNetworkReply *reply) {
   if ( reply->error() != QNetworkReply::NoError ) {
       QString e = QString::number(reply->error());
       qDebug() << "ERROR: Server Access Warning: " << e << " :: " << reply->errorString();
-      serverAccessWarning(e);
+
+      QString s = e + ": " + reply->errorString();
+      serverAccessWarning(s);
   } else {
       serverAccessWarning("");
   }
