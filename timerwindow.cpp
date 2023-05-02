@@ -351,11 +351,13 @@ void TimerWindow::showSystemTrayIconTimeLeftMessage() {
   int clientTimeNotificationFrequency = 5;
   if (!settings.value("session/ClientTimeNotificationFrequency").toString().isEmpty()) {
     clientTimeNotificationFrequency = settings.value("session/ClientTimeNotificationFrequency").toInt();
+    clientTimeNotificationFrequency = clientTimeNotificationFrequency > 0 ? clientTimeNotificationFrequency : 5;
   }
 
   int clientTimeWarningThreshold = 5;
   if (!settings.value("session/ClientTimeWarningThreshold").toString().isEmpty()) {
     clientTimeWarningThreshold = settings.value("session/ClientTimeWarningThreshold").toInt();
+    clientTimeWarningThreshold = clientTimeWarningThreshold > 0 ? clientTimeWarningThreshold : 5;
   }
 
 
