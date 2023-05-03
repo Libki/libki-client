@@ -30,6 +30,8 @@
 #include <QSslError>
 #include <QUdpSocket>
 
+#define VERSION "2.2.24"
+
 NetworkClient::NetworkClient(QApplication *app) : QObject() {
   qDebug("ENTER NetworkClient::NetworkClient");
   this->app = app;
@@ -104,6 +106,7 @@ void NetworkClient::attemptLogin(QString aUsername, QString aPassword) {
 
   QUrl url = QUrl(serviceURL);
   QUrlQuery query = QUrlQuery(urlQuery);
+  query.addQueryItem("version", VERSION);
   query.addQueryItem("action", "login");
   query.addQueryItem("username", username);
   query.addQueryItem("password", password);
@@ -175,6 +178,7 @@ void NetworkClient::attemptLogout() {
 
   QUrl url = QUrl(serviceURL);
   QUrlQuery query = QUrlQuery(urlQuery);
+  query.addQueryItem("version", VERSION);
   query.addQueryItem("action", "logout");
   query.addQueryItem("username", username);
   query.addQueryItem("password", password);
@@ -222,6 +226,7 @@ void NetworkClient::getUserDataUpdate() {
 
   QUrl url = QUrl(serviceURL);
   QUrlQuery query = QUrlQuery(urlQuery);
+  query.addQueryItem("version", VERSION);
   query.addQueryItem("action", "get_user_data");
   query.addQueryItem("username", username);
   query.addQueryItem("password", password);
@@ -461,10 +466,10 @@ void NetworkClient::registerNode() {
 
   QUrl url = QUrl(serviceURL);
   QUrlQuery query = QUrlQuery(urlQuery);
+  query.addQueryItem("version", VERSION);
   query.addQueryItem("action", "register_node");
   query.addQueryItem("node_name", nodeName);
   query.addQueryItem("age_limit", nodeAgeLimit);
-  query.addQueryItem("version", "2.2.24");
   url.setQuery(query);
 
   /*QNetworkReply* reply =*/nam->get(QNetworkRequest(url));
@@ -715,6 +720,7 @@ void NetworkClient::clearMessage() {
       SLOT(handleSslErrors(QNetworkReply *, const QList<QSslError> &)));
   QUrl url = QUrl(serviceURL);
   QUrlQuery query = QUrlQuery(urlQuery);
+  query.addQueryItem("version", VERSION);
   query.addQueryItem("action", "clear_message");
   query.addQueryItem("username", username);
   query.addQueryItem("password", password);
@@ -735,6 +741,7 @@ void NetworkClient::acknowledgeReservation(QString reserved_for) {
       SLOT(handleSslErrors(QNetworkReply *, const QList<QSslError> &)));
   QUrl url = QUrl(serviceURL);
   QUrlQuery query = QUrlQuery(urlQuery);
+  query.addQueryItem("version", VERSION);
   query.addQueryItem("action", "acknowledge_reservation");
   query.addQueryItem("reserved_for", reserved_for);
   url.setQuery(query);
