@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 - Send client version with every server request, not use client registration
+- Add checks to ensure print jobs are renamed and readable before attempting to updload
 
 ## [2.2.24]
 ### Added

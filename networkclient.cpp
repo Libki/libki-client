@@ -336,10 +336,18 @@ void NetworkClient::uploadPrintJobs() {
 
       QString newAbsoluteFilePath =
           absoluteFilePath + "." + fileCounterString + printedFileSuffix;
-      QFile::rename(absoluteFilePath, newAbsoluteFilePath);
+      bool renamed = QFile::rename(absoluteFilePath, newAbsoluteFilePath);
+      if ( !renamed ) {
+          qDebug() << "RENAME FROM " << absoluteFilePath << " TO " << printedFileSuffix << " FAILED! SKIPPING FILE.";
+          continue;
+      }
 
       QFile *file = new QFile(newAbsoluteFilePath);
-      file->open(QIODevice::ReadOnly);
+      bool opened = file->open(QIODevice::ReadOnly);
+      if ( !opened ) {
+          qDebug() << "OPENDING FILE " << newAbsoluteFilePath << " FAILED! SKIPPING FILE.";
+          continue;
+      }
 
       QHttpMultiPart *multiPart =
           new QHttpMultiPart(QHttpMultiPart::FormDataType);
