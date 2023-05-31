@@ -5,6 +5,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QFileInfoList>
+#include <QSettings>
 #include <QStandardPaths>
 #include <QTime>
 #include <iostream>
@@ -17,8 +18,23 @@ static QFile* logFile;
 void initLogFileName() {
   qDebug("ENTER LogUtils::iniLogFileName");
 
-  QString path =
-      QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+  // Check environment variable for logs directory
+  QString path = qgetenv("LIBKI_LOGS_DIR");
+  qDebug() << "LOGS ENV VAR: " << path;
+
+  // Next, check the registry ( on Windows )
+  if ( path.isEmpty() ) {
+      QSettings settings(QSettings::NativeFormat, QSettings::UserScope, "Libki", "Libki Kiosk Management System");
+      path = settings.value("logs_dir").toString();
+      qDebug() << "LOGS REGISTRY VAR: " << path;
+  }
+
+  // Finally, default to AppDataLocation
+  if ( path.isEmpty() ) {
+    path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    qDebug() << "LOGS APP DATA LOCATION: " << path;
+  }
+
   if (path.isEmpty()) qFatal("Cannot determine settings storage location");
   QDir d = QDir(path);
   QString appDataPath = d.absolutePath();
