@@ -22,11 +22,18 @@ void initLogFileName() {
   QString path = qgetenv("LIBKI_LOGS_DIR");
   qDebug() << "LOGS ENV VAR: " << path;
 
-  // Next, check the registry ( on Windows )
+  // Next, check the user level registry ( on Windows )
   if ( path.isEmpty() ) {
-      QSettings settings(QSettings::NativeFormat, QSettings::UserScope, "Libki", "Libki Kiosk Management System");
+      QSettings settings("HKEY_CURRENT_USER\\Software\\Libki", QSettings::NativeFormat);
       path = settings.value("logs_dir").toString();
-      qDebug() << "LOGS REGISTRY VAR: " << path;
+      qDebug() << "HKCU LOGS DIR: " << path;
+  }
+
+  // Next, check the machine level registry ( on Windows )
+  if ( path.isEmpty() ) {
+      QSettings settings("HKEY_LOCAL_MACHINE\\Software\\Libki", QSettings::NativeFormat);
+      path = settings.value("logs_dir").toString();
+      qDebug() << "HKLM LOGS DIR: " << path;
   }
 
   // Finally, default to AppDataLocation
