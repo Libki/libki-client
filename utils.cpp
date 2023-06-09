@@ -22,6 +22,7 @@
 #include <QDebug>
 #include <QLocale>
 #include <QtNetwork/QHostInfo>
+#include <QNetworkInterface>
 #include <QSettings>
 
 QString getLabel(QString labelcode) {
@@ -91,4 +92,66 @@ QString getClientName() {
 
     qDebug("LEAVE utils/getClientName");
     return clientName;
+}
+
+QNetworkInterface getNetworkInterface() {
+
+  foreach(QNetworkInterface netInterface, QNetworkInterface::allInterfaces()) {
+
+     // Get the first non-loopback MAC Address which is up & running
+    if (!(netInterface.flags() & QNetworkInterface::IsLoopBack)
+            && netInterface.flags() & QNetworkInterface::IsRunning) {
+        return netInterface;
+    }
+  }
+}
+
+QString IPv4Address = "";
+QString getIPv4Address() {
+
+  qDebug("ENTER utils/getIPv4Address");
+
+  if ( IPv4Address.length() == 0 ) {
+      QNetworkInterface netInterface = getNetworkInterface();
+      foreach(QNetworkAddressEntry addressEntry, netInterface.addressEntries()) {
+         if ( addressEntry.ip().protocol() == QAbstractSocket::IPv4Protocol) {
+             IPv4Address = addressEntry.ip().toString();
+         }
+      }
+  }
+  qDebug() << "IPv4 Address: " << IPv4Address;
+
+  qDebug("LEAVE utils/getIPv4Address");
+  return IPv4Address;
+}
+
+QString MACAddress = "";
+QString getMACAddress() {
+
+  qDebug("ENTER utils/getMACAddress");
+
+  if ( MACAddress.length() == 0 ) {
+      QNetworkInterface netInterface = getNetworkInterface();
+      MACAddress = netInterface.hardwareAddress();
+  }
+  qDebug() << "MAC Address: " << MACAddress;
+
+  qDebug("LEAVE utils/getMACAddress");
+  return MACAddress;
+
+}
+
+QString hostname = "";
+QString getHostname() {
+
+  qDebug("ENTER utils/getHostname");
+
+  if ( hostname.length() == 0 ) {
+        hostname = QHostInfo::localHostName();
+    }
+  qDebug() << "Hostname: " << hostname;
+
+  qDebug("LEAVE utils/getHostname");
+  return hostname;
+
 }
