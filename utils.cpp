@@ -108,7 +108,6 @@ QNetworkInterface getNetworkInterface() {
 
 QString IPv4Address = "";
 QString getIPv4Address() {
-
   qDebug("ENTER utils/getIPv4Address");
 
   if ( IPv4Address.length() == 0 ) {
