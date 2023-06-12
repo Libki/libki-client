@@ -31,6 +31,7 @@
 #include <QUrl>
 #include <QUrlQuery>
 #include <QtNetwork/QNetworkAccessManager>
+#include <QtNetwork/QNetworkInterface>
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QNetworkRequest>
 #include <QJSEngine>
@@ -109,6 +110,9 @@ class NetworkClient : public QObject {
   QString nodeLocation;
   QString nodeType;
   QString nodeAgeLimit;
+  QString nodeIPAddress;
+  QString nodeMACAddress;
+  QString nodeHostname;
 
   LogoutAction::Enum actionOnLogout;
 
@@ -123,6 +127,7 @@ class NetworkClient : public QObject {
   void doLogoutTasks();
 
   void wakeOnLan(QStringList MAC_addresses, QString host, qint64 port);
+
 };
 
 #endif  // NETWORKCLIENT_H

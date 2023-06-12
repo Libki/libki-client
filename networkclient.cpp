@@ -75,9 +75,16 @@ NetworkClient::NetworkClient(QApplication *app) : QObject() {
   serviceURL.setScheme(settings.value("server/scheme").toString());
   serviceURL.setPath("/api/client/v1_0");
 
+  nodeIPAddress = getIPv4Address();
+  nodeMACAddress = getMACAddress();
+  nodeHostname = getHostname();
+
   urlQuery.addQueryItem("node", nodeName);
   urlQuery.addQueryItem("location", nodeLocation);
   urlQuery.addQueryItem("type", nodeType);
+  urlQuery.addQueryItem("ipaddress", nodeIPAddress);
+  urlQuery.addQueryItem("macaddress", nodeMACAddress);
+  urlQuery.addQueryItem("hostname", nodeHostname);
 
   registerNode();
   registerNodeTimer = new QTimer(this);
