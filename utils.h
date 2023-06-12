@@ -25,5 +25,8 @@
 QString getLabel(QString labelcode);
 
 QString getClientName();
+QString getIPv4Address();
+QString getMACAddress();
+QString getHostname();
 
 #endif  // UTILS_H
