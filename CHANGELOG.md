@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.26]
+### Added
+- Add ability to specify Libki client logs dir using an environment variable LIBKI_LOGS_DIR
+
 ## [2.2.25]
 ### Changed
 - Send client version with every server request, not use client registration
