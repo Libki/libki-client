@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.2.27]
 ### Added
-- Transmit client ip address, mac address and hostname to the server
+- Transmit client ip address, mac address and hostname to the server. Requires server 2.2.7 or greater
 
 ## [2.2.26]
 ### Added
