@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.28]
+### Added
+- Add support for keyboard input when checking for inactivity on Windows
+
 ## [2.2.27]
 ### Added
 - Transmit client ip address, mac address and hostname to the server. Requires server 4.7.7 or greater
