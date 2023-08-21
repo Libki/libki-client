@@ -29,6 +29,12 @@
 #include "utils.h"
 #include "timesplash.h"
 
+#ifdef Q_OS_WINDOWS
+  #include <windows.h>
+  #include <winuser.h>
+  #include <sysinfoapi.h>
+#endif
+
 #define INACTIVITY_CHECK_INTERVAL 10
 
 TimerWindow::TimerWindow(QWidget *parent) : QMainWindow(parent) {
@@ -401,13 +407,57 @@ void TimerWindow::checkForInactivity() {
 
   qDebug() << "INACTIVIY WARNING: " << inactivityWarning;
 
-  if (inactivityLogout > 0) {
-    QPoint pos = QCursor::pos();
-    int x = pos.x();
-    int y = pos.y();
 
-    // TODO: Implement ranges to account for mouse wobble?
-    if (prevMousePosX == x && prevMousePosY == y) {
+  if (inactivityLogout > 0) {
+
+    #ifdef Q_OS_WIN
+
+      systemTickRangeEnd = (GetTickCount());
+
+      LASTINPUTINFO lastInput;
+      lastInput.cbSize = sizeof(lastInput);
+
+      GetLastInputInfo(&lastInput);
+      lastInputTick = lastInput.dwTime;
+
+
+      if ((lastInputTick >=  systemTickRangeStart) && (lastInputTick <=  systemTickRangeEnd)) {
+
+        userIdle = false;
+
+      } else {
+
+        userIdle = true;
+
+      }
+
+      systemTickRangeStart = (GetTickCount());
+
+    #else
+
+      QPoint pos = QCursor::pos();
+      int x = pos.x();
+      int y = pos.y();
+
+      // TODO: Implement ranges to account for mouse wobble?
+      if (prevMousePosX == x && prevMousePosY == y) {
+
+        userIdle = true;
+
+      } else {
+
+        userIdle = false;
+
+      }
+
+      prevMousePosX = x;
+      prevMousePosY = y;
+
+    #endif
+
+
+    
+    if (userIdle == true) {
       secondsSinceLastActivity += INACTIVITY_CHECK_INTERVAL;
       qDebug() << "No activity detected. Seconds since last activity: "
                << secondsSinceLastActivity;
@@ -440,8 +490,7 @@ void TimerWindow::checkForInactivity() {
       emit requestLogout();
     }
 
-    prevMousePosX = x;
-    prevMousePosY = y;
+
   }
 
   qDebug("LEAVE TimerWindow::checkForInactivity");
