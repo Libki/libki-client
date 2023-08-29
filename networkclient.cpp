@@ -324,16 +324,20 @@ void NetworkClient::uploadPrintJobs() {
 
     QFileInfoList list = dir.entryInfoList();
 
+    const QString printedFileSuffix = ".printed";
+
     for (int i = 0; i < list.size(); ++i) {
-      QString printedFileSuffix = ".printed";
 
       QFileInfo fileInfo = list.at(i);
       QString absoluteFilePath = fileInfo.absoluteFilePath();
       QString fileName = fileInfo.fileName();
-      // qDebug() << "Found Print Job File: " << absoluteFilePath;
+
+      // If the file is not writable, the print driver hasn't finished writing the PDF
+      if (!fileInfo.isWritable()) {
+        continue;
+      }
 
       if (fileName.endsWith(printedFileSuffix)) {
-        // qDebug() << "PRINT JOB ALREADY PROCCESSED: " << fileName;
         continue;
       }
       qDebug() << "SENDING PRINT JOB: " << fileName;
