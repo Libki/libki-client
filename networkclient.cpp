@@ -332,6 +332,11 @@ void NetworkClient::uploadPrintJobs() {
       QString absoluteFilePath = fileInfo.absoluteFilePath();
       QString fileName = fileInfo.fileName();
 
+      // If the file is less than 1 kb, it's still being written. An empty PDF is about 3.7K
+      if ( fileInfo.size() < 2048 ) {
+        continue;
+      }
+
       // If the file is not writable, the print driver hasn't finished writing the PDF
       if (!fileInfo.isWritable()) {
         continue;
