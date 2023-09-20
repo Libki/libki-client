@@ -127,6 +127,7 @@ void TimerWindow::startTimer(QString newUsername, QString newPassword,
 
   if (hold_items_count > 0) {
     this->showMessage(waiting_holds_message);
+    qApp->processEvents();
   }
 
   qDebug("LEAVE TimerWindow::startTimer");
@@ -373,8 +374,10 @@ void TimerWindow::showSystemTrayIconTimeLeftMessage() {
 
   if (!(minutesRemaining % clientTimeNotificationFrequency)) {
     trayIcon->showMessage(title, message, QSystemTrayIcon::Information, 1000);
+    qApp->processEvents();
   } else if (minutesRemaining <= clientTimeWarningThreshold) {
     trayIcon->showMessage(title, message, QSystemTrayIcon::Warning, 1000);
+    qApp->processEvents();
   }
 
   qDebug("LEAVE TimerWindow::showSystemTrayIconTimeLeftMessage");
@@ -484,6 +487,7 @@ void TimerWindow::checkForInactivity() {
       QCoreApplication::processEvents();  // Should clear out any previous
                                           // system tray message
       trayIcon->showMessage(title, message, QSystemTrayIcon::Critical, 100000);
+      qApp->processEvents();
     }
 
     if (secondsSinceLastActivity / 60 >= inactivityLogout) {
