@@ -143,8 +143,8 @@ int main(int argc, char *argv[]) {
                    SLOT(displayLoginWindow()));
 
   QObject::connect(
-      loginWindow, SIGNAL(attemptLogin(const QString &, const QString &)),
-      networkClient, SLOT(attemptLogin(const QString &, const QString &)));
+      loginWindow, SIGNAL(attemptLogin(const QString &, const QString &, const bool &)),
+      networkClient, SLOT(attemptLogin(const QString &, const QString &, const bool &)));
 
   QObject::connect(
       networkClient, SIGNAL(loginSucceeded(QString, QString, int, int)),

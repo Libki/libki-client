@@ -66,7 +66,7 @@ class NetworkClient : public QObject {
 
  public slots:
 
-  void attemptLogin(QString username, QString password);
+  void attemptLogin(QString username, QString password, bool createGuest);
   void attemptLogout();
   void acknowledgeReservation(QString reserved_for);
 

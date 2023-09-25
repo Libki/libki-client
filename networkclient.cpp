@@ -30,7 +30,7 @@
 #include <QSslError>
 #include <QUdpSocket>
 
-#define VERSION "2.2.30"
+#define VERSION "2.2.31"
 
 NetworkClient::NetworkClient(QApplication *app) : QObject() {
   qDebug("ENTER NetworkClient::NetworkClient");
@@ -105,8 +105,8 @@ NetworkClient::NetworkClient(QApplication *app) : QObject() {
   qDebug("LEAVE NetworkClient::NetworkClient");
 }
 
-void NetworkClient::attemptLogin(QString aUsername, QString aPassword) {
-  qDebug("ENTER NetworkClient::attemptLogin");
+void NetworkClient::attemptLogin(QString aUsername, QString aPassword, bool createGuest) {
+  qDebug() << "ENTER NetworkClient::attemptLogin(" << aUsername << "," << aPassword << "," << createGuest << ")";
 
   username = aUsername;
   password = aPassword;
@@ -117,6 +117,7 @@ void NetworkClient::attemptLogin(QString aUsername, QString aPassword) {
   query.addQueryItem("action", "login");
   query.addQueryItem("username", username);
   query.addQueryItem("password", password);
+  query.addQueryItem("createGuest", createGuest ? "1" : "0");
   url.setQuery(query);
 
   qDebug() << "LOGIN URL: " << url.toString();
@@ -151,6 +152,13 @@ void NetworkClient::processAttemptLoginReply(QNetworkReply *reply) {
 
     int units = sc.property("units").toInteger();
     int hold_items_count = sc.property("hold_items_count").toInteger();
+
+    QString aUsername = sc.property("username").toString();
+    QString aPassword = sc.property("password").toString();
+    if ( aUsername.length() && aPassword.length() ) {
+        username = aUsername;
+        password = aPassword;
+    }
 
     doLoginTasks(units, hold_items_count);
   } else {
@@ -634,6 +642,9 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
 
   settings.setValue("session/InternetConnectivityURLs",
                     sc.property("InternetConnectivityURLs").toString());
+
+  settings.setValue("session/EnableGuestSelfRegistration",
+                    sc.property("EnableGuestSelfRegistration").toString());
 
   settings.setValue("session/ClientTimeNotificationFrequency",
                     sc.property("ClientTimeNotificationFrequency").toString());

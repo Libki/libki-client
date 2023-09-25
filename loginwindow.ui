@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1006</width>
+    <width>1052</width>
     <height>1505</height>
    </rect>
   </property>
@@ -293,6 +293,26 @@
             </property>
            </widget>
           </item>
+          <item row="3" column="1">
+           <widget class="QPushButton" name="loginGuestButton">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="text">
+             <string>Guest Log In</string>
+            </property>
+            <property name="icon">
+             <iconset resource="libki.qrc">
+              <normaloff>:/icons/images/icons/guest.png</normaloff>:/icons/images/icons/guest.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
         <item>
@@ -508,7 +528,7 @@
        <string notr="true">padding-right: 25px</string>
       </property>
       <property name="text">
-       <string>2.2.30</string>
+       <string>2.2.31</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -609,7 +629,7 @@ color: red;</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1006</width>
+     <width>1052</width>
      <height>21</height>
     </rect>
    </property>

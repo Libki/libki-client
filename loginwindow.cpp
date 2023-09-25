@@ -79,7 +79,9 @@ void LoginWindow::displayLoginWindow() {
 void LoginWindow::setupActions() {
   qDebug("ENTER LoginWindow::setupActions");
 
+  bool f = false;
   connect(loginButton, SIGNAL(clicked()), this, SLOT(attemptLogin()));
+  connect(loginGuestButton, SIGNAL(clicked()), this, SLOT(attemptGuestLogin()));
   connect(cancelButton, SIGNAL(clicked()), this, SLOT(resetLoginScreen()));
 
   qDebug("LEAVE LoginWindow::setupActions");
@@ -145,10 +147,64 @@ void LoginWindow::getSettings() {
     passwordField->hide();
   }
 
+  qDebug() << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX: " << settings.value("session/EnableGuestSelfRegistration").toString();
+  if ( settings.value("session/EnableGuestSelfRegistration").toString() != "enabled" ) {
+      qDebug() << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX: HIDE";
+    loginGuestButton->hide();
+  }
+
   qDebug("LEAVE LoginWindow::getSettings");
 }
 
 /* Protected Slots */
+void LoginWindow::attemptGuestLogin() {
+  qDebug("ENTER LoginWindow::attemptGuestLogin");
+
+  this->setButtonsEnabled(false);
+
+  errorLabel->setText(tr("Please Wait..."));
+
+  QSettings settings;
+  settings.setIniCodec("UTF-8");
+  QString termsOfService = settings.value("session/TermsOfService").toString();
+  QString termsOfServiceDetails = settings.value("session/TermsOfServiceDetails").toString();
+
+  if (termsOfService.length() || termsOfServiceDetails.length() ) {
+    QMessageBox msgBox;
+
+    msgBox.setText(tr("Do you accept the terms of service?"));
+
+    if ( termsOfService.length() ) {
+        msgBox.setInformativeText(termsOfService);
+    } else {
+        msgBox.setInformativeText(tr("Terms of Service"));
+    }
+
+    qDebug() << "TERMS OF SERIVICE DETAILS: " << termsOfServiceDetails;
+    if ( termsOfServiceDetails.length() ) {
+        msgBox.setDetailedText(termsOfServiceDetails);
+        if (Qt::mightBeRichText(termsOfServiceDetails)) {
+          QTextEdit *detailedText = msgBox.findChild<QTextEdit *>();
+          detailedText->setHtml(termsOfServiceDetails);
+        }
+    }
+
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    msgBox.setDefaultButton(QMessageBox::No);
+    msgBox.setButtonText(QMessageBox::Yes, tr("Yes"));
+    msgBox.setButtonText(QMessageBox::No, tr("No"));
+    int ret = msgBox.exec();
+    if (ret == QMessageBox::No) {
+      resetLoginScreen();
+      return;
+    }
+  }
+
+  emit attemptLogin( QString(""), QString(""), true);
+
+  qDebug("LEAVE LoginWindow::attemptGuestLogin");
+}
+
 void LoginWindow::attemptLogin() {
   qDebug("ENTER LoginWindow::attemptLogin");
 
@@ -225,7 +281,7 @@ void LoginWindow::attemptLogin() {
     }
   }
 
-  emit attemptLogin(username, password);
+  emit attemptLogin(username, password, false);
 
   qDebug("LEAVE LoginWindow::attemptLogin");
 }
@@ -409,6 +465,7 @@ void LoginWindow::setButtonsEnabled(bool b) {
   passwordField->setEnabled(b);
   cancelButton->setEnabled(b);
   loginButton->setEnabled(b);
+  loginGuestButton->setEnabled(b);
 
   qDebug("LEAVE LoginWindow::setButtonsEnabled");
 }

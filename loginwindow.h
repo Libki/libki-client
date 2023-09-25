@@ -41,7 +41,7 @@ class LoginWindow : public QMainWindow, public Ui::LoginWindow {
 
   void loginSucceeded(const QString& username, const QString& password,
                       const int& minutes, const int& hold_items_count);
-  void attemptLogin(const QString& username, const QString& password);
+  void attemptLogin(const QString& username, const QString& password, const bool createGuest);
   void displayingReservationMessage(QString reserved_for);
 
  public slots:
@@ -49,6 +49,7 @@ class LoginWindow : public QMainWindow, public Ui::LoginWindow {
   void setAllowClose(bool);
   void displayLoginWindow();
   void attemptLogin();
+  void attemptGuestLogin();
   void attemptLoginFailure(QString loginError);
   void attemptLoginSuccess(QString username, QString password, int minutes,
                            int hold_items_count);

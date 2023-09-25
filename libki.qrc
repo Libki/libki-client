@@ -11,6 +11,7 @@
         <file>images/icons/lock-solid.svg</file>
         <file>images/icons/ban-solid.svg</file>
         <file>images/icons/libki.ico</file>
+        <file>images/icons/guest.png</file>
     </qresource>
     <qresource prefix="/">
         <file>languages/libkiclient_fr.qm</file>
