@@ -528,7 +528,7 @@
        <string notr="true">padding-right: 25px</string>
       </property>
       <property name="text">
-       <string>2.2.31</string>
+       <string>2.2.32</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
