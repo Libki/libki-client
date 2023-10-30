@@ -95,14 +95,17 @@ QString getClientName() {
 }
 
 QNetworkInterface getNetworkInterface() {
+  QNetworkInterface netInterface;
 
-  foreach(QNetworkInterface netInterface, QNetworkInterface::allInterfaces()) {
+  foreach(QNetworkInterface ni, QNetworkInterface::allInterfaces()) {
     // Get the first non-loopback MAC Address which is up & running
-    if (netInterface.isValid() && !(netInterface.flags() & QNetworkInterface::IsLoopBack)
-            && netInterface.flags() & QNetworkInterface::IsRunning) {
-        return netInterface;
+    if (ni.isValid() && !(ni.flags() & QNetworkInterface::IsLoopBack)
+            && ni.flags() & QNetworkInterface::IsRunning) {
+        netInterface = ni;
     }
   }
+
+  return netInterface;
 }
 
 QString IPv4Address = "";
@@ -111,7 +114,7 @@ QString getIPv4Address() {
 
   if ( IPv4Address.length() == 0 ) {
       QNetworkInterface netInterface = getNetworkInterface();
-      if ( netInterface ) {
+      if ( netInterface.isValid() ) {
           foreach(QNetworkAddressEntry addressEntry, netInterface.addressEntries()) {
              if ( addressEntry.ip().protocol() == QAbstractSocket::IPv4Protocol) {
                  IPv4Address = addressEntry.ip().toString();
@@ -132,7 +135,7 @@ QString getMACAddress() {
 
   if ( MACAddress.length() == 0 ) {
       QNetworkInterface netInterface = getNetworkInterface();
-      if ( netInterface ) {
+      if ( netInterface.isValid() ) {
           MACAddress = netInterface.hardwareAddress();
       }
   }
