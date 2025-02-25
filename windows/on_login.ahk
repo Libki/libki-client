@@ -10,6 +10,10 @@
 ;
 #SingleInstance force
 #NoTrayIcon
+;#Persistent
+;#NoEnv
+;SetBatchLines, -1
+OnExit("RestoreRegistry")
 
 #Include functions.ahk
 
@@ -22,7 +26,28 @@ if ( GetSetting( "EnableStartButton" ) ) {
 	DisableStartButton()
 }
 
-Run cmd.exe /c tasklist /nh /fi "imagename eq explorer.exe" | find /i "explorer.exe" > nul || (start explorer.exe)
+RegRead, originalShell, HKEY_LOCAL_MACHINE, SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon, Shell
+if (ErrorLevel) {
+    MsgBox, Error reading the registry key!
+    ExitApp
+}
 
+; Change Shell to Explorer.exe
+RegWrite, REG_SZ, HKEY_LOCAL_MACHINE, SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon, Shell, Explorer.exe
+if (ErrorLevel) {
+    MsgBox, Error writing to registry!
+    ExitApp
+}
+
+; Start Explorer
+Run, explorer.exe
+Sleep, 1000  ; Give Explorer time to start
+
+RestoreRegistry() ; Restore original registry value immediately
 
 ExitApp
+
+RestoreRegistry() {
+    global originalShell
+    RegWrite, REG_SZ, HKEY_LOCAL_MACHINE, SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon, Shell, %originalShell%
+}
