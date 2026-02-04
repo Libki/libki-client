@@ -89,7 +89,8 @@ var
   StartupModePage: TInputOptionWizardPage;
   RebootActionPage: TInputOptionWizardPage;
   PasswordPage: TInputQueryWizardPage;
-  PrintersPage: TInputMemoWizardPage;
+  PrintersPage: TWizardPage;
+  PrintersMemo: TNewMemo;
 
 // Regex helper
 function IsYamlSafeKey(const S: String): Boolean;
@@ -159,15 +160,57 @@ begin
     'Please specify the password for disabling the Libki client.');
   PasswordPage.Add('Password:', True);
   
-  PrintersPage := CreateInputMemoPage(
+  PrintersPage := CreateCustomPage(
     PasswordPage.ID,
     'Printer Configuration',
-    'Printer Setup',
-    'Enter one printer name per line (letters, numbers, _ or - only). Each name will map to C:\printers\<name>.'
+    'Printer Setup'
   );
+
+  PrintersMemo := TNewMemo.Create(PrintersPage);
+  PrintersMemo.Parent := PrintersPage.Surface;
+  PrintersMemo.Left := ScaleX(0);
+  PrintersMemo.Top := ScaleY(0);
+  PrintersMemo.Width := PrintersPage.SurfaceWidth;
+  PrintersMemo.Height := PrintersPage.SurfaceHeight;
+  PrintersMemo.ScrollBars := ssVertical;
+  PrintersMemo.WordWrap := False;
+  PrintersMemo.WantReturns := True;
 
   { Set default values, using settings that were stored last time if possible }
 end;
+
+function NextButtonClick(CurPageID: Integer): Boolean;
+var
+  i: Integer;
+  Line, InvalidList: String;
+begin
+  Result := True;
+
+  if CurPageID = PrintersPage.ID then
+  begin
+    InvalidList := '';
+
+    for i := 0 to PrintersMemo.Lines.Count - 1 do
+    begin
+      Line := Trim(PrintersMemo.Lines[i]);
+      if (Line <> '') and (not IsYamlSafeKey(Line)) then
+      begin
+        if InvalidList <> '' then InvalidList := InvalidList + ', ';
+        InvalidList := InvalidList + Line;
+      end;
+    end;
+
+    if InvalidList <> '' then
+    begin
+      MsgBox(
+        'The following printer names are invalid for YAML keys:' + #13#10 + InvalidList + #13#10#13#10 + 'Names must start with a letter and contain only letters, numbers, _ or -.',
+        mbError, MB_OK
+      );
+      Result := False;
+    end;
+  end;
+end;
+
 
 function GetScheme(Param: String): String;
 begin
@@ -240,9 +283,9 @@ begin
   if CurPageID = PrintersPage.ID then
   begin
     InvalidList := '';
-    for i := 0 to PrintersPage.Lines.Count-1 do
+    for i := 0 to PrintersMemo.Lines.Count-1 do
     begin
-      Line := Trim(PrintersPage.Lines[i]);
+      Line := Trim(PrintersMemo.Lines[i]);
       if (Line <> '') and (not IsYamlSafeKey(Line)) then
       begin
         if InvalidList <> '' then InvalidList := InvalidList + ', ';
@@ -274,7 +317,7 @@ var
 begin
   if CurStep = ssPostInstall then
   begin
-    Lines := PrintersPage.Lines;
+    Lines := PrintersMemo.Lines;
     HasPrinters := False;
     for i := 0 to GetArrayLength(Lines)-1 do
       if Trim(Lines[i]) <> '' then
@@ -369,9 +412,9 @@ begin
   Count := 0;
   SetArrayLength(Printers, 0);
 
-  for i := 0 to PrintersPage.Lines.Count - 1 do
+  for i := 0 to PrintersMemo.Lines.Count - 1 do
   begin
-    Line := Trim(PrintersPage.Lines[i]);
+    Line := Trim(PrintersMemo.Lines[i]);
     if Line <> '' then
     begin
       SetArrayLength(Printers, Count + 1);
