@@ -19,6 +19,7 @@ Source: "libkiclient.exe"; DestDir: "{app}"; Flags: ignoreversion; MinVersion: 0
 Source: "windows\on_login.exe"; DestDir: "{app}\windows"; Flags: ignoreversion; MinVersion: 0.0,5.0
 Source: "windows\on_logout.exe"; DestDir: "{app}\windows"; Flags: ignoreversion; MinVersion: 0.0,5.0
 Source: "windows\on_startup.exe"; DestDir: "{app}\windows"; Flags: ignoreversion; MinVersion: 0.0,5.0
+Source: "windows\clawPDF4Libki.ini"; DestDir: "{app}\windows"; Flags: ignoreversion; MinVersion: 0.0,5.0
 
 Source: "C:\Qt\5.5\mingw492_32\plugins\platforms\qwindows.dll"; DestDir: "{app}\platforms"; Flags: ignoreversion; MinVersion: 0.0,5.0
 
@@ -88,6 +89,34 @@ var
   StartupModePage: TInputOptionWizardPage;
   RebootActionPage: TInputOptionWizardPage;
   PasswordPage: TInputQueryWizardPage;
+  PrintersPage: TInputMemoWizardPage;
+
+// Regex helper
+function IsYamlSafeKey(const S: String): Boolean;
+var
+  i: Integer;
+  C: Char;
+begin
+  Result := Length(S) > 0;
+  if not Result then Exit;
+  // Must start with a letter
+  C := S[1];
+  if not (C in ['A'..'Z', 'a'..'z']) then
+  begin
+    Result := False;
+    Exit;
+  end;
+  // Remaining characters must be letters, numbers, underscore, or dash
+  for i := 2 to Length(S) do
+  begin
+    C := S[i];
+    if not (C in ['A'..'Z','a'..'z','0'..'9','_','-']) then
+    begin
+      Result := False;
+      Exit;
+    end;
+  end;
+end;
 
 procedure InitializeWizard;
 begin
@@ -130,6 +159,13 @@ begin
     'Please specify the password for disabling the Libki client.');
   PasswordPage.Add('Password:', True);
   
+  PrintersPage := CreateInputMemoPage(
+    PasswordPage.ID,
+    'Printer Configuration',
+    'Printer Setup',
+    'Enter one printer name per line (letters, numbers, _ or - only). Each name will map to C:\printers\<name>.'
+  );
+
   { Set default values, using settings that were stored last time if possible }
 end;
 
@@ -191,3 +227,233 @@ function CheckShellReplacement(): Boolean;
 begin
   Result := (StartupModePage.SelectedValueIndex = 1);
 end;
+
+
+// Validate printer names before finishing
+function NextButtonClick(CurPageID: Integer): Boolean;
+var
+  i: Integer;
+  Line, InvalidList: String;
+begin
+  Result := True;
+
+  if CurPageID = PrintersPage.ID then
+  begin
+    InvalidList := '';
+    for i := 0 to PrintersPage.Lines.Count-1 do
+    begin
+      Line := Trim(PrintersPage.Lines[i]);
+      if (Line <> '') and (not IsYamlSafeKey(Line)) then
+      begin
+        if InvalidList <> '' then InvalidList := InvalidList + ', ';
+        InvalidList := InvalidList + Line;
+      end;
+    end;
+
+    if InvalidList <> '' then
+    begin
+      MsgBox(
+        'The following printer names are invalid for YAML keys:' + #13#10 + InvalidList +
+        #13#10#13#10 + 'Names must start with a letter and contain only letters, numbers, _ or -.',
+        mbError, MB_OK
+      );
+      Result := False; // stay on page
+    end;
+  end;
+end;
+
+// Post-install logic: create folders, update INI, install clawPDF, import config
+procedure CurStepChanged(CurStep: TSetupStep);
+var
+  i: Integer;
+  PrinterName: String;
+  IniPath, ClawPDFIni, ClawPDFExe: String;
+  Lines: TArrayOfString;
+  HasPrinters, ClawPDFInstalled: Boolean;
+  ResultCode: Integer;
+  Printers: TArrayOfString;
+begin
+  if CurStep = ssPostInstall then
+  begin
+    Lines := PrintersPage.Lines;
+    HasPrinters := False;
+    for i := 0 to GetArrayLength(Lines)-1 do
+      if Trim(Lines[i]) <> '' then
+      begin
+        HasPrinters := True;
+        Break;
+      end;
+
+    if not HasPrinters then Exit;
+
+    // Paths
+    IniPath := ExpandConstant('{commonappdata}\Libki\Libki Kiosk Management System.ini');
+    ClawPDFIni := ExpandConstant('{app}\clawPDF4Libki.ini');
+
+    // Create base printers folder
+    ForceDirectories('C:\printers');
+    AddToIniFile(IniPath, '[printer]');
+
+    // Create each printer folder and INI entry
+    for i := 0 to GetArrayLength(Lines)-1 do
+    begin
+      PrinterName := Trim(Lines[i]);
+      if PrinterName <> '' then
+      begin
+        ForceDirectories('C:\printers\' + PrinterName);
+        WriteIniString('printer', PrinterName, 'C:\printers\' + PrinterName, IniPath);
+      end;
+    end;
+
+    // Check if clawPDF already installed
+    ClawPDFInstalled :=
+      RegKeyExists(HKLM, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\clawPDF') or
+      RegKeyExists(HKLM, 'Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\clawPDF');
+
+    if not ClawPDFInstalled then
+    begin
+      Exec(
+        'msiexec.exe',
+        '/i "clawPDF_0.9.3_setup.msi" /quiet /norestart',
+        '',
+        SW_HIDE,
+        ewWaitUntilTerminated,
+        ResultCode
+      );
+    end;
+
+    // Import clawPDF4Libki.ini configuration
+    ClawPDFExe := ExpandConstant('{app}\clawPDF.exe');
+    if FileExists(ClawPDFExe) and FileExists(ClawPDFIni) then
+    begin
+      GetPrinterList(Printers);
+
+      if GetArrayLength(Printers) > 0 then
+      begin
+        RewriteClawPDFPrinterMappings(
+          ExpandConstant('{app}\clawPDF4Libki.ini'),
+          Printers
+        );
+      end;
+
+      { Now import into clawPDF }
+      Exec(
+        '"' + ClawPDFExe + '"',
+        '/Config="' + ExpandConstant('{app}\clawPDF4Libki.ini') + '"',
+        '',
+        SW_HIDE,
+        ewWaitUntilTerminated,
+        ResultCode
+      );
+    end;
+  end;
+end;
+
+// Helper to append a section header to INI
+procedure AddToIniFile(const FilePath, Text: String);
+var
+  FileHandle: Integer;
+begin
+  FileHandle := FileOpen(FilePath, fmOpenReadWrite or fmShareDenyNone);
+  if FileHandle < 0 then Exit;
+
+  FileSeek(FileHandle, 0, fsFromEnd);
+  FileWrite(FileHandle, PAnsiChar(#13#10 + Text + #13#10)^, Length(Text) + 2);
+  FileClose(FileHandle);
+end;
+
+procedure GetPrinterList(var Printers: TArrayOfString);
+var
+  i, Count: Integer;
+  Line: String;
+begin
+  Count := 0;
+  SetArrayLength(Printers, 0);
+
+  for i := 0 to PrintersPage.Lines.Count - 1 do
+  begin
+    Line := Trim(PrintersPage.Lines[i]);
+    if Line <> '' then
+    begin
+      SetArrayLength(Printers, Count + 1);
+      Printers[Count] := Line;
+      Inc(Count);
+    end;
+  end;
+end;
+
+procedure RewriteClawPDFPrinterMappings(const IniPath: String; const Printers: TArrayOfString);
+var
+  Lines: TArrayOfString;
+  NewLines: TArrayOfString;
+  i, j, Count: Integer;
+  InMappings: Boolean;
+begin
+  LoadStringsFromFile(IniPath, Lines);
+
+  SetArrayLength(NewLines, 0);
+  InMappings := False;
+
+  { Remove existing PrinterMappings sections }
+  for i := 0 to GetArrayLength(Lines) - 1 do
+  begin
+    if Pos('[ApplicationSettings\PrinterMappings', Lines[i]) = 1 then
+    begin
+      InMappings := True;
+      Continue;
+    end;
+
+    if InMappings then
+    begin
+      if (Length(Lines[i]) > 0) and (Lines[i][1] = '[') then
+      begin
+        InMappings := False;
+      end
+      else
+        Continue;
+    end;
+
+    if not InMappings then
+    begin
+      j := GetArrayLength(NewLines);
+      SetArrayLength(NewLines, j + 1);
+      NewLines[j] := Lines[i];
+    end;
+  end;
+
+  { Append new PrinterMappings block }
+  Count := GetArrayLength(NewLines);
+  SetArrayLength(NewLines, Count + 1);
+  NewLines[Count] := '';
+
+  Count := GetArrayLength(NewLines);
+  SetArrayLength(NewLines, Count + 1);
+  NewLines[Count] := '[ApplicationSettings\PrinterMappings]';
+
+  Count := GetArrayLength(NewLines);
+  SetArrayLength(NewLines, Count + 1);
+  NewLines[Count] := 'numClasses=' + IntToStr(GetArrayLength(Printers));
+
+  for i := 0 to GetArrayLength(Printers) - 1 do
+  begin
+    Count := GetArrayLength(NewLines);
+    SetArrayLength(NewLines, Count + 1);
+    NewLines[Count] := '';
+
+    Count := GetArrayLength(NewLines);
+    SetArrayLength(NewLines, Count + 1);
+    NewLines[Count] :=
+      '[ApplicationSettings\PrinterMappings\' + IntToStr(i) + ']';
+
+    Count := GetArrayLength(NewLines);
+    SetArrayLength(NewLines, Count + 1);
+    NewLines[Count] := 'PrinterName=' + Printers[i];
+
+    Count := GetArrayLength(NewLines);
+    SetArrayLength(NewLines, Count + 1);
+    NewLines[Count] := 'ProfileGuid=DefaultGuid';
+  end;
+
+  SaveStringsToFile(IniPath, NewLines, False);
+end;
+
