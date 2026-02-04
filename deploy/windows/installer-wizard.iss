@@ -253,8 +253,7 @@ begin
     if InvalidList <> '' then
     begin
       MsgBox(
-        'The following printer names are invalid for YAML keys:' + #13#10 + InvalidList +
-        #13#10#13#10 + 'Names must start with a letter and contain only letters, numbers, _ or -.',
+        'The following printer names are invalid for YAML keys:' + #13#10 + InvalidList + #13#10#13#10 + 'Names must start with a letter and contain only letters, numbers, _ or -.',
         mbError, MB_OK
       );
       Result := False; // stay on page
