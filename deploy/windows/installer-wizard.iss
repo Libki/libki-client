@@ -429,7 +429,7 @@ begin
     begin
       Exec(
         'msiexec.exe',
-        '/i "{tmp}\clawPDF_0.9.3_setup.msi" /quiet /norestart',
+        '/i "{app}\clawPDF_0.9.3_setup.msi" /quiet /norestart',
         '',
         SW_HIDE,
         ewWaitUntilTerminated,
