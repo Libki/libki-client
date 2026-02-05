@@ -290,15 +290,16 @@ var
 begin
   if CurStep = ssPostInstall then
   begin
-    Lines := PrintersMemo.Lines;
     HasPrinters := False;
-    for i := 0 to GetArrayLength(Lines)-1 do
-      if Trim(Lines[i]) <> '' then
+
+    for i := 0 to PrintersMemo.Lines.Count - 1 do
+    begin
+      if Trim(PrintersMemo.Lines[i]) <> '' then
       begin
         HasPrinters := True;
         Break;
       end;
-
+    end;
     if not HasPrinters then Exit;
 
     IniPath := ExpandConstant('{commonappdata}\Libki\Libki Kiosk Management System.ini');
