@@ -172,7 +172,7 @@ begin
   PrintersPage := CreateCustomPage(
     PasswordPage.ID,
     'Printer Configuration',
-    'Printer Setup'
+    'List the printers you wish to install on this Client, one per line, or leave blank to skip printer installation'
   );
 
   PrintersMemo := TNewMemo.Create(PrintersPage);
