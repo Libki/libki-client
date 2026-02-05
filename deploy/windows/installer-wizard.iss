@@ -377,30 +377,16 @@ begin
   SaveStringsToFile(IniPath, NewLines, False);
 end;
 
-function IsClawPDFInstalled(): Boolean;
-begin
-  Result :=
-    RegKeyExists(
-      HKLM,
-      'Software\Microsoft\Windows\CurrentVersion\Uninstall\clawPDF'
-    ) or
-    RegKeyExists(
-      HKLM,
-      'Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\clawPDF'
-    );
-end;
-
 function GetClawPDFExePath(): String;
 begin
   if IsWin64 then
-    Result := ExpandConstant('{pf64}\clawPDF\clawPDF.exe')
+    Result := ExpandConstant('{pf64}\clawpdf\clawPDF.exe')
   else
-    Result := ExpandConstant('{pf}\clawPDF\clawPDF.exe');
+    Result := ExpandConstant('{pf}\clawpdf\clawPDF.exe');
 
   if not FileExists(Result) then
     Result := '';
 end;
-
 
 
 { Post-install logic: create folders, update INI, install clawPDF, import config }
@@ -443,8 +429,8 @@ begin
       end;
     end;
 
-
-    if not IsClawPDFInstalled then
+    ClawPDFExe := GetClawPDFExePath();
+    if (ClawPDFExe == '') then
     begin
       Exec(
         'msiexec.exe',
