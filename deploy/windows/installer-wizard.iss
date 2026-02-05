@@ -92,7 +92,7 @@ var
   PrintersPage: TWizardPage;
   PrintersMemo: TNewMemo;
 
-// Regex helper
+{ Regex helper }
 function IsYamlSafeKey(const S: String): Boolean;
 var
   i: Integer;
@@ -100,14 +100,14 @@ var
 begin
   Result := Length(S) > 0;
   if not Result then Exit;
-  // Must start with a letter
+  { Must start with a letter }
   C := S[1];
   if not (C in ['A'..'Z', 'a'..'z']) then
   begin
     Result := False;
     Exit;
   end;
-  // Remaining characters must be letters, numbers, underscore, or dash
+  { Remaining characters must be letters, numbers, underscore, or dash }
   for i := 2 to Length(S) do
   begin
     C := S[i];
@@ -272,7 +272,7 @@ begin
 end;
 
 
-// Validate printer names before finishing
+{ Validate printer names before finishing }
 function NextButtonClick(CurPageID: Integer): Boolean;
 var
   i: Integer;
@@ -299,12 +299,12 @@ begin
         'The following printer names are invalid for YAML keys:' + #13#10 + InvalidList + #13#10#13#10 + 'Names must start with a letter and contain only letters, numbers, _ or -.',
         mbError, MB_OK
       );
-      Result := False; // stay on page
+      Result := False;
     end;
   end;
 end;
 
-// Post-install logic: create folders, update INI, install clawPDF, import config
+{ Post-install logic: create folders, update INI, install clawPDF, import config }
 procedure CurStepChanged(CurStep: TSetupStep);
 var
   i: Integer;
@@ -328,15 +328,13 @@ begin
 
     if not HasPrinters then Exit;
 
-    // Paths
     IniPath := ExpandConstant('{commonappdata}\Libki\Libki Kiosk Management System.ini');
     ClawPDFIni := ExpandConstant('{app}\clawPDF4Libki.ini');
 
-    // Create base printers folder
     ForceDirectories('C:\printers');
     AddToIniFile(IniPath, '[printer]');
 
-    // Create each printer folder and INI entry
+    { Create each printer folder and INI entry }
     for i := 0 to GetArrayLength(Lines)-1 do
     begin
       PrinterName := Trim(Lines[i]);
@@ -347,7 +345,6 @@ begin
       end;
     end;
 
-    // Check if clawPDF already installed
     ClawPDFInstalled :=
       RegKeyExists(HKLM, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\clawPDF') or
       RegKeyExists(HKLM, 'Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\clawPDF');
@@ -364,7 +361,6 @@ begin
       );
     end;
 
-    // Import clawPDF4Libki.ini configuration
     ClawPDFExe := ExpandConstant('{app}\clawPDF.exe');
     if FileExists(ClawPDFExe) and FileExists(ClawPDFIni) then
     begin
@@ -391,7 +387,7 @@ begin
   end;
 end;
 
-// Helper to append a section header to INI
+{ Helper to append a section header to INI }
 procedure AddToIniFile(const FilePath, Text: String);
 var
   FileHandle: Integer;
