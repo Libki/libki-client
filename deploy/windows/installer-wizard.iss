@@ -22,7 +22,9 @@ Source: "libkiclient.exe"; DestDir: "{app}"; Flags: ignoreversion; MinVersion: 0
 Source: "windows\on_login.exe"; DestDir: "{app}\windows"; Flags: ignoreversion; MinVersion: 0.0,5.0
 Source: "windows\on_logout.exe"; DestDir: "{app}\windows"; Flags: ignoreversion; MinVersion: 0.0,5.0
 Source: "windows\on_startup.exe"; DestDir: "{app}\windows"; Flags: ignoreversion; MinVersion: 0.0,5.0
-Source: "windows\clawPDF4Libki.ini"; DestDir: "{app}\windows"; Flags: ignoreversion; MinVersion: 0.0,5.0
+
+Source: "clawPDF\clawPDF_0.9.3_setup.msi"; DestDir: "{tmp}"; Flags: deleteafterinstall
+Source: "clawPDF\clawPDF4Libki.ini"; DestDir: "{app}\windows"; Flags: ignoreversion; MinVersion: 0.0,5.0
 
 Source: "C:\Qt\5.5\mingw492_32\plugins\platforms\qwindows.dll"; DestDir: "{app}\platforms"; Flags: ignoreversion; MinVersion: 0.0,5.0
 
@@ -444,22 +446,9 @@ begin
 
     if not IsClawPDFInstalled then
     begin
-      if not DownloadTemporaryFile(
-        '{#ClawPDFUrl}',
-        '{tmp}\{#ClawPDFMsiName}'
-      ) then
-      begin
-        MsgBox(
-          'Failed to download clawPDF installer.',
-          mbError,
-          MB_OK
-        );
-        Exit;
-      end;
-
       Exec(
         'msiexec.exe',
-        '/i "{tmp}\{#ClawPDFMsiName}" /quiet /norestart',
+        '/i "{tmp}\clawPDF_0.9.3_setup.msi" /quiet /norestart',
         '',
         SW_HIDE,
         ewWaitUntilTerminated,
