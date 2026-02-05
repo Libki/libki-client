@@ -102,7 +102,7 @@ begin
   if not Result then Exit;
   // Must start with a letter
   C := S[1];
-  if not (C in ['A'..'Z', 'a'..'z', '0'..'9', '_', '-']) then
+  if not (C in ['A'..'Z', 'a'..'z') then
   begin
     Result := False;
     Exit;
@@ -111,7 +111,7 @@ begin
   for i := 2 to Length(S) do
   begin
     C := S[i];
-    if not (C in ['A'..'Z','a'..'z','0'..'9','_','-']) then
+    if not (C in ['A'..'Z', 'a'..'z', '0'..'9', '_', '-']) then
     begin
       Result := False;
       Exit;
