@@ -1,4 +1,7 @@
 ﻿#define AppVer GetFileVersion('libkiclient.exe')
+#define ClawPDFVersion "0.9.3"
+#define ClawPDFUrl "https://github.com/clawsoftware/clawPDF/releases/download/0.9.3/clawPDF_0.9.3_setup.msi"
+#define ClawPDFMsiName "clawPDF_0.9.3_setup.msi"
 
 [Setup]
 AppName=Libki Kiosk Management System Client
@@ -372,6 +375,31 @@ begin
   SaveStringsToFile(IniPath, NewLines, False);
 end;
 
+function IsClawPDFInstalled(): Boolean;
+begin
+  Result :=
+    RegKeyExists(
+      HKLM,
+      'Software\Microsoft\Windows\CurrentVersion\Uninstall\clawPDF'
+    ) or
+    RegKeyExists(
+      HKLM,
+      'Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\clawPDF'
+    );
+end;
+
+function GetClawPDFExePath(): String;
+begin
+  if IsWin64 then
+    Result := ExpandConstant('{pf64}\clawPDF\clawPDF.exe')
+  else
+    Result := ExpandConstant('{pf}\clawPDF\clawPDF.exe');
+
+  if not FileExists(Result) then
+    Result := '';
+end;
+
+
 
 { Post-install logic: create folders, update INI, install clawPDF, import config }
 procedure CurStepChanged(CurStep: TSetupStep);
@@ -409,19 +437,29 @@ begin
       if PrinterName <> '' then
       begin
         ForceDirectories('C:\printers\' + PrinterName);
-        SetIniString('printer', PrinterName, 'C:\printers\' + PrinterName, IniPath);
+        SetIniString('printers', PrinterName, 'C:\printers\' + PrinterName, IniPath);
       end;
     end;
 
-    ClawPDFInstalled :=
-      RegKeyExists(HKLM, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\clawPDF') or
-      RegKeyExists(HKLM, 'Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\clawPDF');
 
-    if not ClawPDFInstalled then
+    if not IsClawPDFInstalled then
     begin
+      if not DownloadTemporaryFile(
+        '{#ClawPDFUrl}',
+        '{tmp}\{#ClawPDFMsiName}'
+      ) then
+      begin
+        MsgBox(
+          'Failed to download clawPDF installer.',
+          mbError,
+          MB_OK
+        );
+        Exit;
+      end;
+
       Exec(
         'msiexec.exe',
-        '/i "clawPDF_0.9.3_setup.msi" /quiet /norestart',
+        '/i "{tmp}\{#ClawPDFMsiName}" /quiet /norestart',
         '',
         SW_HIDE,
         ewWaitUntilTerminated,
@@ -429,8 +467,9 @@ begin
       );
     end;
 
-    ClawPDFExe := ExpandConstant('{app}\clawPDF.exe');
-    if FileExists(ClawPDFExe) and FileExists(ClawPDFIni) then
+    ClawPDFExe := GetClawPDFExePath();
+
+    if (ClawPDFExe <> '') and FileExists(ClawPDFIni) then
     begin
       GetPrinterList(Printers);
 
@@ -441,15 +480,21 @@ begin
           Printers
         );
       end;
-
-      { Now import into clawPDF }
       Exec(
         '"' + ClawPDFExe + '"',
-        '/Config="' + ExpandConstant('{app}\clawPDF4Libki.ini') + '"',
+        '/Config="' + ClawPDFIni + '"',
         '',
         SW_HIDE,
         ewWaitUntilTerminated,
         ResultCode
+      );
+    end
+    else
+    begin
+      MsgBox(
+        'clawPDF executable not found; configuration was not imported.',
+        mbError,
+        MB_OK
       );
     end;
   end;
