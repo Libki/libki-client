@@ -409,7 +409,7 @@ var
   i: Integer;
   PrinterName: String;
   IniPath, ClawPDFIni, ClawPDFExe: String;
-  HasPrinters, ClawPDFInstalled: Boolean;
+  HasPrinters: Boolean;
   ResultCode: Integer;
   Printers: TArrayOfString;
 begin
