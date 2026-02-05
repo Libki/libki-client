@@ -283,7 +283,6 @@ var
   i: Integer;
   PrinterName: String;
   IniPath, ClawPDFIni, ClawPDFExe: String;
-  Lines: TArrayOfString;
   HasPrinters, ClawPDFInstalled: Boolean;
   ResultCode: Integer;
   Printers: TArrayOfString;
@@ -310,11 +309,11 @@ begin
     { Create each printer folder and INI entry }
     for i := 0 to PrintersMemo.Lines.Count - 1 do
     begin
-      PrinterName := Trim(Lines[i]);
+      PrinterName := Trim(PrintersMemo.Lines[i]);
       if PrinterName <> '' then
       begin
         ForceDirectories('C:\printers\' + PrinterName);
-        WriteIniString('printer', PrinterName, 'C:\printers\' + PrinterName, IniPath);
+        SetIniString('printer', PrinterName, 'C:\printers\' + PrinterName, IniPath);
       end;
     end;
 
