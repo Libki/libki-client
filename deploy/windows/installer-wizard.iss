@@ -297,19 +297,6 @@ begin
   end;
 end;
 
-{ Helper to append a section header to INI }
-procedure AddToIniFile(const FilePath, Text: String);
-var
-  FileHandle: Integer;
-begin
-  FileHandle := FileOpen(FilePath, fmOpenReadWrite or fmShareDenyNone);
-  if FileHandle < 0 then Exit;
-
-  FileSeek(FileHandle, 0, fsFromEnd);
-  FileWrite(FileHandle, PAnsiChar(#13#10 + Text + #13#10)^, Length(Text) + 2);
-  FileClose(FileHandle);
-end;
-
 procedure RewriteClawPDFPrinterMappings(const IniPath: String; const Printers: TArrayOfString);
 var
   Lines: TArrayOfString;
