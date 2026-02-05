@@ -438,7 +438,7 @@ begin
     end;
 
     { Configure ClawPDF }
-    ClawPDFExe := GetClawPDFExePath();
+    ClawPDFExe := ExpandConstant('{pf}\clawpdf\clawPDF.exe');
     ClawPDFIni := ExpandConstant('{app}\windows\clawPDF4Libki.ini');
     if (ClawPDFExe <> '') and FileExists(ClawPDFIni) then
     begin
@@ -463,7 +463,7 @@ begin
     else
     begin
       MsgBox(
-        'clawPDF executable not found at ' + ClawPDFExe + '; configuration at ' + ClawPDFIni + ' was not imported.',
+        'clawPDF executable not found at ' + ClawPDFExe + '; configuration was not imported.',
         mbError,
         MB_OK
       );
