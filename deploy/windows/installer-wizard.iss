@@ -411,7 +411,6 @@ begin
     if not HasPrinters then Exit;
 
     IniPath := ExpandConstant('{commonappdata}\Libki\Libki Kiosk Management System.ini');
-    ClawPDFIni := ExpandConstant('{app}\clawPDF4Libki.ini');
 
     ForceDirectories('C:\printers');
 
@@ -426,10 +425,11 @@ begin
       end;
     end;
 
+    { Install ClawPDF }
     begin
       Exec(
         'msiexec.exe',
-        '/i "{app}\clawPDF_0.9.3_setup.msi" /quiet /norestart',
+        '/i "{app}\windows\clawPDF_0.9.3_setup.msi" /quiet /norestart',
         '',
         SW_HIDE,
         ewWaitUntilTerminated,
@@ -437,8 +437,9 @@ begin
       );
     end;
 
+    { Configure ClawPDF }
     ClawPDFExe := GetClawPDFExePath();
-
+    ClawPDFIni := ExpandConstant('{app}\windows\clawPDF4Libki.ini');
     if (ClawPDFExe <> '') and FileExists(ClawPDFIni) then
     begin
       GetPrinterList(Printers);
@@ -446,7 +447,7 @@ begin
       if GetArrayLength(Printers) > 0 then
       begin
         RewriteClawPDFPrinterMappings(
-          ExpandConstant('{app}\clawPDF4Libki.ini'),
+          ClawPDFIni,
           Printers
         );
       end;
@@ -462,7 +463,7 @@ begin
     else
     begin
       MsgBox(
-        'clawPDF executable not found; configuration was not imported.',
+        'clawPDF executable not found at ' + ClawPDFExe + '; configuration at ' + ClawPDFIni + ' was not imported.',
         mbError,
         MB_OK
       );
