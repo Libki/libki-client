@@ -277,6 +277,115 @@ begin
   Result := (StartupModePage.SelectedValueIndex = 1);
 end;
 
+procedure GetPrinterList(var Printers: TArrayOfString);
+var
+  i, Count: Integer;
+  Line: String;
+begin
+  Count := 0;
+  SetArrayLength(Printers, 0);
+
+  for i := 0 to PrintersMemo.Lines.Count - 1 do
+  begin
+    Line := Trim(PrintersMemo.Lines[i]);
+    if Line <> '' then
+    begin
+      SetArrayLength(Printers, Count + 1);
+      Printers[Count] := Line;
+      Inc(Count);
+    end;
+  end;
+end;
+
+{ Helper to append a section header to INI }
+procedure AddToIniFile(const FilePath, Text: String);
+var
+  FileHandle: Integer;
+begin
+  FileHandle := FileOpen(FilePath, fmOpenReadWrite or fmShareDenyNone);
+  if FileHandle < 0 then Exit;
+
+  FileSeek(FileHandle, 0, fsFromEnd);
+  FileWrite(FileHandle, PAnsiChar(#13#10 + Text + #13#10)^, Length(Text) + 2);
+  FileClose(FileHandle);
+end;
+
+procedure RewriteClawPDFPrinterMappings(const IniPath: String; const Printers: TArrayOfString);
+var
+  Lines: TArrayOfString;
+  NewLines: TArrayOfString;
+  i, j, Count: Integer;
+  InMappings: Boolean;
+begin
+  LoadStringsFromFile(IniPath, Lines);
+
+  SetArrayLength(NewLines, 0);
+  InMappings := False;
+
+  { Remove existing PrinterMappings sections }
+  for i := 0 to GetArrayLength(Lines) - 1 do
+  begin
+    if Pos('[ApplicationSettings\PrinterMappings', Lines[i]) = 1 then
+    begin
+      InMappings := True;
+      Continue;
+    end;
+
+    if InMappings then
+    begin
+      if (Length(Lines[i]) > 0) and (Lines[i][1] = '[') then
+      begin
+        InMappings := False;
+      end
+      else
+        Continue;
+    end;
+
+    if not InMappings then
+    begin
+      j := GetArrayLength(NewLines);
+      SetArrayLength(NewLines, j + 1);
+      NewLines[j] := Lines[i];
+    end;
+  end;
+
+  { Append new PrinterMappings block }
+  Count := GetArrayLength(NewLines);
+  SetArrayLength(NewLines, Count + 1);
+  NewLines[Count] := '';
+
+  Count := GetArrayLength(NewLines);
+  SetArrayLength(NewLines, Count + 1);
+  NewLines[Count] := '[ApplicationSettings\PrinterMappings]';
+
+  Count := GetArrayLength(NewLines);
+  SetArrayLength(NewLines, Count + 1);
+  NewLines[Count] := 'numClasses=' + IntToStr(GetArrayLength(Printers));
+
+  for i := 0 to GetArrayLength(Printers) - 1 do
+  begin
+    Count := GetArrayLength(NewLines);
+    SetArrayLength(NewLines, Count + 1);
+    NewLines[Count] := '';
+
+    Count := GetArrayLength(NewLines);
+    SetArrayLength(NewLines, Count + 1);
+    NewLines[Count] :=
+      '[ApplicationSettings\PrinterMappings\' + IntToStr(i) + ']';
+
+    Count := GetArrayLength(NewLines);
+    SetArrayLength(NewLines, Count + 1);
+    NewLines[Count] := 'PrinterName=' + Printers[i];
+
+    Count := GetArrayLength(NewLines);
+    SetArrayLength(NewLines, Count + 1);
+    NewLines[Count] := 'ProfileGuid=DefaultGuid';
+  end;
+
+  SaveStringsToFile(IniPath, NewLines, False);
+end;
+
+
 { Post-install logic: create folders, update INI, install clawPDF, import config }
 procedure CurStepChanged(CurStep: TSetupStep);
 var
@@ -357,113 +466,5 @@ begin
       );
     end;
   end;
-end;
-
-{ Helper to append a section header to INI }
-procedure AddToIniFile(const FilePath, Text: String);
-var
-  FileHandle: Integer;
-begin
-  FileHandle := FileOpen(FilePath, fmOpenReadWrite or fmShareDenyNone);
-  if FileHandle < 0 then Exit;
-
-  FileSeek(FileHandle, 0, fsFromEnd);
-  FileWrite(FileHandle, PAnsiChar(#13#10 + Text + #13#10)^, Length(Text) + 2);
-  FileClose(FileHandle);
-end;
-
-procedure GetPrinterList(var Printers: TArrayOfString);
-var
-  i, Count: Integer;
-  Line: String;
-begin
-  Count := 0;
-  SetArrayLength(Printers, 0);
-
-  for i := 0 to PrintersMemo.Lines.Count - 1 do
-  begin
-    Line := Trim(PrintersMemo.Lines[i]);
-    if Line <> '' then
-    begin
-      SetArrayLength(Printers, Count + 1);
-      Printers[Count] := Line;
-      Inc(Count);
-    end;
-  end;
-end;
-
-procedure RewriteClawPDFPrinterMappings(const IniPath: String; const Printers: TArrayOfString);
-var
-  Lines: TArrayOfString;
-  NewLines: TArrayOfString;
-  i, j, Count: Integer;
-  InMappings: Boolean;
-begin
-  LoadStringsFromFile(IniPath, Lines);
-
-  SetArrayLength(NewLines, 0);
-  InMappings := False;
-
-  { Remove existing PrinterMappings sections }
-  for i := 0 to GetArrayLength(Lines) - 1 do
-  begin
-    if Pos('[ApplicationSettings\PrinterMappings', Lines[i]) = 1 then
-    begin
-      InMappings := True;
-      Continue;
-    end;
-
-    if InMappings then
-    begin
-      if (Length(Lines[i]) > 0) and (Lines[i][1] = '[') then
-      begin
-        InMappings := False;
-      end
-      else
-        Continue;
-    end;
-
-    if not InMappings then
-    begin
-      j := GetArrayLength(NewLines);
-      SetArrayLength(NewLines, j + 1);
-      NewLines[j] := Lines[i];
-    end;
-  end;
-
-  { Append new PrinterMappings block }
-  Count := GetArrayLength(NewLines);
-  SetArrayLength(NewLines, Count + 1);
-  NewLines[Count] := '';
-
-  Count := GetArrayLength(NewLines);
-  SetArrayLength(NewLines, Count + 1);
-  NewLines[Count] := '[ApplicationSettings\PrinterMappings]';
-
-  Count := GetArrayLength(NewLines);
-  SetArrayLength(NewLines, Count + 1);
-  NewLines[Count] := 'numClasses=' + IntToStr(GetArrayLength(Printers));
-
-  for i := 0 to GetArrayLength(Printers) - 1 do
-  begin
-    Count := GetArrayLength(NewLines);
-    SetArrayLength(NewLines, Count + 1);
-    NewLines[Count] := '';
-
-    Count := GetArrayLength(NewLines);
-    SetArrayLength(NewLines, Count + 1);
-    NewLines[Count] :=
-      '[ApplicationSettings\PrinterMappings\' + IntToStr(i) + ']';
-
-    Count := GetArrayLength(NewLines);
-    SetArrayLength(NewLines, Count + 1);
-    NewLines[Count] := 'PrinterName=' + Printers[i];
-
-    Count := GetArrayLength(NewLines);
-    SetArrayLength(NewLines, Count + 1);
-    NewLines[Count] := 'ProfileGuid=DefaultGuid';
-  end;
-
-  SaveStringsToFile(IniPath, NewLines, False);
 end;
 
