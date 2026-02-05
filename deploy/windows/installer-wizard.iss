@@ -306,10 +306,9 @@ begin
     ClawPDFIni := ExpandConstant('{app}\clawPDF4Libki.ini');
 
     ForceDirectories('C:\printers');
-    AddToIniFile(IniPath, '[printer]');
 
     { Create each printer folder and INI entry }
-    for i := 0 to GetArrayLength(Lines)-1 do
+    for i := 0 to PrintersMemo.Lines.Count - 1 do
     begin
       PrinterName := Trim(Lines[i]);
       if PrinterName <> '' then
