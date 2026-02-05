@@ -98,25 +98,31 @@ var
   i: Integer;
   C: Char;
 begin
-  Result := Length(S) > 0;
-  if not Result then Exit;
+  Result := False;
+
+  if Length(S) = 0 then Exit;
+
   { Must start with a letter }
   C := S[1];
-  if not (C in ['A'..'Z', 'a'..'z']) then
-  begin
-    Result := False;
-    Exit;
-  end;
-  { Remaining characters must be letters, numbers, underscore, or dash }
+  if not (
+    ((C >= 'A') and (C <= 'Z')) or
+    ((C >= 'a') and (C <= 'z'))
+  ) then Exit;
+
+  { Remaining characters }
   for i := 2 to Length(S) do
   begin
     C := S[i];
-    if not (C in ['A'..'Z', 'a'..'z', '0'..'9', '_', '-']) then
-    begin
-      Result := False;
-      Exit;
-    end;
+    if not (
+      ((C >= 'A') and (C <= 'Z')) or
+      ((C >= 'a') and (C <= 'z')) or
+      ((C >= '0') and (C <= '9')) or
+      (C = '_') or
+      (C = '-')
+    ) then Exit;
   end;
+
+  Result := True;
 end;
 
 procedure InitializeWizard;
