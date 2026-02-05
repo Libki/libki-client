@@ -102,7 +102,7 @@ begin
   if not Result then Exit;
   // Must start with a letter
   C := S[1];
-  if not (C in ['A'..'Z', 'a'..'z') then
+  if not (C in ['A'..'Z', 'a'..'z']) then
   begin
     Result := False;
     Exit;
