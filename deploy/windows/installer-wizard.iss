@@ -429,8 +429,6 @@ begin
       end;
     end;
 
-    ClawPDFExe := GetClawPDFExePath();
-    if (ClawPDFExe == '') then
     begin
       Exec(
         'msiexec.exe',
