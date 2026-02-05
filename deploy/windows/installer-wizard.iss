@@ -277,39 +277,6 @@ begin
   Result := (StartupModePage.SelectedValueIndex = 1);
 end;
 
-
-{ Validate printer names before finishing }
-function NextButtonClick(CurPageID: Integer): Boolean;
-var
-  i: Integer;
-  Line, InvalidList: String;
-begin
-  Result := True;
-
-  if CurPageID = PrintersPage.ID then
-  begin
-    InvalidList := '';
-    for i := 0 to PrintersMemo.Lines.Count-1 do
-    begin
-      Line := Trim(PrintersMemo.Lines[i]);
-      if (Line <> '') and (not IsYamlSafeKey(Line)) then
-      begin
-        if InvalidList <> '' then InvalidList := InvalidList + ', ';
-        InvalidList := InvalidList + Line;
-      end;
-    end;
-
-    if InvalidList <> '' then
-    begin
-      MsgBox(
-        'The following printer names are invalid for YAML keys:' + #13#10 + InvalidList + #13#10#13#10 + 'Names must start with a letter and contain only letters, numbers, _ or -.',
-        mbError, MB_OK
-      );
-      Result := False;
-    end;
-  end;
-end;
-
 { Post-install logic: create folders, update INI, install clawPDF, import config }
 procedure CurStepChanged(CurStep: TSetupStep);
 var
