@@ -1,7 +1,4 @@
 ﻿#define AppVer GetFileVersion('libkiclient.exe')
-#define ClawPDFVersion "0.9.3"
-#define ClawPDFUrl "https://github.com/clawsoftware/clawPDF/releases/download/0.9.3/clawPDF_0.9.3_setup.msi"
-#define ClawPDFMsiName "clawPDF_0.9.3_setup.msi"
 
 [Setup]
 AppName=Libki Kiosk Management System Client
@@ -23,7 +20,7 @@ Source: "windows\on_login.exe"; DestDir: "{app}\windows"; Flags: ignoreversion; 
 Source: "windows\on_logout.exe"; DestDir: "{app}\windows"; Flags: ignoreversion; MinVersion: 0.0,5.0
 Source: "windows\on_startup.exe"; DestDir: "{app}\windows"; Flags: ignoreversion; MinVersion: 0.0,5.0
 
-Source: "clawPDF\clawPDF_0.9.3_setup.msi"; DestDir: "{tmp}"; Flags: deleteafterinstall
+Source: "clawPDF\clawPDF_0.9.3_setup.msi"; DestDir: "{app}\windows"; Flags: ignoreversion; MinVersion: 0.0,5.0
 Source: "clawPDF\clawPDF4Libki.ini"; DestDir: "{app}\windows"; Flags: ignoreversion; MinVersion: 0.0,5.0
 
 Source: "C:\Qt\5.5\mingw492_32\plugins\platforms\qwindows.dll"; DestDir: "{app}\platforms"; Flags: ignoreversion; MinVersion: 0.0,5.0
