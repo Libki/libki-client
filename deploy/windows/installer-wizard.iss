@@ -535,7 +535,7 @@ begin
         begin
           SetIniString('ApplicationSettings\PrinterMappings\' + IntToStr(i), 'PrinterName', PrinterName, ClawPDFIni);
           SetIniString('ApplicationSettings\PrinterMappings\' + IntToStr(i), 'ProfileGuid', '{#ProfileGuid}', ClawPDFIni);
-          Exec(SetupHelperExe, '/Printer=Add /Name=' + PrinterName, SW_HIDE, ewWaitUntilTerminated, ResultCode);
+          Exec(SetupHelperExe, '/Printer=Add /Name=' + PrinterName, , '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
         end;
       end;
       SetIniString('ApplicationSettings\PrinterMappings', 'numClasses', IntToStr(PrintersMemo.Lines.Count), ClawPDFIni);
