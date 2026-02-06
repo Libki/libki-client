@@ -509,7 +509,7 @@ begin
 
     { Install ClawPDF }
     begin
-      if Exec('msiexec.exe', '/i "{app}\windows\clawPDF_0.9.3_setup.msi" /quiet /norestart', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+      if Exec("{sys}\msiexec.exe", '/i "{app}\windows\clawPDF_0.9.3_setup.msi" /norestart', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
       begin
         { install ok }
       end
