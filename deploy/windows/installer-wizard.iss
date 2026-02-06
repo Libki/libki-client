@@ -473,7 +473,7 @@ procedure CurStepChanged(CurStep: TSetupStep);
 var
   i: Integer;
   PrinterName: String;
-  IniPath, ClawPDFIni, ClawPDFExe: String;
+  IniPath, ClawPDFIni, ClawPDFExe, SetupHelperExe: String;
   HasPrinters: Boolean;
   ResultCode: Integer;
   Printers: TArrayOfString;
