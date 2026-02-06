@@ -374,6 +374,87 @@ begin
   SaveStringsToFile(IniPath, NewLines, False);
 end;
 
+procedure SetPrimaryPrinter(IniPath: string; Printers: TArrayOfString);
+var
+  Lines: TArrayOfString;
+  Output: TArrayOfString;
+  i, OutIndex: Integer;
+  InAppSettings: Boolean;
+  PrimaryWritten: Boolean;
+  FirstPrinter: string;
+  Line: string;
+begin
+  if GetArrayLength(Printers) = 0 then
+    Exit;
+
+  FirstPrinter := Trim(Printers[0]);
+  if FirstPrinter = '' then
+    Exit;
+
+  if not LoadStringsFromFile(IniPath, Lines) then
+    Exit;
+
+  SetArrayLength(Output, 0);
+  OutIndex := 0;
+  InAppSettings := False;
+  PrimaryWritten := False;
+
+  for i := 0 to GetArrayLength(Lines) - 1 do
+  begin
+    Line := Lines[i];
+
+    { Detect section changes }
+    if Pos('[ApplicationSettings]', Line) = 1 then
+    begin
+      InAppSettings := True;
+    end
+    else if (Length(Line) > 0) and (Line[1] = '[') then
+    begin
+      { Leaving ApplicationSettings section }
+      if InAppSettings and (not PrimaryWritten) then
+      begin
+        SetArrayLength(Output, OutIndex + 1);
+        Output[OutIndex] := 'PrimaryPrinter=' + FirstPrinter;
+        OutIndex := OutIndex + 1;
+        PrimaryWritten := True;
+      end;
+
+      InAppSettings := False;
+    end;
+
+    { Replace existing PrimaryPrinter }
+    if InAppSettings and (Pos('PrimaryPrinter=', Line) = 1) then
+    begin
+      Line := 'PrimaryPrinter=' + FirstPrinter;
+      PrimaryWritten := True;
+    end;
+
+    SetArrayLength(Output, OutIndex + 1);
+    Output[OutIndex] := Line;
+    OutIndex := OutIndex + 1;
+  end;
+
+  { If section exists but key never appeared }
+  if InAppSettings and (not PrimaryWritten) then
+  begin
+    SetArrayLength(Output, OutIndex + 1);
+    Output[OutIndex] := 'PrimaryPrinter=' + FirstPrinter;
+    OutIndex := OutIndex + 1;
+    PrimaryWritten := True;
+  end;
+
+  { If section never existed, create it }
+  if not PrimaryWritten then
+  begin
+    SetArrayLength(Output, OutIndex + 2);
+    Output[OutIndex] := '[ApplicationSettings]';
+    Output[OutIndex + 1] := 'PrimaryPrinter=' + FirstPrinter;
+  end;
+
+  SaveStringsToFile(IniPath, Output, False);
+end;
+
+
 function GetClawPDFExePath(): String;
 begin
   if IsWin64 then
@@ -446,10 +527,8 @@ begin
 
       if GetArrayLength(Printers) > 0 then
       begin
-        RewriteClawPDFPrinterMappings(
-          ClawPDFIni,
-          Printers
-        );
+        RewriteClawPDFPrinterMappings(ClawPDFIni, Printers);
+        SetPrimaryPrinter(ClawPDFIni, Printers);
       end;
       if Exec('"' + ClawPDFExe + '"', '/Config="' + ClawPDFIni + '"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
       begin
