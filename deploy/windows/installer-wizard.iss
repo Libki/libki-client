@@ -433,7 +433,7 @@ begin
       end
       else
       begin
-        MsgBox('Could not install ClawPDF.  ResultCode = ' + ResultCode, mbError, MB_OK);
+        MsgBox('Could not install ClawPDF', mbError, MB_OK);
       end
     end;
 
@@ -457,7 +457,7 @@ begin
       end
       else
       being
-        MsgBox('Could not import configs.  ResultCode = ' + ResultCode, mbError, MB_OK);
+        MsgBox('Could not import configs', mbError, MB_OK);
       end
     end
     else
