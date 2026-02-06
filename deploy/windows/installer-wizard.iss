@@ -368,7 +368,7 @@ begin
 
     Count := GetArrayLength(NewLines);
     SetArrayLength(NewLines, Count + 1);
-    NewLines[Count] := 'ProfileGuid=DefaultGuid';
+    NewLines[Count] := 'ProfileGuid=5857eb3f-b8d0-42c5-8cdd-c6910a13f317';
   end;
 
   SaveStringsToFile(IniPath, NewLines, False);
