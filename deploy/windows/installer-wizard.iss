@@ -533,12 +533,12 @@ begin
         PrinterName := Trim(PrintersMemo.Lines[i]);
         if PrinterName <> '' then
         begin
-          SetIniString('ApplicationSettings\PrinterMappings\' + IntToString(i), 'PrinterName', PrinterName, ClawPDFIni);
-          SetIniString('ApplicationSettings\PrinterMappings\' + IntToString(i), 'ProfileGuid', '{#ProfileGuid}', ClawPDFIni);
+          SetIniString('ApplicationSettings\PrinterMappings\' + IntToStr(i), 'PrinterName', PrinterName, ClawPDFIni);
+          SetIniString('ApplicationSettings\PrinterMappings\' + IntToStr(i), 'ProfileGuid', '{#ProfileGuid}', ClawPDFIni);
           Exec(SetupHelperExe, '/Printer=Add /Name=' + PrinterName, SW_HIDE, ewWaitUntilTerminated, ResultCode);
         end;
       end;
-      SetIniString('ApplicationSettings\PrinterMappings', 'numClasses', IntToString(PrintersMemo.Lines.Count), ClawPDFIni);
+      SetIniString('ApplicationSettings\PrinterMappings', 'numClasses', IntToStr(PrintersMemo.Lines.Count), ClawPDFIni);
       SetIniString('ApplicationSettings', 'PrimaryPrinter', Trim(PrintersMemo.Lines[0]), ClawPDFIni);
       SetIniString('ApplicationSettings', 'LastUsedProfileGuid', '{#ProfileGuid}', ClawPDFIni);
       
