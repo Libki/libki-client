@@ -1,4 +1,5 @@
 ﻿#define AppVer GetFileVersion('libkiclient.exe')
+#define ProfileGuid '5857eb3f-b8d0-42c5-8cdd-c6910a13f317'
 
 [Setup]
 AppName=Libki Kiosk Management System Client
@@ -520,17 +521,28 @@ begin
 
     { Configure ClawPDF }
     ClawPDFExe := ExpandConstant('{pf}\clawpdf\clawPDF.exe');
+    SetupHelperExe := ExpandConstant('{pf}\clawpdf\SetupHelper.exe');
     ClawPDFIni := ExpandConstant('{app}\windows\clawPDF4Libki.ini');
     if (ClawPDFExe <> '') and FileExists(ClawPDFIni) then
     begin
       GetPrinterList(Printers);
 
-      if GetArrayLength(Printers) > 0 then
+      { Update ClawPDFIni with printer info }
+      for i := 0 to PrintersMemo.Lines.Count - 1 do
       begin
-        RewriteClawPDFPrinterMappings(ClawPDFIni, Printers);
-        SetPrimaryPrinter(ClawPDFIni, Printers);
+        PrinterName := Trim(PrintersMemo.Lines[i]);
+        if PrinterName <> '' then
+        begin
+          SetIniString('ApplicationSettings\PrinterMappings\' + IntToString(i), 'PrinterName', PrinterName, ClawPDFIni);
+          SetIniString('ApplicationSettings\PrinterMappings\' + IntToString(i), 'ProfileGuid', '{#ProfileGuid}', ClawPDFIni);
+          Exec(SetupHelperExe, '/Printer=Add /Name=' + PrinterName, SW_HIDE, ewWaitUntilTerminated, ResultCode);
+        end;
       end;
-      if Exec('"' + ClawPDFExe + '"', '/Config="' + ClawPDFIni + '"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+      SetIniString('ApplicationSettings\PrinterMappings', 'numClasses', IntToString(PrintersMemo.Lines.Count), ClawPDFIni);
+      SetIniString('ApplicationSettings', 'PrimaryPrinter', Trim(PrintersMemo.Lines[0]), ClawPDFIni);
+      SetIniString('ApplicationSettings', 'LastUsedProfileGuid', '{#ProfileGuide}', ClawPDFIni);
+      
+      if Exec(ClawPDFExe, '/Config="' + ClawPDFIni + '"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
       begin
         { configs ok }
       end
