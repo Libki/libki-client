@@ -456,7 +456,7 @@ begin
         { configs ok }
       end
       else
-      being
+      begin
         MsgBox('Could not import configs', mbError, MB_OK);
       end
     end
