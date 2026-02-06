@@ -427,14 +427,14 @@ begin
 
     { Install ClawPDF }
     begin
-      Exec(
-        'msiexec.exe',
-        '/i "{app}\windows\clawPDF_0.9.3_setup.msi" /quiet /norestart',
-        '',
-        SW_HIDE,
-        ewWaitUntilTerminated,
-        ResultCode
-      );
+      if Exec('msiexec.exe', '/i "{app}\windows\clawPDF_0.9.3_setup.msi" /quiet /norestart', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+      begin
+        { install ok }
+      end
+      else
+      begin
+        MsgBox('Could not install ClawPDF.  ResultCode = ' + ResultCode);
+      end
     end;
 
     { Configure ClawPDF }
@@ -451,14 +451,14 @@ begin
           Printers
         );
       end;
-      Exec(
-        '"' + ClawPDFExe + '"',
-        '/Config="' + ClawPDFIni + '"',
-        '',
-        SW_HIDE,
-        ewWaitUntilTerminated,
-        ResultCode
-      );
+      if Exec('"' + ClawPDFExe + '"', '/Config="' + ClawPDFIni + '"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+      begin
+        { configs ok }
+      end
+      else
+      being
+        MsgBox('Could not import configs.  ResultCode = ' + ResultCode);
+      end
     end
     else
     begin
