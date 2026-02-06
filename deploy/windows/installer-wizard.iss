@@ -540,7 +540,7 @@ begin
       end;
       SetIniString('ApplicationSettings\PrinterMappings', 'numClasses', IntToString(PrintersMemo.Lines.Count), ClawPDFIni);
       SetIniString('ApplicationSettings', 'PrimaryPrinter', Trim(PrintersMemo.Lines[0]), ClawPDFIni);
-      SetIniString('ApplicationSettings', 'LastUsedProfileGuid', '{#ProfileGuide}', ClawPDFIni);
+      SetIniString('ApplicationSettings', 'LastUsedProfileGuid', '{#ProfileGuid}', ClawPDFIni);
       
       if Exec(ClawPDFExe, '/Config="' + ClawPDFIni + '"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
       begin
