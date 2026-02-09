@@ -21,11 +21,11 @@ BEGIN
         BLOCK   "040904b0"
         BEGIN
             VALUE   "ProductName",      		"Libki Kiosk Management System\0"
-            VALUE   "ProductVersion",   		"Client v2.2.32 Api v1.0\0"
+            VALUE   "ProductVersion",   		"Client v2.3.0 Api v1.0\0"
             VALUE   "FileDescription",  		"Libki Client\0"
-            VALUE   "FileVersion",      		"2.2.32\0"
+            VALUE   "FileVersion",      		"2.3.0\0"
             VALUE   "InternalName",     		"Libki\0"
-            VALUE   "LegalCopyright",   		"Copyright 2023 Kyle M Hall\0"
+            VALUE   "LegalCopyright",   		"Copyright 2026 Kyle M Hall\0"
         END
     END
 END
