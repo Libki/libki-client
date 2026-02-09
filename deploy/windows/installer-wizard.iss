@@ -13,7 +13,6 @@ DefaultGroupName=Libki Client
 OutputBaseFilename=Libki_Client_Installer
 Compression=lzma
 AllowNoIcons=yes
-PrivilegesRequired=admin
 
 [Files]
 Source: "libkiclient.exe"; DestDir: "{app}"; Flags: ignoreversion; MinVersion: 0.0,5.0
@@ -22,7 +21,6 @@ Source: "windows\on_login.exe"; DestDir: "{app}\windows"; Flags: ignoreversion; 
 Source: "windows\on_logout.exe"; DestDir: "{app}\windows"; Flags: ignoreversion; MinVersion: 0.0,5.0
 Source: "windows\on_startup.exe"; DestDir: "{app}\windows"; Flags: ignoreversion; MinVersion: 0.0,5.0
 
-Source: "clawPDF\clawPDF_0.9.3_setup.msi"; DestDir: "{app}\windows"; Flags: ignoreversion; MinVersion: 0.0,5.0
 Source: "clawPDF\clawPDF4Libki.ini"; DestDir: "{app}\windows"; Flags: ignoreversion; MinVersion: 0.0,5.0
 
 Source: "C:\Qt\5.5\mingw492_32\plugins\platforms\qwindows.dll"; DestDir: "{app}\platforms"; Flags: ignoreversion; MinVersion: 0.0,5.0
@@ -301,174 +299,6 @@ begin
   end;
 end;
 
-procedure RewriteClawPDFPrinterMappings(const IniPath: String; const Printers: TArrayOfString);
-var
-  Lines: TArrayOfString;
-  NewLines: TArrayOfString;
-  i, j, Count: Integer;
-  InMappings: Boolean;
-begin
-  LoadStringsFromFile(IniPath, Lines);
-
-  SetArrayLength(NewLines, 0);
-  InMappings := False;
-
-  { Remove existing PrinterMappings sections }
-  for i := 0 to GetArrayLength(Lines) - 1 do
-  begin
-    if Pos('[ApplicationSettings\PrinterMappings', Lines[i]) = 1 then
-    begin
-      InMappings := True;
-      Continue;
-    end;
-
-    if InMappings then
-    begin
-      if (Length(Lines[i]) > 0) and (Lines[i][1] = '[') then
-      begin
-        InMappings := False;
-      end
-      else
-        Continue;
-    end;
-
-    if not InMappings then
-    begin
-      j := GetArrayLength(NewLines);
-      SetArrayLength(NewLines, j + 1);
-      NewLines[j] := Lines[i];
-    end;
-  end;
-
-  { Append new PrinterMappings block }
-  Count := GetArrayLength(NewLines);
-  SetArrayLength(NewLines, Count + 1);
-  NewLines[Count] := '';
-
-  Count := GetArrayLength(NewLines);
-  SetArrayLength(NewLines, Count + 1);
-  NewLines[Count] := '[ApplicationSettings\PrinterMappings]';
-
-  Count := GetArrayLength(NewLines);
-  SetArrayLength(NewLines, Count + 1);
-  NewLines[Count] := 'numClasses=' + IntToStr(GetArrayLength(Printers));
-
-  for i := 0 to GetArrayLength(Printers) - 1 do
-  begin
-    Count := GetArrayLength(NewLines);
-    SetArrayLength(NewLines, Count + 1);
-    NewLines[Count] := '';
-
-    Count := GetArrayLength(NewLines);
-    SetArrayLength(NewLines, Count + 1);
-    NewLines[Count] :=
-      '[ApplicationSettings\PrinterMappings\' + IntToStr(i) + ']';
-
-    Count := GetArrayLength(NewLines);
-    SetArrayLength(NewLines, Count + 1);
-    NewLines[Count] := 'PrinterName=' + Printers[i];
-
-    Count := GetArrayLength(NewLines);
-    SetArrayLength(NewLines, Count + 1);
-    NewLines[Count] := 'ProfileGuid=5857eb3f-b8d0-42c5-8cdd-c6910a13f317';
-  end;
-
-  SaveStringsToFile(IniPath, NewLines, False);
-end;
-
-procedure SetPrimaryPrinter(IniPath: string; Printers: TArrayOfString);
-var
-  Lines: TArrayOfString;
-  Output: TArrayOfString;
-  i, OutIndex: Integer;
-  InAppSettings: Boolean;
-  PrimaryWritten: Boolean;
-  FirstPrinter: string;
-  Line: string;
-begin
-  if GetArrayLength(Printers) = 0 then
-    Exit;
-
-  FirstPrinter := Trim(Printers[0]);
-  if FirstPrinter = '' then
-    Exit;
-
-  if not LoadStringsFromFile(IniPath, Lines) then
-    Exit;
-
-  SetArrayLength(Output, 0);
-  OutIndex := 0;
-  InAppSettings := False;
-  PrimaryWritten := False;
-
-  for i := 0 to GetArrayLength(Lines) - 1 do
-  begin
-    Line := Lines[i];
-
-    { Detect section changes }
-    if Pos('[ApplicationSettings]', Line) = 1 then
-    begin
-      InAppSettings := True;
-    end
-    else if (Length(Line) > 0) and (Line[1] = '[') then
-    begin
-      { Leaving ApplicationSettings section }
-      if InAppSettings and (not PrimaryWritten) then
-      begin
-        SetArrayLength(Output, OutIndex + 1);
-        Output[OutIndex] := 'PrimaryPrinter=' + FirstPrinter;
-        OutIndex := OutIndex + 1;
-        PrimaryWritten := True;
-      end;
-
-      InAppSettings := False;
-    end;
-
-    { Replace existing PrimaryPrinter }
-    if InAppSettings and (Pos('PrimaryPrinter=', Line) = 1) then
-    begin
-      Line := 'PrimaryPrinter=' + FirstPrinter;
-      PrimaryWritten := True;
-    end;
-
-    SetArrayLength(Output, OutIndex + 1);
-    Output[OutIndex] := Line;
-    OutIndex := OutIndex + 1;
-  end;
-
-  { If section exists but key never appeared }
-  if InAppSettings and (not PrimaryWritten) then
-  begin
-    SetArrayLength(Output, OutIndex + 1);
-    Output[OutIndex] := 'PrimaryPrinter=' + FirstPrinter;
-    OutIndex := OutIndex + 1;
-    PrimaryWritten := True;
-  end;
-
-  { If section never existed, create it }
-  if not PrimaryWritten then
-  begin
-    SetArrayLength(Output, OutIndex + 2);
-    Output[OutIndex] := '[ApplicationSettings]';
-    Output[OutIndex + 1] := 'PrimaryPrinter=' + FirstPrinter;
-  end;
-
-  SaveStringsToFile(IniPath, Output, False);
-end;
-
-
-function GetClawPDFExePath(): String;
-begin
-  if IsWin64 then
-    Result := ExpandConstant('{pf64}\clawpdf\clawPDF.exe')
-  else
-    Result := ExpandConstant('{pf}\clawpdf\clawPDF.exe');
-
-  if not FileExists(Result) then
-    Result := '';
-end;
-
-
 { Post-install logic: create folders, update INI, install clawPDF, import config }
 procedure CurStepChanged(CurStep: TSetupStep);
 var
@@ -508,23 +338,12 @@ begin
       end;
     end;
 
-    { Install ClawPDF }
-    begin
-      if Exec(ExpandConstant('{sys}\msiexec.exe'), '/i "{app}\windows\clawPDF_0.9.3_setup.msi" /norestart /qn', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
-      begin
-        { install ok }
-      end
-      else
-      begin
-        MsgBox('Could not install ClawPDF', mbError, MB_OK);
-      end
-    end;
-
     { Configure ClawPDF }
     ClawPDFExe := ExpandConstant('{pf}\clawpdf\clawPDF.exe');
     SetupHelperExe := ExpandConstant('{pf}\clawpdf\SetupHelper.exe');
     ClawPDFIni := ExpandConstant('{app}\windows\clawPDF4Libki.ini');
-    if (ClawPDFExe <> '') and FileExists(ClawPDFIni) then
+ 
+   if FileExists(ClawPDFExe) and FileExists(SetupHelperExe) then
     begin
       GetPrinterList(Printers);
 
@@ -543,6 +362,7 @@ begin
       SetIniString('ApplicationSettings', 'PrimaryPrinter', Trim(PrintersMemo.Lines[0]), ClawPDFIni);
       SetIniString('ApplicationSettings', 'LastUsedProfileGuid', '{#ProfileGuid}', ClawPDFIni);
       
+      { apply configs }
       if Exec(ClawPDFExe, '/Config="' + ClawPDFIni + '"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
       begin
         { configs ok }
@@ -555,7 +375,7 @@ begin
     else
     begin
       MsgBox(
-        'clawPDF executable not found at ' + ClawPDFExe + '; configuration was not imported.',
+        'clawPDF executable not found at ' + ClawPDFExe,
         mbError,
         MB_OK
       );
