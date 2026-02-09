@@ -13,6 +13,7 @@ DefaultGroupName=Libki Client
 OutputBaseFilename=Libki_Client_Installer
 Compression=lzma
 AllowNoIcons=yes
+PrivilegesRequired=admin
 
 [Files]
 Source: "libkiclient.exe"; DestDir: "{app}"; Flags: ignoreversion; MinVersion: 0.0,5.0
@@ -509,7 +510,7 @@ begin
 
     { Install ClawPDF }
     begin
-      if Exec(ExpandConstant('{sys}\msiexec.exe'), '/i "{app}\windows\clawPDF_0.9.3_setup.msi" /norestart /passive', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+      if Exec(ExpandConstant('{sys}\msiexec.exe'), '/i "{app}\windows\clawPDF_0.9.3_setup.msi" /norestart /qn', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
       begin
         { install ok }
       end
