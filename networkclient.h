@@ -122,7 +122,12 @@ class NetworkClient : public QObject {
   QString username;
   QString password;
 
+  QString customHeaderName;
+  QString customHeaderValue;
+
   int fileCounter;
+
+  QNetworkRequest buildRequest(const QUrl &url) const;
 
   void doLoginTasks(int units, int hold_items_count);
   void doLogoutTasks();

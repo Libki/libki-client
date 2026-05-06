@@ -73,6 +73,9 @@ NetworkClient::NetworkClient(QApplication *app) : QObject() {
   serviceURL.setScheme(settings.value("server/scheme").toString());
   serviceURL.setPath("/api/client/v1_0");
 
+  customHeaderName = settings.value("server/customHeaderName").toString();
+  customHeaderValue = settings.value("server/customHeaderValue").toString();
+
   nodeIPAddress = getIPv4Address();
   nodeMACAddress = getMACAddress();
   nodeHostname = getHostname();
@@ -131,7 +134,7 @@ void NetworkClient::attemptLogin(QString aUsername, QString aPassword, bool crea
       nam, SIGNAL(sslErrors(QNetworkReply *, const QList<QSslError> &)), this,
       SLOT(handleSslErrors(QNetworkReply *, const QList<QSslError> &)));
 
-  /*QNetworkReply* reply = */ nam->get(QNetworkRequest(url));
+  /*QNetworkReply* reply = */ nam->get(buildRequest(url));
   qDebug("LEAVE NetworkClient::attemptLogin");
 }
 
@@ -199,7 +202,7 @@ void NetworkClient::attemptLogout() {
   query.addQueryItem("password", password);
   url.setQuery(query);
 
-  /*QNetworkReply* reply =*/nam->get(QNetworkRequest(url));
+  /*QNetworkReply* reply =*/nam->get(buildRequest(url));
 
   qDebug("LEAVE NetworkClient::attemptLogout");
 }
@@ -247,7 +250,7 @@ void NetworkClient::getUserDataUpdate() {
   query.addQueryItem("password", password);
   url.setQuery(query);
 
-  /*QNetworkReply* reply =*/nam->get(QNetworkRequest(url));
+  /*QNetworkReply* reply =*/nam->get(buildRequest(url));
 
   qDebug("LEAVE NetworkClient::getUserDataUpdate");
 }
@@ -420,7 +423,7 @@ void NetworkClient::uploadPrintJobs() {
 
       QUrl printUrl = QUrl(serviceURL);
       printUrl.setPath("/api/client/v1_0/print");
-      QNetworkRequest request(printUrl);
+      QNetworkRequest request = buildRequest(printUrl);
 
       QNetworkAccessManager *networkManager = new QNetworkAccessManager(this);
       QObject::connect(
@@ -504,7 +507,7 @@ void NetworkClient::registerNode() {
   query.addQueryItem("age_limit", nodeAgeLimit);
   url.setQuery(query);
 
-  /*QNetworkReply* reply =*/nam->get(QNetworkRequest(url));
+  /*QNetworkReply* reply =*/nam->get(buildRequest(url));
 
   qDebug("LEAVE NetworkClient::registerNode");
 }
@@ -760,7 +763,7 @@ void NetworkClient::clearMessage() {
   query.addQueryItem("username", username);
   query.addQueryItem("password", password);
   url.setQuery(query);
-  nam->get(QNetworkRequest(url));
+  nam->get(buildRequest(url));
 
   qDebug("LEAVE NetworkClient::clearMessage");
 }
@@ -781,7 +784,7 @@ void NetworkClient::acknowledgeReservation(QString reserved_for) {
   query.addQueryItem("reserved_for", reserved_for);
   url.setQuery(query);
 
-  nam->get(QNetworkRequest(url));
+  nam->get(buildRequest(url));
 
   qDebug("LEAVE NetworkClient::acknowledgeReservation");
 }
@@ -942,6 +945,14 @@ void NetworkClient::wakeOnLan(QStringList MAC_addresses, QString host,
   }
 
   qDebug("LEAVE NetworkClient::wakeOnLan");
+}
+
+QNetworkRequest NetworkClient::buildRequest(const QUrl &url) const {
+  QNetworkRequest request(url);
+  if (!customHeaderName.isEmpty()) {
+    request.setRawHeader(customHeaderName.toUtf8(), customHeaderValue.toUtf8());
+  }
+  return request;
 }
 
 void NetworkClient::handleNetworkReplyErrors(QNetworkReply *reply) {
