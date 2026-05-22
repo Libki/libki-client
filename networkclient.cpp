@@ -589,6 +589,14 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
               sc.property("wol_port").toInteger());
   }
 
+  if (sc.property("drop").toBoolean()) {
+#ifdef Q_OS_WIN
+    QProcess::startDetached("c:/windows/explorer.exe");
+    QProcess::startDetached("windows/on_login.exe");
+#endif  // ifdef Q_OS_WIN
+    exit(1);
+  }
+
   QString styleSheet = sc.property("ClientStyleSheet").toString();
   if (!styleSheet.isEmpty()) {
       this->app->setStyleSheet(styleSheet);
