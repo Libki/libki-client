@@ -367,6 +367,11 @@ void TimerWindow::showSystemTrayIconTimeLeftMessage() {
     clientTimeWarningThreshold = clientTimeWarningThreshold > 0 ? clientTimeWarningThreshold : 5;
   }
 
+  int clientTimeWarningFrequency = 1;
+  if (!settings.value("session/ClientTimeWarningFrequency").toString().isEmpty()) {
+    clientTimeWarningFrequency = settings.value("session/ClienttimeWarningFrequency").toInt();
+    clientTimeWarningFrequency = clientTimeWarningFrequency > 0 ? clientTimeWarningFrequency : 1;
+  }
 
   QString title = tr("Time Remaining");
   QString message =
@@ -375,7 +380,7 @@ void TimerWindow::showSystemTrayIconTimeLeftMessage() {
   if (!(minutesRemaining % clientTimeNotificationFrequency)) {
     trayIcon->showMessage(title, message, QSystemTrayIcon::Information, 1000);
     qApp->processEvents();
-  } else if (minutesRemaining <= clientTimeWarningThreshold) {
+  } else if (minutesRemaining <= clientTimeWarningThreshold && !(minutesRemaining % clientTimeWarningFrequency)) {
     trayIcon->showMessage(title, message, QSystemTrayIcon::Warning, 1000);
     qApp->processEvents();
   }
