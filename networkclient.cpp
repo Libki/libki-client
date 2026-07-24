@@ -19,6 +19,8 @@
 
 #include "networkclient.h"
 #include "utils.h"
+#include "printsubmissionserver.h"
+#include "printprotocol.h"
 
 #include <QDir>
 #include <QHttpMultiPart>
@@ -104,6 +106,21 @@ NetworkClient::NetworkClient(QApplication *app) : QObject() {
   updateUserDataTimer = new QTimer(this);
   connect(updateUserDataTimer, SIGNAL(timeout()), this,
           SLOT(getUserDataUpdate()));
+
+  printServer = new PrintSubmissionServer(this);
+
+  if (printServer->start()) {
+      qDebug() << "IPC server name:"
+              << LIBKI_PRINT_SERVER_NAME;
+  } else {
+      qWarning() << "Print submission server could not be started.";
+  }
+
+  connect(printServer,
+        SIGNAL(submitPrintRequested(QString,QString,int,int)),
+        this,
+        SLOT(handlePrintRequest(QString,QString,int,int)));
+
 
   qDebug("LEAVE NetworkClient::NetworkClient");
 }
@@ -973,4 +990,16 @@ void NetworkClient::handleNetworkReplyErrors(QNetworkReply *reply) {
   } else {
       serverAccessWarning("");
   }
+}
+
+void NetworkClient::handlePrintRequest(QString filename, QString printer, int copies, int pageCount) {
+    if (username.isEmpty()) {
+        qWarning() << "Ignoring IPC print request: no user logged in.";
+        return;
+    }
+    qDebug() << "IPC print request received";
+    qDebug() << "  filename :" << filename;
+    qDebug() << "  printer :" << printer;
+    qDebug() << "  copies  :" << copies;
+    qDebug() << "  pages   :" << pageCount;
 }

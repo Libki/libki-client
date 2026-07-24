@@ -37,6 +37,11 @@
 #include <QtScript/QScriptEngine>
 #include <QtScript/QScriptValue>
 
+//
+// Forward declarations
+//
+class PrintSubmissionServer;
+
 namespace LogoutAction {
 enum Enum { Logout, Reboot, NoAction };
 }
@@ -96,6 +101,11 @@ class NetworkClient : public QObject {
 
   void handleNetworkReplyErrors(QNetworkReply *reply);
 
+  void handlePrintRequest(QString filename,
+                          QString printer,
+                          int copies,
+                          int pageCount);
+
  private:
   QApplication *app;
 
@@ -126,6 +136,8 @@ class NetworkClient : public QObject {
   QString customHeaderValue;
 
   int fileCounter;
+
+  PrintSubmissionServer *printServer;
 
   QNetworkRequest buildRequest(const QUrl &url) const;
 
