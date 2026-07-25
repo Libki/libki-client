@@ -117,9 +117,9 @@ NetworkClient::NetworkClient(QApplication *app) : QObject() {
   }
 
   connect(printServer,
-        SIGNAL(submitPrintRequested(QString,QString,int,int)),
-        this,
-        SLOT(handlePrintRequest(QString,QString,int,int)));
+          SIGNAL(submitPrintRequested(SubmitPrintRequest)),
+          this,
+          SLOT(handlePrintRequest(SubmitPrintRequest)));
 
 
   qDebug("LEAVE NetworkClient::NetworkClient");
@@ -352,115 +352,134 @@ void NetworkClient::uploadPrintJobs() {
 
     QFileInfoList list = dir.entryInfoList();
 
-    const QString printedFileSuffix = ".printed";
-
     for (int i = 0; i < list.size(); ++i) {
 
       QFileInfo fileInfo = list.at(i);
       QString absoluteFilePath = fileInfo.absoluteFilePath();
-      QString fileName = fileInfo.fileName();
 
-      // If the file is less than 1 kb, it's still being written. An empty PDF is about 3.7K
-      if ( fileInfo.size() < 2048 ) {
-        continue;
-      }
+      SubmitPrintRequest request;
 
-      // If the file is not writable, the print driver hasn't finished writing the PDF
-      if (!fileInfo.isWritable()) {
-        continue;
-      }
+      request.filename = absoluteFilePath;
+      request.printer = printer;
+      request.copies = 0;
+      request.pageCount = 0;
 
-      if (fileName.endsWith(printedFileSuffix)) {
-        continue;
-      }
-      qDebug() << "SENDING PRINT JOB: " << fileName;
-
-      QString fileCounterString = QString::number(fileCounter);
-      fileCounter++;
-
-      QString newAbsoluteFilePath =
-          absoluteFilePath + "." + fileCounterString + printedFileSuffix;
-      bool renamed = QFile::rename(absoluteFilePath, newAbsoluteFilePath);
-      if ( !renamed ) {
-          qDebug() << "RENAME FROM " << absoluteFilePath << " TO " << printedFileSuffix << " FAILED! SKIPPING FILE.";
-          continue;
-      }
-
-      QFile *file = new QFile(newAbsoluteFilePath);
-      bool opened = file->open(QIODevice::ReadOnly);
-      if ( !opened ) {
-          qDebug() << "OPENDING FILE " << newAbsoluteFilePath << " FAILED! SKIPPING FILE.";
-          continue;
-      }
-
-      QHttpMultiPart *multiPart =
-          new QHttpMultiPart(QHttpMultiPart::FormDataType);
-
-      // We con't delete the file object now, delete it with the multiPart
-      file->setParent(multiPart);
-
-      QHttpPart clientNamePart;
-      clientNamePart.setHeader(QNetworkRequest::ContentDispositionHeader,
-                               QVariant("form-data; name=client_name"));
-      QByteArray clientNameQBA;
-      clientNameQBA.append(nodeName);
-      clientNamePart.setBody(clientNameQBA);
-      multiPart->append(clientNamePart);
-
-      QHttpPart userNamePart;
-      userNamePart.setHeader(QNetworkRequest::ContentDispositionHeader,
-                             QVariant("form-data; name=username"));
-      QByteArray userNameQBA;
-      userNameQBA.append(username);
-      userNamePart.setBody(userNameQBA);
-      multiPart->append(userNamePart);
-
-      QHttpPart printerNamePart;
-      printerNamePart.setHeader(QNetworkRequest::ContentDispositionHeader,
-                                QVariant("form-data; name=printer"));
-      QByteArray printerNameQBA;
-      printerNameQBA.append(printer);
-      printerNamePart.setBody(printerNameQBA);
-      multiPart->append(printerNamePart);
-
-      QHttpPart printJobPart;
-      printJobPart.setHeader(
-          QNetworkRequest::ContentDispositionHeader,
-          QVariant("form-data; name=print_file; filename=" + fileName));
-      printJobPart.setBodyDevice(file);
-      multiPart->append(printJobPart);
-
-      QHttpPart fileNamePart;
-      fileNamePart.setHeader(QNetworkRequest::ContentDispositionHeader,
-                             QVariant("form-data; name=filename"));
-      QByteArray fileNameQBA;
-      fileNameQBA.append(fileName);
-      fileNamePart.setBody(fileNameQBA);
-      multiPart->append(fileNamePart);
-
-      QUrl printUrl = QUrl(serviceURL);
-      printUrl.setPath("/api/client/v1_0/print");
-      QNetworkRequest request = buildRequest(printUrl);
-
-      QNetworkAccessManager *networkManager = new QNetworkAccessManager(this);
-      QObject::connect(
-          networkManager,
-          SIGNAL(sslErrors(QNetworkReply *, const QList<QSslError> &)), this,
-          SLOT(handleSslErrors(QNetworkReply *, const QList<QSslError> &)));
-
-      QNetworkReply *reply = networkManager->post(request, multiPart);
-      multiPart->setParent(reply);  // delete the multiPart with the reply
-
-      // TODO: delete file after finished signal emits
-      // https://stackoverflow.com/questions/5153157/passing-an-argument-to-a-slot
-      connect(networkManager, SIGNAL(finished(QNetworkReply *)), this,
-              SLOT(uploadPrintJobReply(QNetworkReply *)));
-      connect(reply, SIGNAL(uploadProgress(qint64, qint64)), this,
-              SLOT(handleUploadProgress(qint64, qint64)));
+      uploadPrintJob(request);
     }
   }
-
   qDebug() << "LEAVE NetworkClient::uploadPrintJobs";
+}
+
+void NetworkClient::uploadPrintJob(const SubmitPrintRequest &request) {
+  QFile *file = new QFile(request.filename);
+  bool opened = file->open(QIODevice::ReadOnly);
+  if ( !opened ) {
+    qDebug() << "OPENING FILE " << request.filename << " FAILED! SKIPPING FILE.";
+    return;
+  }
+  QFileInfo fileInfo = request.filename;
+  QString fileNameOnly = fileInfo.fileName();
+
+  // If the file is less than 1 kb, it's still being written. An empty PDF is about 3.7K
+  if ( fileInfo.size() < 2048 ) {
+    return;
+  }
+
+  // If the file is not writable, the print driver hasn't finished writing the PDF
+  if (!fileInfo.isWritable()) {
+    return;
+  }
+  const QString printedFileSuffix = ".printed";
+
+  if (request.filename.endsWith(printedFileSuffix)) {
+    return;
+  }
+  qDebug() << "SENDING PRINT JOB: " << fileNameOnly;
+
+  QString fileCounterString = QString::number(fileCounter);
+  fileCounter++;
+
+  QString newAbsoluteFilePath =
+      request.filename + "." + fileCounterString + printedFileSuffix;
+  bool renamed = file->rename(request.filename, newAbsoluteFilePath);
+  if ( !renamed ) {
+    qDebug() << "RENAME FROM " << request.filename << " TO " << printedFileSuffix << " FAILED! SKIPPING FILE.";
+    return;
+  }
+
+  QHttpMultiPart *multiPart =
+      new QHttpMultiPart(QHttpMultiPart::FormDataType);
+
+          // We con't delete the file object now, delete it with the multiPart
+  file->setParent(multiPart);
+
+  QHttpPart clientNamePart;
+  clientNamePart.setHeader(QNetworkRequest::ContentDispositionHeader,
+                           QVariant("form-data; name=client_name"));
+  QByteArray clientNameQBA;
+  clientNameQBA.append(nodeName);
+  clientNamePart.setBody(clientNameQBA);
+  multiPart->append(clientNamePart);
+
+  QHttpPart userNamePart;
+  userNamePart.setHeader(QNetworkRequest::ContentDispositionHeader,
+                         QVariant("form-data; name=username"));
+  QByteArray userNameQBA;
+  userNameQBA.append(username);
+  userNamePart.setBody(userNameQBA);
+  multiPart->append(userNamePart);
+
+  QHttpPart printerNamePart;
+  printerNamePart.setHeader(QNetworkRequest::ContentDispositionHeader,
+                            QVariant("form-data; name=printer"));
+  QByteArray printerNameQBA;
+  printerNameQBA.append(request.printer);
+  printerNamePart.setBody(printerNameQBA);
+  multiPart->append(printerNamePart);
+
+  QHttpPart printJobPart;
+  printJobPart.setHeader(
+      QNetworkRequest::ContentDispositionHeader,
+      QVariant("form-data; name=print_file; filename=" + fileNameOnly));
+  printJobPart.setBodyDevice(file);
+  multiPart->append(printJobPart);
+
+  QHttpPart fileNamePart;
+  fileNamePart.setHeader(QNetworkRequest::ContentDispositionHeader,
+                         QVariant("form-data; name=filename"));
+  QByteArray fileNameQBA;
+  fileNameQBA.append(fileNameOnly);
+  fileNamePart.setBody(fileNameQBA);
+  multiPart->append(fileNamePart);
+
+  QHttpPart copiesPart;
+  copiesPart.setHeader(
+      QNetworkRequest::ContentDispositionHeader,
+      QVariant("form-data; name=\"copies\""));
+  copiesPart.setBody(
+      QByteArray::number(request.copies));
+  multiPart->append(copiesPart);
+
+  QUrl printUrl = QUrl(serviceURL);
+  printUrl.setPath("/api/client/v1_0/print");
+  QNetworkRequest netrequest = buildRequest(printUrl);
+
+
+  QNetworkAccessManager *networkManager = new QNetworkAccessManager(this);
+  QObject::connect(
+      networkManager,
+      SIGNAL(sslErrors(QNetworkReply *, const QList<QSslError> &)), this,
+      SLOT(handleSslErrors(QNetworkReply *, const QList<QSslError> &)));
+
+  QNetworkReply *reply = networkManager->post(netrequest, multiPart);
+  multiPart->setParent(reply);  // delete the multiPart with the reply
+
+          // TODO: delete file after finished signal emits
+          // https://stackoverflow.com/questions/5153157/passing-an-argument-to-a-slot
+  connect(networkManager, SIGNAL(finished(QNetworkReply *)), this,
+          SLOT(uploadPrintJobReply(QNetworkReply *)));
+  connect(reply, SIGNAL(uploadProgress(qint64, qint64)), this,
+          SLOT(handleUploadProgress(qint64, qint64)));
 }
 
 void NetworkClient::handleUploadProgress(qint64 bytesSent, qint64 bytesTotal) {
@@ -992,14 +1011,12 @@ void NetworkClient::handleNetworkReplyErrors(QNetworkReply *reply) {
   }
 }
 
-void NetworkClient::handlePrintRequest(QString filename, QString printer, int copies, int pageCount) {
-    if (username.isEmpty()) {
-        qWarning() << "Ignoring IPC print request: no user logged in.";
-        return;
-    }
-    qDebug() << "IPC print request received";
-    qDebug() << "  filename :" << filename;
-    qDebug() << "  printer :" << printer;
-    qDebug() << "  copies  :" << copies;
-    qDebug() << "  pages   :" << pageCount;
+void NetworkClient::handlePrintRequest(const SubmitPrintRequest &request) {
+  if (username.isEmpty()) {
+    qWarning()
+        << "Ignoring print request because no user is logged in.";
+    return;
+  }
+
+  uploadPrintJob(request);
 }

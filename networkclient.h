@@ -36,10 +36,8 @@
 #include <QtNetwork/QNetworkInterface>
 #include <QtScript/QScriptEngine>
 #include <QtScript/QScriptValue>
+#include "printprotocol.h"
 
-//
-// Forward declarations
-//
 class PrintSubmissionServer;
 
 namespace LogoutAction {
@@ -101,10 +99,8 @@ class NetworkClient : public QObject {
 
   void handleNetworkReplyErrors(QNetworkReply *reply);
 
-  void handlePrintRequest(QString filename,
-                          QString printer,
-                          int copies,
-                          int pageCount);
+  void handlePrintRequest(const SubmitPrintRequest &request);
+  void uploadPrintJob( const SubmitPrintRequest &request);
 
  private:
   QApplication *app;

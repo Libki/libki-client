@@ -9,10 +9,26 @@ int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
 
-    QLocalSocket socket;
+    QStringList args = app.arguments();
 
-    qDebug() << "Connecting to"
-             << LIBKI_PRINT_SERVER_NAME;
+    if (args.size() < 3) {
+        qCritical()
+            << "Usage:"
+            << args[0]
+            << "<filename> <printer> [copies] [pages]";
+        return 1;
+    }
+
+    SubmitPrintRequest request;
+
+    request.filename = args[1];
+    request.printer  = args[2];
+    request.copies   = (args.size() >= 4) ? args[3].toInt() : 1;
+    request.pageCount = (args.size() >= 5) ? args[4].toInt() : 0;
+
+    qDebug() << "Connecting to" << LIBKI_PRINT_SERVER_NAME;
+
+    QLocalSocket socket;
 
     socket.connectToServer(LIBKI_PRINT_SERVER_NAME);
 
@@ -28,15 +44,15 @@ int main(int argc, char *argv[])
     QDataStream stream(&socket);
     stream.setVersion(QDataStream::Qt_5_5);
 
+    qDebug() << "Sending:";
+    qDebug() << "  file    =" << request.filename;
+    qDebug() << "  printer =" << request.printer;
+    qDebug() << "  copies  =" << request.copies;
+    qDebug() << "  pages   =" << request.pageCount;
+
     stream << (quint32)LIBKI_PRINT_PROTOCOL_VERSION;
     stream << (quint32)PrintMessage_SubmitPrint;
-
-    stream << QString("/tmp/test.pdf");
-    stream << QString("Color Printer");
-    stream << (qint32)2;
-    stream << (qint32)17;
-
-    qDebug() << "Test Message sent.";
+    stream << request;
 
     socket.flush();
 
@@ -63,7 +79,7 @@ int main(int argc, char *argv[])
     qDebug() << "  status  =" << status;
     qDebug() << "  message =" << message;
 
-    socket.waitForDisconnected(1000);
+    socket.disconnectFromServer();
 
-//    return 0;
+    return (status == 0) ? 0 : 1;
 }
