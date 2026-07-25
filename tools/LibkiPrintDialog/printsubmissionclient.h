@@ -17,35 +17,36 @@
  * along with Libki. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PRINTSUBMISSIONSERVER_H
-#define PRINTSUBMISSIONSERVER_H
 
-#include <QObject>
-#include <QLocalServer>
-#include "printprotocol.h"
+#ifndef PRINTSUBMISSIONCLIENT_H
+#define PRINTSUBMISSIONCLIENT_H
+
+#include <QString>
+#include <QStringList>
+
+#include "../../printprotocol.h"
 
 class QLocalSocket;
 
-class PrintSubmissionServer : public QObject {
-  Q_OBJECT
+class PrintSubmissionClient
+{
+public:
+    PrintSubmissionClient();
+    ~PrintSubmissionClient();
 
-  public:
-    explicit PrintSubmissionServer(QObject *parent = 0);
-    bool start();
-    void sendPrintInfoReply(QLocalSocket *socket, const PrintInfoReply &reply);
+    bool connectToServer(int timeout = 3000);
 
-  signals:
-    void submitPrintRequested(const SubmitPrintRequest &request);
-   void printInfoRequested(PrintInfoRequest request, QLocalSocket *socket);
+    bool submitPrint(const SubmitPrintRequest &request);
 
-   private slots:
-    void newConnection();
-    void socketReadyRead();
+    bool getPrintInfo(const PrintInfoRequest &request, PrintInfoReply &reply);
 
-  private:
-    bool processSocket(QLocalSocket *socket, QString &errorMessage);
+    QString lastError() const;
 
-    QLocalServer *server;
+private:
+    bool waitForReply();
+
+    QLocalSocket *socket;
+    QString errorString;
 };
 
-#endif
+#endif // PRINTSUBMISSIONCLIENT_H

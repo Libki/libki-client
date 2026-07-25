@@ -24,6 +24,7 @@
 #include <QDebug>
 #include <QEventLoop>
 #include <QHash>
+#include <QLocalSocket>
 #include <QObject>
 #include <QProcess>
 #include <QSettings>
@@ -102,6 +103,9 @@ class NetworkClient : public QObject {
   void handlePrintRequest(const SubmitPrintRequest &request);
   void uploadPrintJob( const SubmitPrintRequest &request);
 
+  void handlePrintInfoRequest(PrintInfoRequest request, QLocalSocket *socket);
+  void processPrintPriceCheckReply();
+
  private:
   QApplication *app;
 
@@ -142,6 +146,14 @@ class NetworkClient : public QObject {
 
   void wakeOnLan(QStringList MAC_addresses, QString host, qint64 port);
 
+  struct PendingPrintInfoRequest
+  {
+    QLocalSocket *socket;
+
+    PrintInfoRequest request;
+  };
+
+  QHash<QNetworkReply *, PendingPrintInfoRequest> pendingPrintInfoReplies;
 };
 
 #endif  // NETWORKCLIENT_H

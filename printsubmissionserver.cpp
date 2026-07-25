@@ -48,22 +48,23 @@ bool PrintSubmissionServer::start() {
 
     return true;
 }
-void PrintSubmissionServer::newConnection() {
-    while (server->hasPendingConnections()) {
+void PrintSubmissionServer::newConnection()
+{
+  while (server->hasPendingConnections()) {
 
-        QLocalSocket *socket =
-            server->nextPendingConnection();
+    QLocalSocket *socket =
+        server->nextPendingConnection();
 
-        connect(socket,
-                SIGNAL(readyRead()),
-                this,
-                SLOT(socketReadyRead()));
+    connect(socket,
+            SIGNAL(readyRead()),
+            this,
+            SLOT(socketReadyRead()));
 
-        connect(socket,
-                SIGNAL(disconnected()),
-                socket,
-                SLOT(deleteLater()));
-    }
+    connect(socket,
+            SIGNAL(disconnected()),
+            socket,
+            SLOT(deleteLater()));
+  }
 }
 
 void PrintSubmissionServer::socketReadyRead()
@@ -74,71 +75,106 @@ void PrintSubmissionServer::socketReadyRead()
   if (!socket)
     return;
 
-  qDebug() << "bytes available:" << socket->bytesAvailable();
-
   QString error;
 
-  bool ok = processSocket(socket, error);
+  bool finished =
+      processSocket(socket, error);
 
-  QDataStream out(socket);
-  out.setVersion(QDataStream::Qt_5_5);
+  if (!error.isEmpty())
+    qWarning() << error;
 
-  out << (quint32)LIBKI_PRINT_PROTOCOL_VERSION;
-  out << (quint32)(ok ? 0 : 1);
-  out << (ok ? QString("OK") : error);
-
-  socket->flush();
-  socket->disconnectFromServer();
+  if (finished &&
+      socket->state() == QLocalSocket::ConnectedState)
+  {
+    socket->disconnectFromServer();
+  }
 }
 
-bool PrintSubmissionServer::processSocket(QLocalSocket *socket, QString &errorMessage) {
-    if (socket->bytesAvailable() < 8)
-      return 1;
+bool PrintSubmissionServer::processSocket(QLocalSocket *socket, QString &error) {
+    if (!socket)
+      return true;
+
+    if (socket->bytesAvailable() < sizeof(quint32) * 2)
+      return false;
+
     QDataStream stream(socket);
+    stream.setVersion(QDataStream::Qt_5_5);
 
     quint32 version;
     quint32 message;
 
-    stream.setVersion(QDataStream::Qt_5_5);
-
     stream >> version;
     stream >> message;
 
+    if (version != LIBKI_PRINT_PROTOCOL_VERSION) {
+      error = tr("Protocol version mismatch.");
+      return true;
+    }
+
     switch (message) {
 
-    case PrintMessage_SubmitPrint:
-    {
+      case PrintMessage_SubmitPrintRequest:
+      {
         SubmitPrintRequest request;
 
         stream >> request;
 
-        qDebug()
-            << "Print request:"
-            << request.filename
-            << request.printer
-            << request.copies
-            << request.pageCount;
-
         emit submitPrintRequested(request);
 
-        break;
+        QDataStream out(socket);
+        out.setVersion(QDataStream::Qt_5_5);
+
+        out << (quint32)LIBKI_PRINT_PROTOCOL_VERSION;
+        out << (quint32)PrintStatus_Ok;
+        out << QString("OK");
+
+        socket->flush();
+        socket->waitForBytesWritten(1000);
+
+        return true;
+      }
+    case PrintMessage_GetPrintInfoRequest:
+    {
+      PrintInfoRequest request;
+
+      stream >> request;
+
+      emit printInfoRequested(request, socket);
+
+      return false;
     }
 
     default:
         qWarning()
             << "Unknown IPC message";
+        return true;
     }
 
     QDataStream out(socket);
     out.setVersion(QDataStream::Qt_5_5);
 
     out << (quint32)LIBKI_PRINT_PROTOCOL_VERSION;
-    out << (quint32)0;
+    out << (quint32)PrintStatus_Ok;
     out << QString("OK");
 
     socket->flush();
     socket->waitForBytesWritten(1000);
 
     socket->disconnectFromServer();
-    return 0;
+    return true;
+}
+
+void PrintSubmissionServer::sendPrintInfoReply(QLocalSocket *socket, const PrintInfoReply &reply)
+{
+  if (!socket)
+    return;
+
+  QDataStream stream(socket);
+
+  stream << (quint32)LIBKI_PRINT_PROTOCOL_VERSION;
+  stream << (quint32)PrintMessage_GetPrintInfoReply;
+  stream << reply;
+
+  socket->flush();
+  socket->disconnectFromServer();
 }

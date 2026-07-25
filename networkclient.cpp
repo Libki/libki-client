@@ -121,6 +121,11 @@ NetworkClient::NetworkClient(QApplication *app) : QObject() {
           this,
           SLOT(handlePrintRequest(SubmitPrintRequest)));
 
+  connect(printServer,
+          SIGNAL(printInfoRequested(PrintInfoRequest,QLocalSocket*)),
+          this,
+          SLOT(handlePrintInfoRequest(PrintInfoRequest,QLocalSocket*)));
+
 
   qDebug("LEAVE NetworkClient::NetworkClient");
 }
@@ -1019,4 +1024,104 @@ void NetworkClient::handlePrintRequest(const SubmitPrintRequest &request) {
   }
 
   uploadPrintJob(request);
+}
+
+void NetworkClient::handlePrintInfoRequest(PrintInfoRequest request, QLocalSocket *socket) {
+  qDebug("ENTER handlePrintInfoRequest");
+  QNetworkAccessManager *nam = new QNetworkAccessManager(this);
+  QUrl url(serviceURL);
+
+  url.setPath("/api/client/v1_0/print_price_check");
+
+  QUrlQuery query;
+
+  query.addQueryItem("client_name", nodeName);
+  query.addQueryItem("username", username);
+  query.addQueryItem("printer", request.printer);
+
+  url.setQuery(query);
+
+  QNetworkReply *reply = nam->get(buildRequest(url));
+
+  PendingPrintInfoRequest context;
+
+  context.socket = socket;
+  context.request = request;
+
+  pendingPrintInfoReplies.insert(reply, context);
+
+  connect(reply,
+          SIGNAL(finished()),
+          this,
+          SLOT(processPrintPriceCheckReply()));
+  qDebug("LEAVE handlePrintInfoRequest");
+}
+
+void NetworkClient::processPrintPriceCheckReply() {
+  qDebug("ENTER processPrintPriceCheckReply");
+  QNetworkReply *networkReply =
+      qobject_cast<QNetworkReply *>(sender());
+
+  if (!networkReply)
+    qDebug("No network reply");
+    return;
+
+  PendingPrintInfoRequest context = pendingPrintInfoReplies.take(networkReply);
+
+  PrintInfoReply reply;
+
+  if (networkReply->error() != QNetworkReply::NoError) {
+    reply.success = false;
+    reply.error = networkReply->errorString();
+
+    printServer->sendPrintInfoReply(
+        context.socket,
+        reply);
+
+    networkReply->deleteLater();
+    return;
+  }
+
+  QJsonParseError parseError;
+
+  QJsonDocument doc = QJsonDocument::fromJson(networkReply->readAll(), &parseError);
+
+  if (parseError.error != QJsonParseError::NoError || !doc.isObject()) {
+    reply.success = false;
+    reply.error = tr("Invalid JSON returned by server.");
+
+    printServer->sendPrintInfoReply(
+        context.socket,
+        reply);
+
+    networkReply->deleteLater();
+    return;
+  }
+
+  QJsonObject obj = doc.object();
+
+  reply.success = true;
+  reply.currency = obj.value("currency").toString();
+  reply.costPerPage = obj.value("cpp").toDouble();
+  reply.availableFunds = obj.value("funds").toDouble();
+  reply.gratisBalance = obj.value("gratis_balance").toDouble();
+  reply.gratisMethod = obj.value("gratis_method").toString();
+
+  reply.estimatedCost = reply.costPerPage * context.request.pageCount * context.request.copies;
+
+          //
+          // TODO:
+          // We may eventually incorporate gratisBalance/gratisMethod
+          // into this calculation.
+          //
+  reply.remainingBalance = reply.availableFunds - reply.estimatedCost;
+
+  reply.canPrint = (reply.remainingBalance >= 0.0);
+
+  printServer->sendPrintInfoReply(
+      context.socket,
+      reply);
+
+  networkReply->deleteLater();
+  qDebug("LEAVE processPrintPriceCheckReply");
 }
