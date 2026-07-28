@@ -32,6 +32,17 @@
 int main(int argc, char *argv[]) {
   QApplication app(argc, argv);
 
+  /* Apply the stylesheet */
+  QFile qss("libki.qss");
+  qss.open(QFile::ReadOnly);
+  app.setStyleSheet(qss.readAll());
+  qss.close();
+
+  QCoreApplication::setOrganizationName("Libki");
+  QCoreApplication::setOrganizationDomain("libki.org");
+  QCoreApplication::setApplicationName("Libki Kiosk Management System");
+  QSettings::setDefaultFormat(QSettings::IniFormat);
+
   LogUtils::initLogging();
 
   QString os_username;
@@ -45,7 +56,7 @@ int main(int argc, char *argv[]) {
 
   qDebug() << "OS Username: " << os_username;
 
-  // Translate the application if the locale is available
+          // Translate the application if the locale is available
   QString locale = QLocale::system().name();
   QString filename = QString("languages/libkiclient_") + locale;
   qDebug() << "LOCALE: " << locale;
@@ -57,17 +68,6 @@ int main(int argc, char *argv[]) {
     qDebug() << "Translation file loaded" << filename;
   } else
     qDebug() << "Translation file not found:" << filename;
-
-  /* Apply the stylesheet */
-  QFile qss("libki.qss");
-  qss.open(QFile::ReadOnly);
-  app.setStyleSheet(qss.readAll());
-  qss.close();
-
-  QCoreApplication::setOrganizationName("Libki");
-  QCoreApplication::setOrganizationDomain("libki.org");
-  QCoreApplication::setApplicationName("Libki Kiosk Management System");
-  QSettings::setDefaultFormat(QSettings::IniFormat);
 
   QSettings settings;
   settings.setIniCodec("UTF-8");

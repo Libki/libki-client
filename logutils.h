@@ -11,9 +11,22 @@
 #include <QTime>
 
 namespace LogUtils {
+
+enum LogLevel {
+  DebugLevel,
+  WarningLevel,
+  ErrorLevel,
+  OffLevel
+};
+
 bool initLogging();
-void myMessageHandler(QtMsgType type, const QMessageLogContext& context,
-                      const QString& msg);
+
+void myMessageHandler(QtMsgType type,
+                      const QMessageLogContext &context,
+                      const QString &msg);
+
+LogLevel logLevel();
+
 }  // namespace LogUtils
 
 #endif  // LOGUTILS_H

@@ -387,11 +387,13 @@ void NetworkClient::uploadPrintJob(const SubmitPrintRequest &request) {
 
   // If the file is less than 1 kb, it's still being written. An empty PDF is about 3.7K
   if ( fileInfo.size() < 2048 ) {
+    qWarning() << "File size too small: " << fileNameOnly;
     return;
   }
 
   // If the file is not writable, the print driver hasn't finished writing the PDF
   if (!fileInfo.isWritable()) {
+    qWarning() << "File not writable: " << fileNameOnly;
     return;
   }
   const QString printedFileSuffix = ".printed";
@@ -408,7 +410,7 @@ void NetworkClient::uploadPrintJob(const SubmitPrintRequest &request) {
       request.filename + "." + fileCounterString + printedFileSuffix;
   bool renamed = file->rename(request.filename, newAbsoluteFilePath);
   if ( !renamed ) {
-    qDebug() << "RENAME FROM " << request.filename << " TO " << printedFileSuffix << " FAILED! SKIPPING FILE.";
+    qWarning() << "RENAME FROM " << request.filename << " TO " << printedFileSuffix << " FAILED! SKIPPING FILE.";
     return;
   }
 
@@ -501,8 +503,8 @@ void NetworkClient::uploadPrintJobReply(QNetworkReply *reply) {
     reply->deleteLater();
     reply->manager()->deleteLater();
   } else {
-    qDebug() << "Network Error: " << reply->errorString();
-    qDebug() << "Retrying network request.";
+    qWarning() << "Network Error: " << reply->errorString();
+    qWarning() << "Retrying network request.";
 
     QNetworkRequest request = reply->request();
 
@@ -573,7 +575,7 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
   sc = engine.evaluate("(" + QString(result) + ")");
 
   if (!sc.property("registered").toBoolean()) {
-    qDebug("Node Registration FAILED");
+    qWarning("Node Registration FAILED");
   }
 
   // TODO: Rename this to something like 'auto-login guest session'
@@ -784,7 +786,7 @@ void NetworkClient::processCheckForInternetConnectivityReply(QNetworkReply *repl
 
   if ( reply->error() != QNetworkReply::NoError ) {
       emit internetAccessWarning(reply->errorString());
-      qDebug() << "NetworkClient::processCheckForInternetConnectivityReply Network Reply Error: " << reply->errorString();
+      qWarning() << "NetworkClient::processCheckForInternetConnectivityReply Network Reply Error: " << reply->errorString();
   } else {
       emit internetAccessWarning("");
   }
@@ -1007,7 +1009,7 @@ QNetworkRequest NetworkClient::buildRequest(const QUrl &url) const {
 void NetworkClient::handleNetworkReplyErrors(QNetworkReply *reply) {
   if ( reply->error() != QNetworkReply::NoError ) {
       QString e = QString::number(reply->error());
-      qDebug() << "ERROR: Server Access Warning: " << e << " :: " << reply->errorString();
+      qWarning() << "ERROR: Server Access Warning: " << e << " :: " << reply->errorString();
 
       QString s = e + ": " + reply->errorString();
       serverAccessWarning(s);
@@ -1063,7 +1065,7 @@ void NetworkClient::processPrintPriceCheckReply() {
       qobject_cast<QNetworkReply *>(sender());
 
   if (!networkReply)
-    qDebug("No network reply");
+    qWarning("No network reply");
     return;
 
   PendingPrintInfoRequest context = pendingPrintInfoReplies.take(networkReply);
@@ -1073,6 +1075,7 @@ void NetworkClient::processPrintPriceCheckReply() {
   if (networkReply->error() != QNetworkReply::NoError) {
     reply.success = false;
     reply.error = networkReply->errorString();
+    qWarning() << "Network reply error: " << reply.error;
 
     printServer->sendPrintInfoReply(
         context.socket,
@@ -1089,6 +1092,7 @@ void NetworkClient::processPrintPriceCheckReply() {
   if (parseError.error != QJsonParseError::NoError || !doc.isObject()) {
     reply.success = false;
     reply.error = tr("Invalid JSON returned by server.");
+    qWarning() << "JSON parsing error";
 
     printServer->sendPrintInfoReply(
         context.socket,
