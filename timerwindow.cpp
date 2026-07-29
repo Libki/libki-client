@@ -421,29 +421,20 @@ void TimerWindow::checkForInactivity() {
 
     #ifdef Q_OS_WIN
 
-      systemTickRangeEnd = (GetTickCount());
+    LASTINPUTINFO lii;
+    lii.cbSize = sizeof(lii);
 
-      LASTINPUTINFO lastInput;
-      lastInput.cbSize = sizeof(lastInput);
-
-      GetLastInputInfo(&lastInput);
-      lastInputTick = lastInput.dwTime;
-
-
-      if ((lastInputTick >=  systemTickRangeStart) && (lastInputTick <=  systemTickRangeEnd)) {
-
-        userIdle = false;
-
-      } else {
-
-        userIdle = true;
-
-      }
-
-      systemTickRangeStart = (GetTickCount());
+    if (GetLastInputInfo(&lii)) {
+      quint64 idleMS =
+          GetTickCount64() - lii.dwTime;
+      secondsSinceLastActivity =
+          idleMS / 1000;
+    } else {
+      qWarning() << "GetLastInputInfo failed.";
+    }
 
     #else
-
+/**
       QPoint pos = QCursor::pos();
       int x = pos.x();
       int y = pos.y();
@@ -461,21 +452,10 @@ void TimerWindow::checkForInactivity() {
 
       prevMousePosX = x;
       prevMousePosY = y;
-
+**/
     #endif
 
-
-    
-    if (userIdle == true) {
-      secondsSinceLastActivity += INACTIVITY_CHECK_INTERVAL;
-      qDebug() << "No activity detected. Seconds since last activity: "
-               << secondsSinceLastActivity;
-    } else {
-      secondsSinceLastActivity = 0;
-      qDebug() << "Activity detected. Seconds since last activity: 0";
-    }
-
-    if (secondsSinceLastActivity / 60 >= inactivityWarning) {
+    if (secondsSinceLastActivity >= inactivityWarning * 60) {
       QString title = tr("Inactivity detected");
       QString message = tr("Please confirm you are still using this computer.");
 
@@ -496,7 +476,7 @@ void TimerWindow::checkForInactivity() {
       qApp->processEvents();
     }
 
-    if (secondsSinceLastActivity / 60 >= inactivityLogout) {
+    if (secondsSinceLastActivity >= inactivityLogout * 60) {
       emit requestLogout();
     }
 
