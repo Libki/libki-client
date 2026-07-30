@@ -717,12 +717,15 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
                       sc.property("LogoWidth").toString());
   }
 
+  QString guestRegistrationEnabled = settings.value("session/EnableGuestSelfRegistration").toString();
+
   settings.sync();
 
   if (
       (logoURL != sc.property("Logo").toString()) ||
       (bannerTopURL != sc.property("BannerTopURL").toString()) ||
-      (bannerBottomURL != sc.property("BannerBottomURL").toString())
+      (bannerBottomURL != sc.property("BannerBottomURL").toString()) ||
+      (guestRegistrationEnabled != sc.property("EnableGuestSelfRegistration").toString())
   ) {
     emit handleBanners();  // TODO: Emit only if a banner url has changed
   }

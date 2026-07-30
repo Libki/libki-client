@@ -592,6 +592,13 @@ void LoginWindow::handleBanners() {
     logoWebView->hide();
   }
 
+  /* okay, not strictly banners, but handling a server-side configuration without needing a node setting */
+  if ( settings.value("session/EnableGuestSelfRegistration").toString() != "enabled" ) {
+    loginGuestButton->hide();
+  } else {
+    loginGuestButton->show();
+  }
+
   qDebug("LEAVE LoginWindow::handleBanners");
 }
 
