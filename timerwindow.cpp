@@ -258,7 +258,7 @@ void TimerWindow::doLogoutDialog() {
   msgBox.setText(tr("Log Out?"));
   msgBox.setInformativeText(tr("Are you sure you want to log out?"));
   msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
-  msgBox.setDefaultButton(QMessageBox::Yes);
+  msgBox.setDefaultButton(QMessageBox::Cancel);
   msgBox.setButtonText(QMessageBox::Yes, tr("Yes"));
   msgBox.setButtonText(QMessageBox::Cancel, tr("Cancel"));
   int ret = msgBox.exec();
@@ -282,6 +282,12 @@ void TimerWindow::setupActions() {
   qDebug("ENTER TimerWindow::setupActions");
 
   connect(logoutButton, SIGNAL(clicked()), this, SLOT(doLogoutDialog()));
+
+  // Don't let either button take keyboard focus. The timer window can be raised
+  // while the user is typing, and a stray spacebar would otherwise activate
+  // whichever button holds focus, which is "Log Out" by default.
+  logoutButton->setFocusPolicy(Qt::NoFocus);
+  lockSessionButton->setFocusPolicy(Qt::NoFocus);
 
   qDebug("LEAVE TimerWindow::setupActions");
 }
