@@ -179,8 +179,7 @@ void TimerWindow::updateClock() {
                        tr("Minutes Left"));
 
   this->setWindowTitle("Libki " + time);
-
-  if ( settings.value("node/showTimeRemainingInTray").toInt() == 1 ) {
+  if ( settings.value("node/showTimeRemainingInTray").toInt() == 1 || settings.value("session/ShowTimeRemainingInTray").toInt() == 1 ) {
       // Update the system tray icon
       QPixmap libkiIcon = QPixmap(":/images/images/tray.png");
       QPainter painter(&libkiIcon);
@@ -206,7 +205,7 @@ void TimerWindow::updateClock() {
       trayIcon->setIcon(libkiIcon);
   }
 
-  bool showSplash = settings.value("node/showTimeRemainingInSplash").toInt() == 1;
+  bool showSplash = settings.value("node/showTimeRemainingInSplash").toInt() == 1 || settings.value("session/ShowTimeRemainingInSplash").toInt() == 1;
   if ( sessionLockedWindow && sessionLockedWindow->isVisible() ) showSplash = false;
   if ( showSplash ) {
       // Update the time splash

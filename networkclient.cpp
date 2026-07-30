@@ -700,6 +700,11 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
   settings.setValue("session/EnableGuestSelfRegistration",
                     sc.property("EnableGuestSelfRegistration").toString());
 
+  settings.setValue("session/ShowTimeRemainingInSplash",
+                    sc.property("ShowTimeRemainingInSplash").toString());
+  settings.setValue("session/ShowTimeRemainingInTray",
+                    sc.property("ShowTimeRemainingInTray").toString());
+
   settings.setValue("session/ClientTimeNotificationFrequency",
                     sc.property("ClientTimeNotificationFrequency").toString());
   settings.setValue("session/ClientTimeWarningThreshold",
