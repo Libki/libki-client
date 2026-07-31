@@ -52,10 +52,15 @@ struct PrintInfoReply
   QString currency;
   double costPerPage;
   double estimatedCost;
-  double availableFunds;
-  double gratisBalance;
+
   QString gratisMethod;
-  double remainingBalance;
+
+  double availableFunds;
+  double availableGratis;
+
+  double remainingFundsBalance;
+  double remainingGratisBalance;
+
   bool canPrint;
   QString error;
 };
@@ -133,9 +138,10 @@ inline QDataStream &operator<<(QDataStream &out,
   out << reply.costPerPage;
   out << reply.estimatedCost;
   out << reply.availableFunds;
-  out << reply.gratisBalance;
+  out << reply.availableGratis;
   out << reply.gratisMethod;
-  out << reply.remainingBalance;
+  out << reply.remainingFundsBalance;
+  out << reply.remainingGratisBalance;
   out << reply.canPrint;
   out << reply.error;
   return out;
@@ -149,9 +155,10 @@ inline QDataStream &operator>>(QDataStream &in,
   in >> reply.costPerPage;
   in >> reply.estimatedCost;
   in >> reply.availableFunds;
-  in >> reply.gratisBalance;
+  in >> reply.availableGratis;
   in >> reply.gratisMethod;
-  in >> reply.remainingBalance;
+  in >> reply.remainingFundsBalance;
+  in >> reply.remainingGratisBalance;
   in >> reply.canPrint;
   in >> reply.error;
   return in;

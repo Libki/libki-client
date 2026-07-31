@@ -53,8 +53,11 @@ private:
     QLabel *costPerPageValue;
     QLabel *estimatedCostValue;
     QLabel *availableFundsValue;
-    QLabel *remainingBalanceValue;
+    QLabel *availableGratisValue;
+    QLabel *remainingFundsValue;
+    QLabel *remainingGratisValue;
     QLabel *statusLabel;
+    QLabel *gratisLabel;
 
     QComboBox *printerCombo;
     QSpinBox *copiesSpin;

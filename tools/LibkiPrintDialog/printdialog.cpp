@@ -56,14 +56,23 @@ PrintDialog::PrintDialog(SubmitPrintRequest &request, PrintInfoReply &info, QWid
 
     costPerPageValue = new QLabel();
     estimatedCostValue = new QLabel();
+
     availableFundsValue = new QLabel();
-    remainingBalanceValue = new QLabel();
+    availableGratisValue = new QLabel();
+
+    remainingFundsValue = new QLabel();
+    remainingGratisValue = new QLabel();
+
     statusLabel = new QLabel();
 
     costPerPageValue->setText(money(info.costPerPage));
     estimatedCostValue->setText(money(info.estimatedCost));
+
     availableFundsValue->setText(money(info.availableFunds));
-    remainingBalanceValue->setText(money(info.remainingBalance));
+    availableGratisValue->setText(money(info.availableGratis));
+
+    remainingFundsValue->setText(money(info.remainingFundsBalance));
+    remainingGratisValue->setText(money(info.remainingGratisBalance));
 
     buttonBox =
         new QDialogButtonBox(
@@ -86,21 +95,40 @@ PrintDialog::PrintDialog(SubmitPrintRequest &request, PrintInfoReply &info, QWid
     grid->addWidget(printerCombo,2,1);
 
     grid->addWidget(copiesLabel,3,0);
-    grid->addWidget(copiesSpin,3,1);
+    grid->addWidget(copiesSpin, 3,1);
 
     grid->addWidget(new QLabel(tr("Cost per page:")), 4, 0);
-    grid->addWidget(costPerPageValue,               4, 1);
+    grid->addWidget(costPerPageValue,                 4, 1);
 
     grid->addWidget(new QLabel(tr("Estimated cost:")), 5, 0);
-    grid->addWidget(estimatedCostValue,               5, 1);
+    grid->addWidget(estimatedCostValue,                5, 1);
 
     grid->addWidget(new QLabel(tr("Current balance:")), 6, 0);
-    grid->addWidget(availableFundsValue,               6, 1);
+    grid->addWidget(availableFundsValue,                6, 1);
 
-    grid->addWidget(new QLabel(tr("Balance after job:")), 7, 0);
-    grid->addWidget(remainingBalanceValue,              7, 1);
+    if (info.availableGratis) {
+      if (info.gratisMethod == "pages") {
+         availableGratisValue->setText(QString::number(info.availableGratis) + tr(" pages"));
+         remainingGratisValue->setText(QString::number(info.remainingGratisBalance) + tr(" pages"));
+      }
+      grid->addWidget(new QLabel(tr("Free printing allowance: ")),          7, 0);
+      grid->addWidget(availableGratisValue, 7, 1);
 
-    grid->addWidget(statusLabel, 8, 0);//, 1, 2);
+      grid->addWidget(new QLabel(tr("Balance after job:")), 8, 0);
+      grid->addWidget(remainingFundsValue,                  8, 1);
+
+      grid->addWidget(new QLabel(tr("Free printing balance after job:")), 9, 0);
+      grid->addWidget(remainingGratisValue,                  9, 1);
+
+      grid->addWidget(statusLabel, 10, 0);
+
+    } else {
+
+      grid->addWidget(new QLabel(tr("Balance after job:")), 7, 0);
+      grid->addWidget(remainingFundsValue,                  7, 1);
+
+      grid->addWidget(statusLabel, 8, 0);//, 1, 2);
+    }
 
     QVBoxLayout *layout =
         new QVBoxLayout();
@@ -141,20 +169,38 @@ QString PrintDialog::money(double value) const {
 void PrintDialog::updateTotals() {
     request.copies = copiesSpin->value();
 
-    info.estimatedCost = info.costPerPage * request.pageCount * request.copies;
+    int totalPages = request.pageCount * request.copies;
+    info.estimatedCost = info.costPerPage * totalPages;
 
-    info.remainingBalance = info.availableFunds - info.estimatedCost;
+    if (info.gratisMethod == "pages") {
+      if (totalPages <= info.availableGratis) {
+        info.estimatedCost = 0;
+        info.remainingGratisBalance = info.availableGratis - totalPages;
+      } else {
+        info.estimatedCost = info.costPerPage * (totalPages - info.availableGratis);
+        info.remainingGratisBalance = 0;
+      }
+    } else if (info.gratisMethod == "funds") {
+      if (info.estimatedCost <= info.availableGratis) {
+        info.remainingGratisBalance = info.availableGratis - info.estimatedCost;
+        info.estimatedCost = 0;
+      } else {
+        info.estimatedCost = (info.costPerPage * totalPages) - info.availableGratis;
+        info.remainingGratisBalance = 0;
+      }
+    }
+
+    info.remainingFundsBalance = info.availableFunds - info.estimatedCost;
+
+    info.canPrint = (info.remainingFundsBalance >= 0.0);
 
     estimatedCostValue->setText(money(info.estimatedCost));
-
-    remainingBalanceValue->setText( money(info.remainingBalance));
-
-    bool canPrint = info.remainingBalance >= 0.0;
+    remainingFundsValue->setText( money(info.remainingFundsBalance));
 
     QPushButton *ok =
         buttonBox->button(QDialogButtonBox::Ok);
 
-    if (canPrint) {
+    if (info.canPrint) {
         ok->setText(tr("Print"));
         statusLabel->clear();
     } else {

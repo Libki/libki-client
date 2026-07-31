@@ -1072,10 +1072,10 @@ void NetworkClient::processPrintPriceCheckReply() {
   QNetworkReply *networkReply =
       qobject_cast<QNetworkReply *>(sender());
 
-  if (!networkReply)
+  if (!networkReply) {
     qWarning("No network reply");
     return;
-
+  }
   PendingPrintInfoRequest context = pendingPrintInfoReplies.take(networkReply);
 
   PrintInfoReply reply;
@@ -1116,19 +1116,35 @@ void NetworkClient::processPrintPriceCheckReply() {
   reply.currency = obj.value("currency").toString();
   reply.costPerPage = obj.value("cpp").toDouble();
   reply.availableFunds = obj.value("funds").toDouble();
-  reply.gratisBalance = obj.value("gratis_balance").toDouble();
+  reply.availableGratis = obj.value("gratis_balance").toDouble();
   reply.gratisMethod = obj.value("gratis_method").toString();
 
-  reply.estimatedCost = reply.costPerPage * context.request.pageCount * context.request.copies;
+  int totalPages = context.request.pageCount * context.request.copies;
+  reply.estimatedCost = reply.costPerPage * totalPages;
 
-          //
-          // TODO:
-          // We may eventually incorporate gratisBalance/gratisMethod
-          // into this calculation.
-          //
-  reply.remainingBalance = reply.availableFunds - reply.estimatedCost;
+  if (reply.gratisMethod == "pages") {
+    if (totalPages <= reply.availableGratis) {
+      reply.estimatedCost = 0;
+      reply.remainingGratisBalance = reply.availableGratis - totalPages;
+    } else {
+      reply.estimatedCost = reply.costPerPage * (totalPages - reply.availableGratis);
+      reply.remainingGratisBalance = 0;
+    }
+  } else if (reply.gratisMethod == "funds") {
+    if (reply.estimatedCost <= reply.availableGratis) {
+      reply.remainingGratisBalance = reply.availableGratis - reply.estimatedCost;
+      reply.estimatedCost = 0;
+    } else {
+      reply.estimatedCost = (reply.costPerPage * totalPages) - reply.availableGratis;
+      reply.remainingGratisBalance = 0;
+    }
+  } else {
+    qWarning() << "Invalid gratis method: " << reply.gratisMethod;
+  }
 
-  reply.canPrint = (reply.remainingBalance >= 0.0);
+  reply.remainingFundsBalance = reply.availableFunds - reply.estimatedCost;
+
+  reply.canPrint = (reply.remainingFundsBalance >= 0.0);
 
   printServer->sendPrintInfoReply(
       context.socket,
