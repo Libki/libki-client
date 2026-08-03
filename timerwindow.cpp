@@ -424,10 +424,8 @@ void TimerWindow::checkForInactivity() {
     lii.cbSize = sizeof(lii);
 
     if (GetLastInputInfo(&lii)) {
-      quint64 idleMS =
-          GetTickCount64() - lii.dwTime;
-      secondsSinceLastActivity =
-          idleMS / 1000;
+      DWORD idleMS = GetTickCount() - lii.dwTime;
+      secondsSinceLastActivity = idleMS / 1000;
     } else {
       qWarning() << "GetLastInputInfo failed.";
     }
