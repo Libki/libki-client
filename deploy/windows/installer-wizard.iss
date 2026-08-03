@@ -185,6 +185,34 @@ begin
   PrintersMemo.WantReturns := True;
 
   { Set default values, using settings that were stored last time if possible }
+
+
+  { Read command line parameters and set them as default values for installer UI pages. }
+  ServerPage.Values[0] := ExpandConstant('{param:scheme|}');
+  ServerPage.Values[1] := ExpandConstant('{param:host|}');
+  ServerPage.Values[2] := ExpandConstant('{param:port|}');
+  ClientPage.Values[0] := ExpandConstant('{param:location|}');
+  ClientPage.Values[1] := ExpandConstant('{param:runonly|}');
+  ClientPage.Values[2] := ExpandConstant('{param:stoponly|}');
+  ClientPage.Values[3] := ExpandConstant('{param:nodename|}');
+  PasswordPage.Values[0] := ExpandConstant('{param:password|}');
+
+  { Parse RebootAction string. Can be one of 'reboot', 'logout', or 'none'. Defaults to 'reboot' }
+  if CompareText(ExpandConstant('{param:rebootaction}'), 'logout') = 0 then
+    RebootActionPage.SelectedValueIndex := 1
+  else if CompareText(ExpandConstant('{param:rebootaction}'), 'none') = 0 then
+    RebootActionPage.SelectedValueIndex := 2
+  else
+    RebootActionPage.SelectedValueIndex := 0;
+
+  { Parse StartupMode string. Can be one of 'normal', 'shell', or 'none'. Defaults to 'normal' }
+  if CompareText(ExpandConstant('{param:startupmode}'), 'shell') = 0 then
+    StartupModePage.SelectedValueIndex := 1
+  else if CompareText(ExpandConstant('{param:startupmode}'), 'none') = 0 then
+    StartupModePage.SelectedValueIndex := 2
+  else
+    StartupModePage.SelectedValueIndex := 0;
+
 end;
 
 function NextButtonClick(CurPageID: Integer): Boolean;
