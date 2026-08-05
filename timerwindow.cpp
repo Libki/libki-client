@@ -374,7 +374,7 @@ void TimerWindow::showSystemTrayIconTimeLeftMessage() {
 
   int clientTimeWarningFrequency = 1;
   if (!settings.value("session/ClientTimeWarningFrequency").toString().isEmpty()) {
-    clientTimeWarningFrequency = settings.value("session/ClienttimeWarningFrequency").toInt();
+    clientTimeWarningFrequency = settings.value("session/ClientTimeWarningFrequency").toInt();
     clientTimeWarningFrequency = clientTimeWarningFrequency > 0 ? clientTimeWarningFrequency : 1;
   }
 
