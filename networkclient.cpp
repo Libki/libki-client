@@ -19,6 +19,8 @@
 
 #include "networkclient.h"
 #include "utils.h"
+#include "printsubmissionserver.h"
+#include "printprotocol.h"
 
 #include <QDir>
 #include <QHttpMultiPart>
@@ -73,6 +75,9 @@ NetworkClient::NetworkClient(QApplication *app) : QObject() {
   serviceURL.setScheme(settings.value("server/scheme").toString());
   serviceURL.setPath("/api/client/v1_0");
 
+  customHeaderName = settings.value("server/customHeaderName").toString();
+  customHeaderValue = settings.value("server/customHeaderValue").toString();
+
   nodeIPAddress = getIPv4Address();
   nodeMACAddress = getMACAddress();
   nodeHostname = getHostname();
@@ -101,6 +106,26 @@ NetworkClient::NetworkClient(QApplication *app) : QObject() {
   updateUserDataTimer = new QTimer(this);
   connect(updateUserDataTimer, SIGNAL(timeout()), this,
           SLOT(getUserDataUpdate()));
+
+  printServer = new PrintSubmissionServer(this);
+
+  if (printServer->start()) {
+      qDebug() << "IPC server name:"
+              << LIBKI_PRINT_SERVER_NAME;
+  } else {
+      qWarning() << "Print submission server could not be started.";
+  }
+
+  connect(printServer,
+          SIGNAL(submitPrintRequested(SubmitPrintRequest)),
+          this,
+          SLOT(handlePrintRequest(SubmitPrintRequest)));
+
+  connect(printServer,
+          SIGNAL(printInfoRequested(PrintInfoRequest,QLocalSocket*)),
+          this,
+          SLOT(handlePrintInfoRequest(PrintInfoRequest,QLocalSocket*)));
+
 
   qDebug("LEAVE NetworkClient::NetworkClient");
 }
@@ -131,7 +156,7 @@ void NetworkClient::attemptLogin(QString aUsername, QString aPassword, bool crea
       nam, SIGNAL(sslErrors(QNetworkReply *, const QList<QSslError> &)), this,
       SLOT(handleSslErrors(QNetworkReply *, const QList<QSslError> &)));
 
-  /*QNetworkReply* reply = */ nam->get(QNetworkRequest(url));
+  /*QNetworkReply* reply = */ nam->get(buildRequest(url));
   qDebug("LEAVE NetworkClient::attemptLogin");
 }
 
@@ -199,7 +224,7 @@ void NetworkClient::attemptLogout() {
   query.addQueryItem("password", password);
   url.setQuery(query);
 
-  /*QNetworkReply* reply =*/nam->get(QNetworkRequest(url));
+  /*QNetworkReply* reply =*/nam->get(buildRequest(url));
 
   qDebug("LEAVE NetworkClient::attemptLogout");
 }
@@ -247,7 +272,7 @@ void NetworkClient::getUserDataUpdate() {
   query.addQueryItem("password", password);
   url.setQuery(query);
 
-  /*QNetworkReply* reply =*/nam->get(QNetworkRequest(url));
+  /*QNetworkReply* reply =*/nam->get(buildRequest(url));
 
   qDebug("LEAVE NetworkClient::getUserDataUpdate");
 }
@@ -332,115 +357,136 @@ void NetworkClient::uploadPrintJobs() {
 
     QFileInfoList list = dir.entryInfoList();
 
-    const QString printedFileSuffix = ".printed";
-
     for (int i = 0; i < list.size(); ++i) {
 
       QFileInfo fileInfo = list.at(i);
       QString absoluteFilePath = fileInfo.absoluteFilePath();
-      QString fileName = fileInfo.fileName();
 
-      // If the file is less than 1 kb, it's still being written. An empty PDF is about 3.7K
-      if ( fileInfo.size() < 2048 ) {
-        continue;
-      }
+      SubmitPrintRequest request;
 
-      // If the file is not writable, the print driver hasn't finished writing the PDF
-      if (!fileInfo.isWritable()) {
-        continue;
-      }
+      request.filename = absoluteFilePath;
+      request.printer = printer;
+      request.copies = 0;
+      request.pageCount = 0;
 
-      if (fileName.endsWith(printedFileSuffix)) {
-        continue;
-      }
-      qDebug() << "SENDING PRINT JOB: " << fileName;
-
-      QString fileCounterString = QString::number(fileCounter);
-      fileCounter++;
-
-      QString newAbsoluteFilePath =
-          absoluteFilePath + "." + fileCounterString + printedFileSuffix;
-      bool renamed = QFile::rename(absoluteFilePath, newAbsoluteFilePath);
-      if ( !renamed ) {
-          qDebug() << "RENAME FROM " << absoluteFilePath << " TO " << printedFileSuffix << " FAILED! SKIPPING FILE.";
-          continue;
-      }
-
-      QFile *file = new QFile(newAbsoluteFilePath);
-      bool opened = file->open(QIODevice::ReadOnly);
-      if ( !opened ) {
-          qDebug() << "OPENDING FILE " << newAbsoluteFilePath << " FAILED! SKIPPING FILE.";
-          continue;
-      }
-
-      QHttpMultiPart *multiPart =
-          new QHttpMultiPart(QHttpMultiPart::FormDataType);
-
-      // We con't delete the file object now, delete it with the multiPart
-      file->setParent(multiPart);
-
-      QHttpPart clientNamePart;
-      clientNamePart.setHeader(QNetworkRequest::ContentDispositionHeader,
-                               QVariant("form-data; name=client_name"));
-      QByteArray clientNameQBA;
-      clientNameQBA.append(nodeName);
-      clientNamePart.setBody(clientNameQBA);
-      multiPart->append(clientNamePart);
-
-      QHttpPart userNamePart;
-      userNamePart.setHeader(QNetworkRequest::ContentDispositionHeader,
-                             QVariant("form-data; name=username"));
-      QByteArray userNameQBA;
-      userNameQBA.append(username);
-      userNamePart.setBody(userNameQBA);
-      multiPart->append(userNamePart);
-
-      QHttpPart printerNamePart;
-      printerNamePart.setHeader(QNetworkRequest::ContentDispositionHeader,
-                                QVariant("form-data; name=printer"));
-      QByteArray printerNameQBA;
-      printerNameQBA.append(printer);
-      printerNamePart.setBody(printerNameQBA);
-      multiPart->append(printerNamePart);
-
-      QHttpPart printJobPart;
-      printJobPart.setHeader(
-          QNetworkRequest::ContentDispositionHeader,
-          QVariant("form-data; name=print_file; filename=" + fileName));
-      printJobPart.setBodyDevice(file);
-      multiPart->append(printJobPart);
-
-      QHttpPart fileNamePart;
-      fileNamePart.setHeader(QNetworkRequest::ContentDispositionHeader,
-                             QVariant("form-data; name=filename"));
-      QByteArray fileNameQBA;
-      fileNameQBA.append(fileName);
-      fileNamePart.setBody(fileNameQBA);
-      multiPart->append(fileNamePart);
-
-      QUrl printUrl = QUrl(serviceURL);
-      printUrl.setPath("/api/client/v1_0/print");
-      QNetworkRequest request(printUrl);
-
-      QNetworkAccessManager *networkManager = new QNetworkAccessManager(this);
-      QObject::connect(
-          networkManager,
-          SIGNAL(sslErrors(QNetworkReply *, const QList<QSslError> &)), this,
-          SLOT(handleSslErrors(QNetworkReply *, const QList<QSslError> &)));
-
-      QNetworkReply *reply = networkManager->post(request, multiPart);
-      multiPart->setParent(reply);  // delete the multiPart with the reply
-
-      // TODO: delete file after finished signal emits
-      // https://stackoverflow.com/questions/5153157/passing-an-argument-to-a-slot
-      connect(networkManager, SIGNAL(finished(QNetworkReply *)), this,
-              SLOT(uploadPrintJobReply(QNetworkReply *)));
-      connect(reply, SIGNAL(uploadProgress(qint64, qint64)), this,
-              SLOT(handleUploadProgress(qint64, qint64)));
+      uploadPrintJob(request);
     }
   }
-
   qDebug() << "LEAVE NetworkClient::uploadPrintJobs";
+}
+
+void NetworkClient::uploadPrintJob(const SubmitPrintRequest &request) {
+  QFile *file = new QFile(request.filename);
+  bool opened = file->open(QIODevice::ReadOnly);
+  if ( !opened ) {
+    qDebug() << "OPENING FILE " << request.filename << " FAILED! SKIPPING FILE.";
+    return;
+  }
+  QFileInfo fileInfo = request.filename;
+  QString fileNameOnly = fileInfo.fileName();
+
+  // If the file is less than 1 kb, it's still being written. An empty PDF is about 3.7K
+  if ( fileInfo.size() < 2048 ) {
+    qWarning() << "File size too small: " << fileNameOnly;
+    return;
+  }
+
+  // If the file is not writable, the print driver hasn't finished writing the PDF
+  if (!fileInfo.isWritable()) {
+    qWarning() << "File not writable: " << fileNameOnly;
+    return;
+  }
+  const QString printedFileSuffix = ".printed";
+
+  if (request.filename.endsWith(printedFileSuffix)) {
+    return;
+  }
+  qDebug() << "SENDING PRINT JOB: " << fileNameOnly;
+
+  QString fileCounterString = QString::number(fileCounter);
+  fileCounter++;
+
+  QString newAbsoluteFilePath =
+      request.filename + "." + fileCounterString + printedFileSuffix;
+  bool renamed = file->rename(request.filename, newAbsoluteFilePath);
+  if ( !renamed ) {
+    qWarning() << "RENAME FROM " << request.filename << " TO " << printedFileSuffix << " FAILED! SKIPPING FILE.";
+    return;
+  }
+
+  QHttpMultiPart *multiPart =
+      new QHttpMultiPart(QHttpMultiPart::FormDataType);
+
+          // We con't delete the file object now, delete it with the multiPart
+  file->setParent(multiPart);
+
+  QHttpPart clientNamePart;
+  clientNamePart.setHeader(QNetworkRequest::ContentDispositionHeader,
+                           QVariant("form-data; name=client_name"));
+  QByteArray clientNameQBA;
+  clientNameQBA.append(nodeName);
+  clientNamePart.setBody(clientNameQBA);
+  multiPart->append(clientNamePart);
+
+  QHttpPart userNamePart;
+  userNamePart.setHeader(QNetworkRequest::ContentDispositionHeader,
+                         QVariant("form-data; name=username"));
+  QByteArray userNameQBA;
+  userNameQBA.append(username);
+  userNamePart.setBody(userNameQBA);
+  multiPart->append(userNamePart);
+
+  QHttpPart printerNamePart;
+  printerNamePart.setHeader(QNetworkRequest::ContentDispositionHeader,
+                            QVariant("form-data; name=printer"));
+  QByteArray printerNameQBA;
+  printerNameQBA.append(request.printer);
+  printerNamePart.setBody(printerNameQBA);
+  multiPart->append(printerNamePart);
+
+  QHttpPart printJobPart;
+  printJobPart.setHeader(
+      QNetworkRequest::ContentDispositionHeader,
+      QVariant("form-data; name=print_file; filename=" + fileNameOnly));
+  printJobPart.setBodyDevice(file);
+  multiPart->append(printJobPart);
+
+  QHttpPart fileNamePart;
+  fileNamePart.setHeader(QNetworkRequest::ContentDispositionHeader,
+                         QVariant("form-data; name=filename"));
+  QByteArray fileNameQBA;
+  fileNameQBA.append(fileNameOnly);
+  fileNamePart.setBody(fileNameQBA);
+  multiPart->append(fileNamePart);
+
+  QHttpPart copiesPart;
+  copiesPart.setHeader(
+      QNetworkRequest::ContentDispositionHeader,
+      QVariant("form-data; name=\"copies\""));
+  copiesPart.setBody(
+      QByteArray::number(request.copies));
+  multiPart->append(copiesPart);
+
+  QUrl printUrl = QUrl(serviceURL);
+  printUrl.setPath("/api/client/v1_0/print");
+  QNetworkRequest netrequest = buildRequest(printUrl);
+
+
+  QNetworkAccessManager *networkManager = new QNetworkAccessManager(this);
+  QObject::connect(
+      networkManager,
+      SIGNAL(sslErrors(QNetworkReply *, const QList<QSslError> &)), this,
+      SLOT(handleSslErrors(QNetworkReply *, const QList<QSslError> &)));
+
+  QNetworkReply *reply = networkManager->post(netrequest, multiPart);
+  multiPart->setParent(reply);  // delete the multiPart with the reply
+
+          // TODO: delete file after finished signal emits
+          // https://stackoverflow.com/questions/5153157/passing-an-argument-to-a-slot
+  connect(networkManager, SIGNAL(finished(QNetworkReply *)), this,
+          SLOT(uploadPrintJobReply(QNetworkReply *)));
+  connect(reply, SIGNAL(uploadProgress(qint64, qint64)), this,
+          SLOT(handleUploadProgress(qint64, qint64)));
 }
 
 void NetworkClient::handleUploadProgress(qint64 bytesSent, qint64 bytesTotal) {
@@ -457,8 +503,8 @@ void NetworkClient::uploadPrintJobReply(QNetworkReply *reply) {
     reply->deleteLater();
     reply->manager()->deleteLater();
   } else {
-    qDebug() << "Network Error: " << reply->errorString();
-    qDebug() << "Retrying network request.";
+    qWarning() << "Network Error: " << reply->errorString();
+    qWarning() << "Retrying network request.";
 
     QNetworkRequest request = reply->request();
 
@@ -504,7 +550,7 @@ void NetworkClient::registerNode() {
   query.addQueryItem("age_limit", nodeAgeLimit);
   url.setQuery(query);
 
-  /*QNetworkReply* reply =*/nam->get(QNetworkRequest(url));
+  /*QNetworkReply* reply =*/nam->get(buildRequest(url));
 
   qDebug("LEAVE NetworkClient::registerNode");
 }
@@ -529,7 +575,7 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
   sc = engine.evaluate("(" + QString(result) + ")");
 
   if (!sc.property("registered").toBoolean()) {
-    qDebug("Node Registration FAILED");
+    qWarning("Node Registration FAILED");
   }
 
   // TODO: Rename this to something like 'auto-login guest session'
@@ -589,6 +635,14 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
               sc.property("wol_port").toInteger());
   }
 
+  if (sc.property("drop").toBoolean()) {
+#ifdef Q_OS_WIN
+    QProcess::startDetached("c:/windows/explorer.exe");
+    QProcess::startDetached("windows/on_login.exe");
+#endif  // ifdef Q_OS_WIN
+    exit(1);
+  }
+
   QString styleSheet = sc.property("ClientStyleSheet").toString();
   if (!styleSheet.isEmpty()) {
       this->app->setStyleSheet(styleSheet);
@@ -646,6 +700,11 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
   settings.setValue("session/EnableGuestSelfRegistration",
                     sc.property("EnableGuestSelfRegistration").toString());
 
+  settings.setValue("session/ShowTimeRemainingInSplash",
+                    sc.property("ShowTimeRemainingInSplash").toString());
+  settings.setValue("session/ShowTimeRemainingInTray",
+                    sc.property("ShowTimeRemainingInTray").toString());
+
   settings.setValue("session/ClientTimeNotificationFrequency",
                     sc.property("ClientTimeNotificationFrequency").toString());
   settings.setValue("session/ClientTimeWarningThreshold",
@@ -665,12 +724,15 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
                       sc.property("LogoWidth").toString());
   }
 
+  QString guestRegistrationEnabled = settings.value("session/EnableGuestSelfRegistration").toString();
+
   settings.sync();
 
   if (
       (logoURL != sc.property("Logo").toString()) ||
       (bannerTopURL != sc.property("BannerTopURL").toString()) ||
-      (bannerBottomURL != sc.property("BannerBottomURL").toString())
+      (bannerBottomURL != sc.property("BannerBottomURL").toString()) ||
+      (guestRegistrationEnabled != sc.property("EnableGuestSelfRegistration").toString())
   ) {
     emit handleBanners();  // TODO: Emit only if a banner url has changed
   }
@@ -734,7 +796,7 @@ void NetworkClient::processCheckForInternetConnectivityReply(QNetworkReply *repl
 
   if ( reply->error() != QNetworkReply::NoError ) {
       emit internetAccessWarning(reply->errorString());
-      qDebug() << "NetworkClient::processCheckForInternetConnectivityReply Network Reply Error: " << reply->errorString();
+      qWarning() << "NetworkClient::processCheckForInternetConnectivityReply Network Reply Error: " << reply->errorString();
   } else {
       emit internetAccessWarning("");
   }
@@ -762,7 +824,7 @@ void NetworkClient::clearMessage() {
   query.addQueryItem("username", username);
   query.addQueryItem("password", password);
   url.setQuery(query);
-  nam->get(QNetworkRequest(url));
+  nam->get(buildRequest(url));
 
   qDebug("LEAVE NetworkClient::clearMessage");
 }
@@ -783,7 +845,7 @@ void NetworkClient::acknowledgeReservation(QString reserved_for) {
   query.addQueryItem("reserved_for", reserved_for);
   url.setQuery(query);
 
-  nam->get(QNetworkRequest(url));
+  nam->get(buildRequest(url));
 
   qDebug("LEAVE NetworkClient::acknowledgeReservation");
 }
@@ -946,14 +1008,150 @@ void NetworkClient::wakeOnLan(QStringList MAC_addresses, QString host,
   qDebug("LEAVE NetworkClient::wakeOnLan");
 }
 
+QNetworkRequest NetworkClient::buildRequest(const QUrl &url) const {
+  QNetworkRequest request(url);
+  if (!customHeaderName.isEmpty()) {
+    request.setRawHeader(customHeaderName.toUtf8(), customHeaderValue.toUtf8());
+  }
+  return request;
+}
+
 void NetworkClient::handleNetworkReplyErrors(QNetworkReply *reply) {
   if ( reply->error() != QNetworkReply::NoError ) {
       QString e = QString::number(reply->error());
-      qDebug() << "ERROR: Server Access Warning: " << e << " :: " << reply->errorString();
+      qWarning() << "ERROR: Server Access Warning: " << e << " :: " << reply->errorString();
 
       QString s = e + ": " + reply->errorString();
       serverAccessWarning(s);
   } else {
       serverAccessWarning("");
   }
+}
+
+void NetworkClient::handlePrintRequest(const SubmitPrintRequest &request) {
+  if (username.isEmpty()) {
+    qWarning()
+        << "Ignoring print request because no user is logged in.";
+    return;
+  }
+
+  uploadPrintJob(request);
+}
+
+void NetworkClient::handlePrintInfoRequest(PrintInfoRequest request, QLocalSocket *socket) {
+  qDebug("ENTER handlePrintInfoRequest");
+  QNetworkAccessManager *nam = new QNetworkAccessManager(this);
+  QUrl url(serviceURL);
+
+  url.setPath("/api/client/v1_0/print_price_check");
+
+  QUrlQuery query;
+
+  query.addQueryItem("client_name", nodeName);
+  query.addQueryItem("username", username);
+  query.addQueryItem("printer", request.printer);
+
+  url.setQuery(query);
+
+  QNetworkReply *reply = nam->get(buildRequest(url));
+
+  PendingPrintInfoRequest context;
+
+  context.socket = socket;
+  context.request = request;
+
+  pendingPrintInfoReplies.insert(reply, context);
+
+  connect(reply,
+          SIGNAL(finished()),
+          this,
+          SLOT(processPrintPriceCheckReply()));
+  qDebug("LEAVE handlePrintInfoRequest");
+}
+
+void NetworkClient::processPrintPriceCheckReply() {
+  qDebug("ENTER processPrintPriceCheckReply");
+  QNetworkReply *networkReply =
+      qobject_cast<QNetworkReply *>(sender());
+
+  if (!networkReply) {
+    qWarning("No network reply");
+    return;
+  }
+  PendingPrintInfoRequest context = pendingPrintInfoReplies.take(networkReply);
+
+  PrintInfoReply reply;
+
+  if (networkReply->error() != QNetworkReply::NoError) {
+    reply.success = false;
+    reply.error = networkReply->errorString();
+    qWarning() << "Network reply error: " << reply.error;
+
+    printServer->sendPrintInfoReply(
+        context.socket,
+        reply);
+
+    networkReply->deleteLater();
+    return;
+  }
+
+  QJsonParseError parseError;
+
+  QJsonDocument doc = QJsonDocument::fromJson(networkReply->readAll(), &parseError);
+
+  if (parseError.error != QJsonParseError::NoError || !doc.isObject()) {
+    reply.success = false;
+    reply.error = tr("Invalid JSON returned by server.");
+    qWarning() << "JSON parsing error";
+
+    printServer->sendPrintInfoReply(
+        context.socket,
+        reply);
+
+    networkReply->deleteLater();
+    return;
+  }
+
+  QJsonObject obj = doc.object();
+
+  reply.success = true;
+  reply.currency = obj.value("currency").toString();
+  reply.costPerPage = obj.value("cpp").toDouble();
+  reply.availableFunds = obj.value("funds").toDouble();
+  reply.availableGratis = obj.value("gratis_balance").toDouble();
+  reply.gratisMethod = obj.value("gratis_method").toString();
+
+  int totalPages = context.request.pageCount * context.request.copies;
+  reply.estimatedCost = reply.costPerPage * totalPages;
+
+  if (reply.gratisMethod == "pages") {
+    if (totalPages <= reply.availableGratis) {
+      reply.estimatedCost = 0;
+      reply.remainingGratisBalance = reply.availableGratis - totalPages;
+    } else {
+      reply.estimatedCost = reply.costPerPage * (totalPages - reply.availableGratis);
+      reply.remainingGratisBalance = 0;
+    }
+  } else if (reply.gratisMethod == "funds") {
+    if (reply.estimatedCost <= reply.availableGratis) {
+      reply.remainingGratisBalance = reply.availableGratis - reply.estimatedCost;
+      reply.estimatedCost = 0;
+    } else {
+      reply.estimatedCost = (reply.costPerPage * totalPages) - reply.availableGratis;
+      reply.remainingGratisBalance = 0;
+    }
+  } else {
+    qWarning() << "Invalid gratis method: " << reply.gratisMethod;
+  }
+
+  reply.remainingFundsBalance = reply.availableFunds - reply.estimatedCost;
+
+  reply.canPrint = (reply.remainingFundsBalance >= 0.0);
+
+  printServer->sendPrintInfoReply(
+      context.socket,
+      reply);
+
+  networkReply->deleteLater();
+  qDebug("LEAVE processPrintPriceCheckReply");
 }

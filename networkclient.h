@@ -24,6 +24,7 @@
 #include <QDebug>
 #include <QEventLoop>
 #include <QHash>
+#include <QLocalSocket>
 #include <QObject>
 #include <QProcess>
 #include <QSettings>
@@ -36,6 +37,9 @@
 #include <QtNetwork/QNetworkInterface>
 #include <QtScript/QScriptEngine>
 #include <QtScript/QScriptValue>
+#include "printprotocol.h"
+
+class PrintSubmissionServer;
 
 namespace LogoutAction {
 enum Enum { Logout, Reboot, NoAction };
@@ -96,6 +100,12 @@ class NetworkClient : public QObject {
 
   void handleNetworkReplyErrors(QNetworkReply *reply);
 
+  void handlePrintRequest(const SubmitPrintRequest &request);
+  void uploadPrintJob( const SubmitPrintRequest &request);
+
+  void handlePrintInfoRequest(PrintInfoRequest request, QLocalSocket *socket);
+  void processPrintPriceCheckReply();
+
  private:
   QApplication *app;
 
@@ -122,13 +132,28 @@ class NetworkClient : public QObject {
   QString username;
   QString password;
 
+  QString customHeaderName;
+  QString customHeaderValue;
+
   int fileCounter;
+
+  PrintSubmissionServer *printServer;
+
+  QNetworkRequest buildRequest(const QUrl &url) const;
 
   void doLoginTasks(int units, int hold_items_count);
   void doLogoutTasks();
 
   void wakeOnLan(QStringList MAC_addresses, QString host, qint64 port);
 
+  struct PendingPrintInfoRequest
+  {
+    QLocalSocket *socket;
+
+    PrintInfoRequest request;
+  };
+
+  QHash<QNetworkReply *, PendingPrintInfoRequest> pendingPrintInfoReplies;
 };
 
 #endif  // NETWORKCLIENT_H

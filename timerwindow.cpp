@@ -179,8 +179,7 @@ void TimerWindow::updateClock() {
                        tr("Minutes Left"));
 
   this->setWindowTitle("Libki " + time);
-
-  if ( settings.value("node/showTimeRemainingInTray").toInt() == 1 ) {
+  if ( settings.value("node/showTimeRemainingInTray").toInt() == 1 || settings.value("session/ShowTimeRemainingInTray").toInt() == 1 ) {
       // Update the system tray icon
       QPixmap libkiIcon = QPixmap(":/images/images/tray.png");
       QPainter painter(&libkiIcon);
@@ -206,7 +205,7 @@ void TimerWindow::updateClock() {
       trayIcon->setIcon(libkiIcon);
   }
 
-  bool showSplash = settings.value("node/showTimeRemainingInSplash").toInt() == 1;
+  bool showSplash = settings.value("node/showTimeRemainingInSplash").toInt() == 1 || settings.value("session/ShowTimeRemainingInSplash").toInt() == 1;
   if ( sessionLockedWindow && sessionLockedWindow->isVisible() ) showSplash = false;
   if ( showSplash ) {
       // Update the time splash
@@ -258,7 +257,7 @@ void TimerWindow::doLogoutDialog() {
   msgBox.setText(tr("Log Out?"));
   msgBox.setInformativeText(tr("Are you sure you want to log out?"));
   msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
-  msgBox.setDefaultButton(QMessageBox::Yes);
+  msgBox.setDefaultButton(QMessageBox::Cancel);
   msgBox.setButtonText(QMessageBox::Yes, tr("Yes"));
   msgBox.setButtonText(QMessageBox::Cancel, tr("Cancel"));
   int ret = msgBox.exec();
@@ -282,6 +281,12 @@ void TimerWindow::setupActions() {
   qDebug("ENTER TimerWindow::setupActions");
 
   connect(logoutButton, SIGNAL(clicked()), this, SLOT(doLogoutDialog()));
+
+  // Don't let either button take keyboard focus. The timer window can be raised
+  // while the user is typing, and a stray spacebar would otherwise activate
+  // whichever button holds focus, which is "Log Out" by default.
+  logoutButton->setFocusPolicy(Qt::NoFocus);
+  lockSessionButton->setFocusPolicy(Qt::NoFocus);
 
   qDebug("LEAVE TimerWindow::setupActions");
 }
@@ -420,29 +425,18 @@ void TimerWindow::checkForInactivity() {
 
     #ifdef Q_OS_WIN
 
-      systemTickRangeEnd = (GetTickCount());
+    LASTINPUTINFO lii;
+    lii.cbSize = sizeof(lii);
 
-      LASTINPUTINFO lastInput;
-      lastInput.cbSize = sizeof(lastInput);
-
-      GetLastInputInfo(&lastInput);
-      lastInputTick = lastInput.dwTime;
-
-
-      if ((lastInputTick >=  systemTickRangeStart) && (lastInputTick <=  systemTickRangeEnd)) {
-
-        userIdle = false;
-
-      } else {
-
-        userIdle = true;
-
-      }
-
-      systemTickRangeStart = (GetTickCount());
+    if (GetLastInputInfo(&lii)) {
+      DWORD idleMS = GetTickCount() - lii.dwTime;
+      secondsSinceLastActivity = idleMS / 1000;
+    } else {
+      qWarning() << "GetLastInputInfo failed.";
+    }
 
     #else
-
+/**
       QPoint pos = QCursor::pos();
       int x = pos.x();
       int y = pos.y();
@@ -460,21 +454,10 @@ void TimerWindow::checkForInactivity() {
 
       prevMousePosX = x;
       prevMousePosY = y;
-
+**/
     #endif
 
-
-    
-    if (userIdle == true) {
-      secondsSinceLastActivity += INACTIVITY_CHECK_INTERVAL;
-      qDebug() << "No activity detected. Seconds since last activity: "
-               << secondsSinceLastActivity;
-    } else {
-      secondsSinceLastActivity = 0;
-      qDebug() << "Activity detected. Seconds since last activity: 0";
-    }
-
-    if (secondsSinceLastActivity / 60 >= inactivityWarning) {
+    if (secondsSinceLastActivity >= inactivityWarning * 60) {
       QString title = tr("Inactivity detected");
       QString message = tr("Please confirm you are still using this computer.");
 
@@ -495,7 +478,7 @@ void TimerWindow::checkForInactivity() {
       qApp->processEvents();
     }
 
-    if (secondsSinceLastActivity / 60 >= inactivityLogout) {
+    if (secondsSinceLastActivity >= inactivityLogout * 60) {
       emit requestLogout();
     }
 
