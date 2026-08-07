@@ -18,8 +18,15 @@ install:
 build_script:
   - qmake Libki.pro
   - mingw32-make
-  - dir release
-  - copy release\libkiclient.exe deploy\windows\libkiclient.exe
+
+  - cd tools\LibkiPrintDialog
+  - qmake LibkiPrintDialog.pro
+  - mingw32-make
+  - cd ..\..
+
+  - copy release\libkiclient.exe deploy\windows\
+  - copy tools\LibkiPrintDialog\release\LibkiPrintDialog.exe deploy\windows\
+
   - cd deploy\windows
   - ISCC.exe installer-wizard.iss
 
