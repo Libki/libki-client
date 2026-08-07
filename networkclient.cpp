@@ -683,7 +683,7 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
                     sc.property("BannerBottomHeight").toString());
 
   settings.setValue("session/LogoURL",
-                    sc.property("LogoURL").toString());
+                    sc.property("Logo").toString());
   settings.setValue("session/LogoWidth",
                     sc.property("LogoWidth").toString());
   settings.setValue("session/LogoHeight",
@@ -713,16 +713,6 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
                     sc.property("ClientTimeWarningFrequency").toString());
 
   QString logoURL = settings.value("images/logo").toString();
-  if ( ! sc.property("Logo").toString().isEmpty() ) {
-    settings.setValue("images/logo",
-                      sc.property("Logo").toString());
-
-    settings.setValue("images/logo_height",
-                      sc.property("LogoHeight").toString());
-
-    settings.setValue("images/logo_width",
-                      sc.property("LogoWidth").toString());
-  }
 
   QString guestRegistrationEnabled = settings.value("session/EnableGuestSelfRegistration").toString();
 

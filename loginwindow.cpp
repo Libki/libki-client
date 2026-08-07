@@ -565,21 +565,21 @@ void LoginWindow::handleBanners() {
   }
 
   /* For when logo is specificed in server side setting */
-  if (!settings.value("images/logo").toString().isEmpty()) {
+  if (!settings.value("session/LogoURL").toString().isEmpty()) {
     logo->hide();
 
     QPalette palette = logoWebView->palette();
     palette.setBrush(QPalette::Base, Qt::transparent);
 
-    QString logoUrl = settings.value("images/logo").toString();
+    QString logoUrl = settings.value("session/LogoURL").toString();
     qDebug() << "Logo URL: " << logoUrl;
 
     if (!logoUrl.isEmpty()) {
-      int logoWidth = settings.value("images/logo_width").toInt();
+      int logoWidth = settings.value("session/LogoWidth").toInt();
 
       if (logoWidth) logoWebView->setMaximumWidth(logoWidth);
 
-      int logoHeight = settings.value("images/logo_height").toInt();
+      int logoHeight = settings.value("session/LogoHeight").toInt();
 
       if (logoHeight) logoWebView->setMaximumHeight(logoHeight);
 
