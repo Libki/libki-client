@@ -16,7 +16,7 @@ AllowNoIcons=yes
 
 [Files]
 Source: "libkiclient.exe"; DestDir: "{app}"; Flags: ignoreversion; MinVersion: 0.0,5.0
-Source: "LibkiPrintDialog.exe"; DestDir: "{app}", Flags: ignoreversion; MinVersion: 0.0,5.0
+Source: "LibkiPrintDialog.exe"; DestDir: "{app}"; Flags: ignoreversion; MinVersion: 0.0,5.0
 
 Source: "windows\on_login.exe"; DestDir: "{app}\windows"; Flags: ignoreversion; MinVersion: 0.0,5.0
 Source: "windows\on_logout.exe"; DestDir: "{app}\windows"; Flags: ignoreversion; MinVersion: 0.0,5.0
