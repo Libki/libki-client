@@ -181,22 +181,23 @@ inline bool SubmitPrintRequest::fromArguments(
     return false;
   }
 
-  request.filename = arguments[1];
-  request.printer  = arguments[2];
+  request.printer  = arguments[1];
 
   bool ok = false;
 
-  request.copies = arguments[3].toInt(&ok);
+  request.copies = arguments[2].toInt(&ok);
   if (!ok || request.copies < 1) {
     error = "Invalid copies value.";
     return false;
   }
 
-  request.pageCount = arguments[4].toInt(&ok);
+  request.pageCount = arguments[3].toInt(&ok);
   if (!ok || request.pageCount < 1) {
     error = "Invalid page count.";
     return false;
   }
+
+  request.filename = arguments[4];
 
   return true;
 }

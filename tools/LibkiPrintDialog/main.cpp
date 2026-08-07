@@ -31,7 +31,7 @@ static void usage(const QString &program)
     qCritical()
         << "Usage:"
         << program
-        << "<filename> <printer> <copies> <pages>";
+        << "<printer> <copies> <pages> <filename>";
 }
 
 int main(int argc, char *argv[]) {
