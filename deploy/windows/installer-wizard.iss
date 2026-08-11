@@ -357,10 +357,9 @@ begin
     SetupHelperExe := ExpandConstant('{pf}\clawpdf\SetupHelper.exe');
     ClawPDFIni := ExpandConstant('{app}\windows\clawPDF4Libki.ini');
  
-   if FileExists(ClawPDFExe) and FileExists(SetupHelperExe) then
-    ForceDirectories('C:\printers\clawpdf');
-
+    if FileExists(ClawPDFExe) and FileExists(SetupHelperExe) then
     begin
+      ForceDirectories('C:\printers\clawpdf');
       GetPrinterList(Printers);
 
       { Update ClawPDFIni with printer info }
