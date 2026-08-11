@@ -76,6 +76,7 @@ Filename: "{commonappdata}\Libki\Libki Kiosk Management System.ini"; Section: "s
 
 Filename: "{commonappdata}\Libki\Libki Kiosk Management System.ini"; Section: "windows"; Key: "EnableStartButton"; String: "1"
 Filename: "{commonappdata}\Libki\Libki Kiosk Management System.ini"; Section: "node"; Key: "start_user_shell"; String: "C:\Windows\explorer.exe"; Check: CheckShellReplacement
+Filename: "{commonappdata}\Libki\Libki Kiosk Management System.ini"; Section: "node"; Key: "startupAction"; String: "{code:GetStartupAction}"
 Filename: "{commonappdata}\Libki\Libki Kiosk Management System.ini"; Section: "node"; Key: "logoutAction"; String: "{code:GetLogoutAction}"
 ;logout, reboot, noaction
 Filename: "{commonappdata}\Libki\Libki Kiosk Management System.ini"; Section: "node"; Key: "onlyStopFor"; String: "{code:GetOnlyStopFor}"
@@ -130,6 +131,7 @@ end;
 
 procedure InitializeWizard;
 begin
+  IniPath := ExpandConstant("{commonappdata}\Libki\Libki Kiosk Management System.ini");
   { Create the pages }
   
   ServerPage := CreateInputQueryPage(wpWelcome,
@@ -138,6 +140,9 @@ begin
   ServerPage.Add('Scheme:', False);
   ServerPage.Add('Host:', False);
   ServerPage.Add('Port:', False);
+  ServerPage.Values[0] := GetIniString('server', 'scheme', '', IniPath);
+  ServerPage.Values[1] := GetIniString('server', 'host', '', IniPath);
+  ServerPage.Values[2] := GetIniString('server', 'port', '', IniPath);
 
   ClientPage := CreateInputQueryPage(ServerPage.ID,
     'Client Information', 'Libki client data',
@@ -146,6 +151,10 @@ begin
   ClientPage.Add('Run only for this user:', False);
   ClientPage.Add('Run for all users but this one:', False);
   ClientPage.Add('Client name:', False);
+  ClientPage.Values[0] := GetIniString('node', 'location', '', IniPath);
+  ClientPage.Values[1] := GetIniString('node', 'onlyRunFor', '', IniPath);
+  ClientPage.Values[2] := GetIniString('node', 'onlyStopFor', '', IniPath);
+  ClientPage.Values[3] := GetIniString('node', 'name', '', IniPath);
 
   StartupModePage := CreateInputOptionPage(ClientPage.ID,
     'Startup mode', 'Specify how to start the client',
@@ -154,7 +163,12 @@ begin
   StartupModePage.Add('Automatically start Libki client after normal user shell');
   StartupModePage.Add('Automatically start Libki instead of user shell (shell replacement)');
   StartupModePage.Add('Do not start Libki client automatically');
-  StartupModePage.SelectedValueIndex := 0;
+  if CompareText(GetIniString('node', 'startupAction', '', IniPath), 'shell') = 0 then
+    StartupModePage.SelectedValueIndex := 1
+  else if CompareText(GetIniString('node', 'startupAction', '', IniPath), 'none') = 0 then
+    StartupModePage.SelectedValueIndex := 2
+  else
+    StartupModePage.SelectedValueIndex := 0
 
   RebootActionPage := CreateInputOptionPage(StartupModePage.ID,
     'Logout Action', 'Specify action on logout?',
@@ -163,11 +177,18 @@ begin
   RebootActionPage.Add('Reboot (best for Deep Freeze)');
   RebootActionPage.Add('Log out of operating system (best for Clean Slate)');
   RebootActionPage.Add('Nothing (just redisplay the Libki login screen)');
+  if CompareText(GetIniString('node', 'logoutAction', '', IniPath), 'logout') = 0 then
+    RebootActionPage.SelectedValueIndex := 1
+  else if CompareText(GetIniString('node', 'logoutAction', '', IniPath), 'none') = 0 then
+    RebootActionPage.SelectedValueIndex := 2
+  else
+    RebootActionPage.SelectedValueIndex := 0
 
   PasswordPage := CreateInputQueryPage(RebootActionPage.ID,
     'Client Disable', 'Libki client disabling password',
     'Please specify the password for disabling the Libki client.');
   PasswordPage.Add('Password:', True);
+  PasswordPage.Values[0] := GetIniString('node', 'password', '', IniPath);
   
   PrintersPage := CreateCustomPage(
     PasswordPage.ID,
@@ -282,6 +303,15 @@ end;
 function GetNodeName(Param: String): String;
 begin
   Result := ClientPage.Values[3];
+end;
+
+function GetStartupAction(Param: String): String;
+begin
+  case StartupModePage.SelectedValueIndex of
+    0: Result := 'normal';
+    1: Result := 'shell';
+    2: Result := 'none';
+  end;
 end;
 
 function GetLogoutAction(Param: String): String;
