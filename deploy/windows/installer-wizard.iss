@@ -141,8 +141,8 @@ begin
   ServerPage.Add('Scheme:', False);
   ServerPage.Add('Host:', False);
   ServerPage.Add('Port:', False);
-  ServerPage.Values[0] := GetIniString('server', 'scheme', '', IniPath);
-  ServerPage.Values[1] := GetIniString('server', 'host', '', IniPath);
+  ServerPage.Values[0] := GetIniString('server', 'scheme', '', '{commonappdata}\Libki\Libki Kiosk Management.ini');
+  ServerPage.Values[1] := GetIniString('server', 'host', '', '{commonappdata}\Libki\Libki Kiosk Management System.ini');
   ServerPage.Values[2] := GetIniString('server', 'port', '', IniPath);
 
   ClientPage := CreateInputQueryPage(ServerPage.ID,
