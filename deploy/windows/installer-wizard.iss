@@ -132,7 +132,7 @@ end;
 
 procedure InitializeWizard;
 begin
-  IniPath := ExpandConstant("{commonappdata}\Libki\Libki Kiosk Management System.ini");
+  IniPath := ExpandConstant('{commonappdata}\Libki\Libki Kiosk Management System.ini');
   { Create the pages }
   
   ServerPage := CreateInputQueryPage(wpWelcome,
