@@ -95,6 +95,7 @@ var
   PasswordPage: TInputQueryWizardPage;
   PrintersPage: TWizardPage;
   PrintersMemo: TNewMemo;
+  IniPath: string;
 
 { Regex helper }
 function IsYamlSafeKey(const S: String): Boolean;
