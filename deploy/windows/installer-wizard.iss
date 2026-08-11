@@ -169,7 +169,7 @@ begin
   else if CompareText(GetIniString('node', 'startupAction', '', IniPath), 'none') = 0 then
     StartupModePage.SelectedValueIndex := 2
   else
-    StartupModePage.SelectedValueIndex := 0
+    StartupModePage.SelectedValueIndex := 0;
 
   RebootActionPage := CreateInputOptionPage(StartupModePage.ID,
     'Logout Action', 'Specify action on logout?',
@@ -183,7 +183,7 @@ begin
   else if CompareText(GetIniString('node', 'logoutAction', '', IniPath), 'none') = 0 then
     RebootActionPage.SelectedValueIndex := 2
   else
-    RebootActionPage.SelectedValueIndex := 0
+    RebootActionPage.SelectedValueIndex := 0;
 
   PasswordPage := CreateInputQueryPage(RebootActionPage.ID,
     'Client Disable', 'Libki client disabling password',
