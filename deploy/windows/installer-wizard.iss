@@ -130,6 +130,21 @@ begin
   Result := True;
 end;
 
+function HasCommandLineSwitch(Name: string): Boolean;
+var
+  I: Integer;
+begin
+  Result := False;
+  for I := 1 to ParamCount do
+  begin
+    if CompareText(ParamStr(I), '/' + Name) = 0 then
+    begin
+      Result := True;
+      Break;
+    end;
+  end;
+end;
+
 procedure InitializeWizard;
 begin
   IniPath := ExpandConstant('{commonappdata}\Libki\Libki Kiosk Management System.ini');
