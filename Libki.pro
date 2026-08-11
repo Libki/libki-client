@@ -16,6 +16,7 @@ QT += widgets
 HEADERS += loginwindow.h networkclient.h timerwindow.h \
     sessionlockedwindow.h \
     logutils.h \
+    syslog.h \
     timesplash.h \
     utils.h \
     printprotocol.h \
@@ -27,6 +28,7 @@ RC_FILE += libki.rc
 SOURCES += loginwindow.cpp \
            main.cpp \
            networkclient.cpp \
+           syslog.cpp \
            timerwindow.cpp \
            utils.cpp \
            sessionlockedwindow.cpp \
