@@ -410,8 +410,7 @@ void NetworkClient::uploadPrintJob(const SubmitPrintRequest &request) {
       request.filename + "." + fileCounterString + printedFileSuffix;
   bool renamed = file->rename(request.filename, newAbsoluteFilePath);
   if ( !renamed ) {
-    qWarning() << "RENAME FROM " << request.filename << " TO " << printedFileSuffix << " FAILED! SKIPPING FILE.";
-    return;
+    qWarning() << "RENAME FROM " << request.filename << " TO " << newAbsoluteFilePath << " FAILED!";
   }
 
   QHttpMultiPart *multiPart =

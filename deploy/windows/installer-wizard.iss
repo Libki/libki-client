@@ -352,28 +352,14 @@ begin
     end;
     if not HasPrinters then Exit;
 
-    IniPath := ExpandConstant('{commonappdata}\Libki\Libki Kiosk Management System.ini');
-
-    ForceDirectories('C:\printers');
-
-    { Create each printer folder and INI entry }
-    for i := 0 to PrintersMemo.Lines.Count - 1 do
-    begin
-      PrinterName := Trim(PrintersMemo.Lines[i]);
-      if PrinterName <> '' then
-      begin
-        ForceDirectories('C:\printers\' + PrinterName);
-        SetIniString('printers', PrinterName, 'C:\printers\' + PrinterName, IniPath);
-      end;
-    end;
-
     { Configure ClawPDF }
     ClawPDFExe := ExpandConstant('{pf}\clawpdf\clawPDF.exe');
     SetupHelperExe := ExpandConstant('{pf}\clawpdf\SetupHelper.exe');
     ClawPDFIni := ExpandConstant('{app}\windows\clawPDF4Libki.ini');
  
-   if FileExists(ClawPDFExe) and FileExists(SetupHelperExe) then
+    if FileExists(ClawPDFExe) and FileExists(SetupHelperExe) then
     begin
+      ForceDirectories('C:\printers\clawpdf');
       GetPrinterList(Printers);
 
       { Update ClawPDFIni with printer info }
