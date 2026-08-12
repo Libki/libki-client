@@ -274,42 +274,42 @@ begin
   { Read command line parameters and set them as default values for installer UI pages. }
   { Unless ignore file is present, read existing values from the ini. }
   if HasCommandLineSwitch('scheme') then
-    ServerPage.Values[0] := ExpandConstant('{param:scheme|}')
+    ServerPage.Values[0] := ExpandConstant('{param:scheme}')
   else if not IgnoreFile then
     ServerPage.Values[0] := GetIniString('server', 'scheme', '', IniPath);
 
   if HasCommandLineSwitch('host') then
-    ServerPage.Values[1] := ExpandConstant('{param:host|}')
+    ServerPage.Values[1] := ExpandConstant('{param:host}')
   else if not IgnoreFile then
     ServerPage.Values[1] := GetIniString('server', 'host', '', IniPath);
 
   if HasCommandLineSwitch('port') then
-    ServerPage.Values[2] := ExpandConstant('{param:port|}')
+    ServerPage.Values[2] := ExpandConstant('{param:port}')
   else if not IgnoreFile then
     ServerPage.Values[2] := GetIniString('server', 'port', '', IniPath);
 
   if HasCommandLineSwitch('location') then
-    ClientPage.Values[0] := ExpandConstant('{param:location|}')
+    ClientPage.Values[0] := ExpandConstant('{param:location}')
   else if not IgnoreFile then
     ClientPage.Values[0] := GetIniString('node', 'location', '', IniPath);
 
   if HasCommandLineSwitch('runonly') then
-    ClientPage.Values[1] := ExpandConstant('{param:runonly|}')
+    ClientPage.Values[1] := ExpandConstant('{param:runonly}')
   else if not IgnoreFile then
     ClientPage.Values[1] := GetIniString('node', 'onlyRunFor', '', IniPath);
     
   if HasCommandLineSwitch('stoponly') then
-    ClientPage.Values[2] := ExpandConstant('{param:stoponly|}')
+    ClientPage.Values[2] := ExpandConstant('{param:stoponly}')
   else if not IgnoreFile then
     ClientPage.Values[2] := GetIniString('node', 'onlyStopFor', '', IniPath);
     
   if HasCommandLineSwitch('nodename') then
-    ClientPage.Values[3] := ExpandConstant('{param:nodename|}')
+    ClientPage.Values[3] := ExpandConstant('{param:nodename}')
   else if not IgnoreFile then
     ClientPage.Values[3] := GetIniString('node', 'name', '', IniPath);
   
   if HasCommandLineSwitch('password') then
-    PasswordPage.Values[0] := ExpandConstant('{param:password|}')
+    PasswordPage.Values[0] := ExpandConstant('{param:password}')
   else if not IgnoreFile then
     PasswordPage.Values[0] := GetIniString('node', 'password', '', IniPath);
 
