@@ -95,42 +95,8 @@ var
   PasswordPage: TInputQueryWizardPage;
   PrintersPage: TWizardPage;
   PrintersMemo: TNewMemo;
-  IniPath: string;
   IgnoreFile: boolean;
   PrintersExisting: TArrayOfString;
-
-{ Regex helper }
-function IsYamlSafeKey(const S: String): Boolean;
-var
-  i: Integer;
-  C: Char;
-begin
-  Result := False;
-
-  if Length(S) = 0 then Exit;
-
-  { Must start with a letter }
-  C := S[1];
-  if not (
-    ((C >= 'A') and (C <= 'Z')) or
-    ((C >= 'a') and (C <= 'z'))
-  ) then Exit;
-
-  { Remaining characters }
-  for i := 2 to Length(S) do
-  begin
-    C := S[i];
-    if not (
-      ((C >= 'A') and (C <= 'Z')) or
-      ((C >= 'a') and (C <= 'z')) or
-      ((C >= '0') and (C <= '9')) or
-      (C = '_') or
-      (C = '-')
-    ) then Exit;
-  end;
-
-  Result := True;
-end;
 
 function FirstSubstring(const Name: String; const Sep: String): String;
 var
@@ -356,39 +322,6 @@ begin
     end;
   end;
 end;
-
-function NextButtonClick(CurPageID: Integer): Boolean;
-var
-  i: Integer;
-  Line, InvalidList: String;
-begin
-  Result := True;
-
-  if CurPageID = PrintersPage.ID then
-  begin
-    InvalidList := '';
-
-    for i := 0 to PrintersMemo.Lines.Count - 1 do
-    begin
-      Line := Trim(PrintersMemo.Lines[i]);
-      if (Line <> '') and (not IsYamlSafeKey(Line)) then
-      begin
-        if InvalidList <> '' then InvalidList := InvalidList + ', ';
-        InvalidList := InvalidList + Line;
-      end;
-    end;
-
-    if InvalidList <> '' then
-    begin
-      MsgBox(
-        'The following printer names are invalid for YAML keys:' + #13#10 + InvalidList + #13#10#13#10 + 'Names must start with a letter and contain only letters, numbers, _ or -.',
-        mbError, MB_OK
-      );
-      Result := False;
-    end;
-  end;
-end;
-
 
 function GetScheme(Param: String): String;
 begin
