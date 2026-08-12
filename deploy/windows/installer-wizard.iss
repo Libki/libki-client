@@ -319,7 +319,7 @@ begin
       RebootActionPage.SelectedValueIndex := 2
     else
       RebootActionPage.SelectedValueIndex := 0;
-  end;
+  end
   else if not IgnoreFile then begin
     if CompareText(GetIniString('node', 'logoutAction', '', IniPath), 'logout') = 0 then
       RebootActionPage.SelectedValueIndex := 1
@@ -337,7 +337,7 @@ begin
       StartupModePage.SelectedValueIndex := 2
     else
       StartupModePage.SelectedValueIndex := 0;
-  end;
+  end
   else if not IgnoreFile then begin
     if CompareText(GetIniString('node', 'startupAction', '', IniPath), 'shell') = 0 then
       StartupModePage.SelectedValueIndex := 1
