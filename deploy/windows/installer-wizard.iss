@@ -134,12 +134,14 @@ end;
 
 function HasCommandLineSwitch(const Name: String): Boolean;
 var
+  Comp: String;
   I: Integer;
 begin
   Result := False;
   for I := 1 to ParamCount do
   begin
-    if CompareText(ParamStr(I), '/' + Name) = 0 then
+    Comp := FirstSubstring(ParamStr(I), '=');
+    if CompareText(Comp, '/' + Name) = 0 then
     begin
       Result := True;
       Break;
