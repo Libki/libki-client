@@ -281,32 +281,32 @@ begin
     ServerPage.Values[1] := GetIniString('server', 'host', '', IniPath);
 
   if HasCommandLineSwitch('port') then
-    ServerPage.Values[2] := ExpandConstant('{param:port|}');
+    ServerPage.Values[2] := ExpandConstant('{param:port|}')
   else if not IgnoreFile then
     ServerPage.Values[3] := GetIniString('server', 'port', '', IniPath);
 
   if HasCommandLineSwitch('location') then
-    ClientPage.Values[0] := ExpandConstant('{param:location|}');
+    ClientPage.Values[0] := ExpandConstant('{param:location|}')
   else if not IgnoreFile then
     ClientPage.Values[0] := GetIniString('node', 'location', '', IniPath);
 
   if HasCommandLineSwitch('runonly') then
-    ClientPage.Values[1] := ExpandConstant('{param:runonly|}');
+    ClientPage.Values[1] := ExpandConstant('{param:runonly|}')
   else if not IgnoreFile then
     ClientPage.Values[1] := GetIniString('node', 'onlyRunFor', '', IniPath);
     
   if HasCommandLineSwitch('stoponly') then
-    ClientPage.Values[2] := ExpandConstant('{param:stoponly|}');
+    ClientPage.Values[2] := ExpandConstant('{param:stoponly|}')
   else if not IgnoreFile then
     ClientPage.Values[2] := GetIniString('node', 'onlyStopFor', '', IniPath);
     
   if HasCommandLineSwtich('nodename') then
-    ClientPage.Values[3] := ExpandConstant('{param:nodename|}');
+    ClientPage.Values[3] := ExpandConstant('{param:nodename|}')
   else if not IgnoreFile then
     ClientPage.Values[3] := GetIniString('node', 'name', '', IniPath);
   
   if HasCommandLineSwitch('password') then
-    PasswordPage.Values[0] := ExpandConstant('{param:password|}');
+    PasswordPage.Values[0] := ExpandConstant('{param:password|}')
   else if not IgnoreFile then
     PasswordPage.Values[0] := GetIniString('node', 'password', '', IniPath);
 
