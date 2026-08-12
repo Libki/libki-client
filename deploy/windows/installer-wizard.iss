@@ -137,10 +137,10 @@ var
   Count, i: Integer;
   s: String;
 begin
-  Count := 0;
-  for i := 0 to Length(Name) do
+  Count := 1;
+  for i := 1 to Length(Name) do
   begin
-    if CompareText(Name[Count + 1], Sep) = 0 then
+    if CompareText(Name[i], Sep) = 0 then
       break;
     Inc(Count);
   end;
