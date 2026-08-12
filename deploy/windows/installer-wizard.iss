@@ -132,14 +132,32 @@ begin
   Result := True;
 end;
 
+function FirstSubstring(const Name: String; const Sep: String): String;
+var
+  Count, i: Integer;
+  s: String;
+begin
+  Count := 0;
+  for i := 1 to Length(Name) do
+  begin
+    if CompareText(Name[i], Sep) = 0 then
+      break;
+    Inc(Count);
+  end;
+  s := Copy(Name, 1, Count);
+  Result := s;
+end;
+
 function HasCommandLineSwitch(const Name: String): Boolean;
 var
+  Comp: String;
   I: Integer;
 begin
   Result := False;
   for I := 1 to ParamCount do
   begin
-    if CompareText(ParamStr(I), '/' + Name) = 0 then
+    Comp := FirstSubstring(ParamStr(I), '=');
+    if CompareText(Comp, '/' + Name) = 0 then
     begin
       Result := True;
       Break;
@@ -147,47 +165,34 @@ begin
   end;
 end;
 
-function FirstSubstring(const Name: String; const Sep: String): String;
-var
-  Count, i: Integer;
-  s: String;
-begin
-  for i := 0 to Length(Name) do
-  begin
-    Inc(Count);
-    if CompareText(Name[Count], Sep) = 0 then
-      break;
-  end;
-  s := Copy(Name, 1, Count);
-  Result := s;
-end;
-
-function CreateMemoString(const Strings: TArrayOfString; const Sep: String): String;
+function CreateMemoString(const Strings: TArrayOfString; const Memo: TMemo): Boolean;
 var
   i: Integer;
 begin
-  Result := '';
+  Result := False;
   for i := low(Strings) to high(Strings) do
   begin
-    Result := Result + Strings[i] + Sep
+    Memo.Lines.Append(Strings[i]);
   end;
-  Delete(Result, Length(Result), 1);
+  Result := True;
 end;
 
 function ParseExistingPrinters(Name: string): TArrayOfString;
 var
   Line, A: String;
   Count, i: Integer;
-  Printers, Config: TArrayOfString;
+  Config: TArrayOfString;
   InSection: Boolean;
 begin
   Count := 0;
   InSection := False;
-  SetArrayLength(Printers, 0);
+  SetArrayLength(Result, 0);
   if LoadStringsFromFile(Name, Config) then begin
-    for i := 0 to GetArrayLength(Config) - 1 do
+    for i := low(Config) to high(Config) do
     begin
       Line := Trim(Config[i])
+      if Length(Line) = 0 then
+        continue;
       if CompareText(Line[1], '[') = 0 then
         InSection := False;
       if InSection then
@@ -195,8 +200,8 @@ begin
         A := FirstSubstring(Line, '=');
         if Trim(A) <> '' then
         begin
-          SetArrayLength(Printers, Count + 1);
-          Printers[Count] := Trim(A);
+          SetArrayLength(Result, Count + 1);
+          Result[Count] := Trim(A);
           Inc(Count);
         end;
       end;
@@ -271,42 +276,42 @@ begin
   { Read command line parameters and set them as default values for installer UI pages. }
   { Unless ignore file is present, read existing values from the ini. }
   if HasCommandLineSwitch('scheme') then
-    ServerPage.Values[0] := ExpandConstant('{param:scheme|}')
+    ServerPage.Values[0] := ExpandConstant('{param:scheme}')
   else if not IgnoreFile then
     ServerPage.Values[0] := GetIniString('server', 'scheme', '', IniPath);
 
   if HasCommandLineSwitch('host') then
-    ServerPage.Values[1] := ExpandConstant('{param:host|}')
+    ServerPage.Values[1] := ExpandConstant('{param:host}')
   else if not IgnoreFile then
     ServerPage.Values[1] := GetIniString('server', 'host', '', IniPath);
 
   if HasCommandLineSwitch('port') then
-    ServerPage.Values[2] := ExpandConstant('{param:port|}');
+    ServerPage.Values[2] := ExpandConstant('{param:port}')
   else if not IgnoreFile then
-    ServerPage.Values[3] := GetIniString('server', 'port', '', IniPath);
+    ServerPage.Values[2] := GetIniString('server', 'port', '', IniPath);
 
   if HasCommandLineSwitch('location') then
-    ClientPage.Values[0] := ExpandConstant('{param:location|}');
+    ClientPage.Values[0] := ExpandConstant('{param:location}')
   else if not IgnoreFile then
     ClientPage.Values[0] := GetIniString('node', 'location', '', IniPath);
 
   if HasCommandLineSwitch('runonly') then
-    ClientPage.Values[1] := ExpandConstant('{param:runonly|}');
+    ClientPage.Values[1] := ExpandConstant('{param:runonly}')
   else if not IgnoreFile then
     ClientPage.Values[1] := GetIniString('node', 'onlyRunFor', '', IniPath);
     
   if HasCommandLineSwitch('stoponly') then
-    ClientPage.Values[2] := ExpandConstant('{param:stoponly|}');
+    ClientPage.Values[2] := ExpandConstant('{param:stoponly}')
   else if not IgnoreFile then
     ClientPage.Values[2] := GetIniString('node', 'onlyStopFor', '', IniPath);
     
-  if HasCommandLineSwtich('nodename') then
-    ClientPage.Values[3] := ExpandConstant('{param:nodename|}');
+  if HasCommandLineSwitch('nodename') then
+    ClientPage.Values[3] := ExpandConstant('{param:nodename}')
   else if not IgnoreFile then
     ClientPage.Values[3] := GetIniString('node', 'name', '', IniPath);
   
   if HasCommandLineSwitch('password') then
-    PasswordPage.Values[0] := ExpandConstant('{param:password|}');
+    PasswordPage.Values[0] := ExpandConstant('{param:password}')
   else if not IgnoreFile then
     PasswordPage.Values[0] := GetIniString('node', 'password', '', IniPath);
 
@@ -319,7 +324,7 @@ begin
       RebootActionPage.SelectedValueIndex := 2
     else
       RebootActionPage.SelectedValueIndex := 0;
-  end;
+  end
   else if not IgnoreFile then begin
     if CompareText(GetIniString('node', 'logoutAction', '', IniPath), 'logout') = 0 then
       RebootActionPage.SelectedValueIndex := 1
@@ -337,7 +342,7 @@ begin
       StartupModePage.SelectedValueIndex := 2
     else
       StartupModePage.SelectedValueIndex := 0;
-  end;
+  end
   else if not IgnoreFile then begin
     if CompareText(GetIniString('node', 'startupAction', '', IniPath), 'shell') = 0 then
       StartupModePage.SelectedValueIndex := 1
@@ -347,11 +352,12 @@ begin
       StartupModePage.SelectedValueIndex := 0;
   end; 
   
-  PrintersExisting := ParseExistingPrinters(IniPath);
-  if (GetArrayLength(PrintersExisting) > 0) then begin
-    PrintersMemo.Lines.Append(CreateMemoString(PrintersExisting, sLineBreak));
+  if not IgnoreFile then begin 
+    PrintersExisting := ParseExistingPrinters(IniPath);
+    if (GetArrayLength(PrintersExisting) > 0) then begin
+      CreateMemoString(PrintersExisting, PrintersMemo);
+    end;
   end;
-  
 end;
 
 function NextButtonClick(CurPageID: Integer): Boolean;
