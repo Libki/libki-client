@@ -137,7 +137,7 @@ var
   Count, i: Integer;
   s: String;
 begin
-  Count := 1;
+  Count := 0;
   for i := 1 to Length(Name) do
   begin
     if CompareText(Name[i], Sep) = 0 then
