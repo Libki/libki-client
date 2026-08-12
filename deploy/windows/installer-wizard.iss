@@ -132,6 +132,22 @@ begin
   Result := True;
 end;
 
+function FirstSubstring(const Name: String; const Sep: String): String;
+var
+  Count, i: Integer;
+  s: String;
+begin
+  Count := 0;
+  for i := 0 to Length(Name) do
+  begin
+    if CompareText(Name[Count + 1], Sep) = 0 then
+      break;
+    Inc(Count);
+  end;
+  s := Copy(Name, 1, Count);
+  Result := s;
+end;
+
 function HasCommandLineSwitch(const Name: String): Boolean;
 var
   Comp: String;
@@ -147,22 +163,6 @@ begin
       Break;
     end;
   end;
-end;
-
-function FirstSubstring(const Name: String; const Sep: String): String;
-var
-  Count, i: Integer;
-  s: String;
-begin
-  Count := 0;
-  for i := 0 to Length(Name) do
-  begin
-    if CompareText(Name[Count + 1], Sep) = 0 then
-      break;
-    Inc(Count);
-  end;
-  s := Copy(Name, 1, Count);
-  Result := s;
 end;
 
 function CreateMemoString(const Strings: TArrayOfString; const Memo: TMemo): Boolean;
