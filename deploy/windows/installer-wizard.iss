@@ -162,7 +162,7 @@ begin
   Result := s;
 end;
 
-function CreateMemoString(const Strings: TArrayOfString; const Sep: String): String
+function CreateMemoString(const Strings: TArrayOfString; const Sep: String): String;
 var
   i: Integer;
 begin
