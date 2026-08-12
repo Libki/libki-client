@@ -162,14 +162,16 @@ begin
   Result := s;
 end;
 
-function CreateMemoString(const Strings: TArrayOfString; const Memo: TMemo);
+function CreateMemoString(const Strings: TArrayOfString; const Memo: TMemo): Boolean;
 var
   i: Integer;
 begin
+  Result := False
   for i := 0 to GetArrayLength(Strings) - 1 do
   begin
     Memo.Append(Strings[i]);
   end;
+  Result := True
 end;
 
 function ParseExistingPrinters(Name: string): TArrayOfString;
