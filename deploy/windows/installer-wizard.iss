@@ -311,10 +311,7 @@ begin
     ClientPage.Values[3] := GetIniString('node', 'name', '', IniPath);
   
   if HasCommandLineSwitch('password') then
-    PasswordPage.Values[0] := ExpandConstant('{param:password}')
-  else if not IgnoreFile then
-    PasswordPage.Values[0] := GetIniString('node', 'password', '', IniPath);
-
+    PasswordPage.Values[0] := ExpandConstant('{param:password}');
 
   { Parse RebootAction string. Can be one of 'reboot', 'logout', or 'none'. Defaults to 'reboot' }
   if HasCommandLineSwitch('rebootaction') then begin
@@ -447,8 +444,16 @@ begin
 end;
 
 function GetPassword(Param: String): String;
+var
+  IniPath, Original: String;
 begin
-  Result := GetMD5OfString( PasswordPage.Values[0] );
+  Result := '';
+  IniPath := ExpandConstant('{commonappdata}\Libki\Libki Kiosk Management System.ini');
+  Original := GetIniString('node', 'password', '', IniPath);
+  if Original <> '' then
+    Result := Original;
+  if PasswordPage.Values[0] <> '' then
+    Result := GetMD5OfString( PasswordPage.Values[0] );
 end;
 
 function CheckStartAfterShell(): Boolean;
