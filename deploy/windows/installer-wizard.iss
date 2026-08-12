@@ -95,39 +95,6 @@ var
   PrintersPage: TWizardPage;
   PrintersMemo: TNewMemo;
 
-{ Regex helper }
-function IsYamlSafeKey(const S: String): Boolean;
-var
-  i: Integer;
-  C: Char;
-begin
-  Result := False;
-
-  if Length(S) = 0 then Exit;
-
-  { Must start with a letter }
-  C := S[1];
-  if not (
-    ((C >= 'A') and (C <= 'Z')) or
-    ((C >= 'a') and (C <= 'z'))
-  ) then Exit;
-
-  { Remaining characters }
-  for i := 2 to Length(S) do
-  begin
-    C := S[i];
-    if not (
-      ((C >= 'A') and (C <= 'Z')) or
-      ((C >= 'a') and (C <= 'z')) or
-      ((C >= '0') and (C <= '9')) or
-      (C = '_') or
-      (C = '-')
-    ) then Exit;
-  end;
-
-  Result := True;
-end;
-
 procedure InitializeWizard;
 begin
   { Create the pages }
@@ -230,7 +197,7 @@ begin
     for i := 0 to PrintersMemo.Lines.Count - 1 do
     begin
       Line := Trim(PrintersMemo.Lines[i]);
-      if (Line <> '') and (not IsYamlSafeKey(Line)) then
+      if (Line <> '') then
       begin
         if InvalidList <> '' then InvalidList := InvalidList + ', ';
         InvalidList := InvalidList + Line;
@@ -370,7 +337,7 @@ begin
         begin
           SetIniString('ApplicationSettings\PrinterMappings\' + IntToStr(i), 'PrinterName', PrinterName, ClawPDFIni);
           SetIniString('ApplicationSettings\PrinterMappings\' + IntToStr(i), 'ProfileGuid', '{#ProfileGuid}', ClawPDFIni);
-          Exec(SetupHelperExe, '/Printer=Add /Name=' + PrinterName, '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+          Exec(SetupHelperExe, '/Printer=Add /Name="' + PrinterName + '"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
         end;
       end;
       SetIniString('ApplicationSettings\PrinterMappings', 'numClasses', IntToStr(PrintersMemo.Lines.Count), ClawPDFIni);
