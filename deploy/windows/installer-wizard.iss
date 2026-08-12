@@ -179,6 +179,8 @@ end;
   
 
 procedure InitializeWizard;
+var
+  IniPath: String;
 begin
   IniPath := ExpandConstant('{commonappdata}\Libki\Libki Kiosk Management System.ini');
   { Create the pages }
