@@ -132,7 +132,7 @@ begin
   Result := True;
 end;
 
-function HasCommandLineSwitch(Name: string): Boolean;
+function HasCommandLineSwitch(const Name: String): Boolean;
 var
   I: Integer;
 begin
@@ -147,31 +147,60 @@ begin
   end;
 end;
 
+function FirstSubstring(const Name: String; const Sep: String): String;
+var
+  Count, i: Integer;
+  s: String;
+begin
+  for i := 0 to Length(Name) do
+  begin
+    Inc(Count);
+    if CompareText(Name[Count], Sep) = 0 then
+      break;
+  end;
+  s := Copy(Name, 1, Count);
+  Result := s;
+end;
+
+function CreateMemoString(const Strings: TArrayOfString; const Sep: String): String
+var
+  i: Integer;
+begin
+  Result := '';
+  for i := low(Strings) to high(Strings) do
+  begin
+    Result := Result + Strings[i] + Sep
+  end;
+  Delete(Result, Length(Result), 1);
+end;
+
 function ParseExistingPrinters(Name: string): TArrayOfString;
 var
-  Line: String;
+  Line, A: String;
   Count, i: Integer;
-  Printers, Config, A: TArrayOfString;
+  Printers, Config: TArrayOfString;
   InSection: Boolean;
 begin
   Count := 0;
   InSection := False;
   SetArrayLength(Printers, 0);
   if LoadStringsFromFile(Name, Config) then begin
-    for i := 0 to GetArrayLength(Config) - 1 do begin
+    for i := 0 to GetArrayLength(Config) - 1 do
+    begin
       Line := Trim(Config[i])
-      if CompareText(Line[0], '[') = 0 then
+      if CompareText(Line[1], '[') = 0 then
         InSection := False;
-      if InSection then begin
-        SetArrayLength(A, 0);
-        A := StringSplit(Trim(Line), ['='], stExcludeEmpty);
-        if Trim(A[0]) <> '' then begin
+      if InSection then
+      begin
+        A := FirstSubstring(Line, '=');
+        if Trim(A) <> '' then
+        begin
           SetArrayLength(Printers, Count + 1);
-          Printers[Count] := Trim(A[0]);
+          Printers[Count] := Trim(A);
           Inc(Count);
         end;
       end;
-      if CompareText(Line, '[printers]') then
+      if CompareText(Line, '[printers]') = 0 then
         InSection := True;
     end;
   end;
@@ -320,7 +349,7 @@ begin
   
   PrintersExisting := ParseExistingPrinters(IniPath);
   if (GetArrayLength(PrintersExisting) > 0) then begin
-    PrintersMemo.Lines.Append(StringJoin(sLineBreak, PrintersExisting))
+    PrintersMemo.Lines.Append(CreateMemoString(PrintersExisting, sLineBreak));
   end;
   
 end;
