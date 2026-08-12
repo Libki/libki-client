@@ -162,16 +162,14 @@ begin
   Result := s;
 end;
 
-function CreateMemoString(const Strings: TArrayOfString; const Sep: String): String;
+function CreateMemoString(const Strings: TArrayOfString; const Memo: TMemo);
 var
   i: Integer;
 begin
-  Result := '';
-  for i := low(Strings) to high(Strings) do
+  for i := 0 to GetArrayLength(Strings) - 1 do
   begin
-    Result := Result + Strings[i] + Sep
+    Memo.Append(Strings[i]);
   end;
-  Delete(Result, Length(Result), 1);
 end;
 
 function ParseExistingPrinters(Name: string): TArrayOfString;
@@ -349,7 +347,7 @@ begin
   
   PrintersExisting := ParseExistingPrinters(IniPath);
   if (GetArrayLength(PrintersExisting) > 0) then begin
-    PrintersMemo.Lines.Append(CreateMemoString(PrintersExisting, sLineBreak));
+    CreateMemoString(PrintersExisting, PrintersMemo);
   end;
   
 end;
