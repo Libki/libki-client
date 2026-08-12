@@ -1104,6 +1104,7 @@ void NetworkClient::processPrintPriceCheckReply() {
   QJsonObject obj = doc.object();
 
   reply.success = true;
+  reply.printer = obj.value("printer").toString();
   reply.currency = obj.value("currency").toString();
   reply.costPerPage = obj.value("cpp").toDouble();
   reply.availableFunds = obj.value("funds").toDouble();

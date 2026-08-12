@@ -49,6 +49,7 @@ struct PrintInfoRequest
 struct PrintInfoReply
 {
   bool success;
+  QString printer;
   QString currency;
   double costPerPage;
   double estimatedCost;
@@ -134,6 +135,7 @@ inline QDataStream &operator<<(QDataStream &out,
                                const PrintInfoReply &reply)
 {
   out << reply.success;
+  out << reply.printer;
   out << reply.currency;
   out << reply.costPerPage;
   out << reply.estimatedCost;
@@ -151,6 +153,7 @@ inline QDataStream &operator>>(QDataStream &in,
                                PrintInfoReply &reply)
 {
   in >> reply.success;
+  in >> reply.printer;
   in >> reply.currency;
   in >> reply.costPerPage;
   in >> reply.estimatedCost;
@@ -166,7 +169,7 @@ inline QDataStream &operator>>(QDataStream &in,
 
 inline QString SubmitPrintRequest::usage(const QString &programName)
 {
-  return QString("%1 <filename> <printer> <copies> <pages>")
+  return QString("%1 <printer> <copies> <pages> <filename>")
       .arg(programName);
 }
 

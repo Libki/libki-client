@@ -357,39 +357,6 @@ begin
   end;
 end;
 
-function NextButtonClick(CurPageID: Integer): Boolean;
-var
-  i: Integer;
-  Line, InvalidList: String;
-begin
-  Result := True;
-
-  if CurPageID = PrintersPage.ID then
-  begin
-    InvalidList := '';
-
-    for i := 0 to PrintersMemo.Lines.Count - 1 do
-    begin
-      Line := Trim(PrintersMemo.Lines[i]);
-      if (Line <> '') and (not IsYamlSafeKey(Line)) then
-      begin
-        if InvalidList <> '' then InvalidList := InvalidList + ', ';
-        InvalidList := InvalidList + Line;
-      end;
-    end;
-
-    if InvalidList <> '' then
-    begin
-      MsgBox(
-        'The following printer names are invalid for YAML keys:' + #13#10 + InvalidList + #13#10#13#10 + 'Names must start with a letter and contain only letters, numbers, _ or -.',
-        mbError, MB_OK
-      );
-      Result := False;
-    end;
-  end;
-end;
-
-
 function GetScheme(Param: String): String;
 begin
   Result := ServerPage.Values[0];
@@ -528,7 +495,7 @@ begin
         begin
           SetIniString('ApplicationSettings\PrinterMappings\' + IntToStr(i), 'PrinterName', PrinterName, ClawPDFIni);
           SetIniString('ApplicationSettings\PrinterMappings\' + IntToStr(i), 'ProfileGuid', '{#ProfileGuid}', ClawPDFIni);
-          Exec(SetupHelperExe, '/Printer=Add /Name=' + PrinterName, '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+          Exec(SetupHelperExe, '/Printer=Add /Name="' + PrinterName + '"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
         end;
       end;
       SetIniString('ApplicationSettings\PrinterMappings', 'numClasses', IntToStr(PrintersMemo.Lines.Count), ClawPDFIni);
