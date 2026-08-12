@@ -41,7 +41,7 @@ PrintDialog::PrintDialog(SubmitPrintRequest &request, PrintInfoReply &info, QWid
 
     QLabel *printerLabel = new QLabel(tr("Printer:"));
     printerCombo = new QComboBox();
-    printerCombo->addItem(request.printer);
+    printerCombo->addItem(info.printer);
 
     QLabel *copiesLabel = new QLabel(tr("Copies:"));
     copiesSpin = new QSpinBox();
