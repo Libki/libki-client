@@ -167,12 +167,12 @@ function CreateMemoString(const Strings: TArrayOfString; const Memo: TMemo): Boo
 var
   i: Integer;
 begin
-  Result := False
+  Result := False;
   for i := low(Strings) to high(Strings) do
   begin
     Memo.Lines.Append(Strings[i]);
   end;
-  Result := True
+  Result := True;
 end;
 
 function ParseExistingPrinters(Name: string): TArrayOfString;
@@ -189,6 +189,8 @@ begin
     for i := low(Config) to high(Config) do
     begin
       Line := Trim(Config[i])
+      if Length(Line) = 0 then
+        continue;
       if CompareText(Line[1], '[') = 0 then
         InSection := False;
       if InSection then
@@ -284,7 +286,7 @@ begin
   if HasCommandLineSwitch('port') then
     ServerPage.Values[2] := ExpandConstant('{param:port|}')
   else if not IgnoreFile then
-    ServerPage.Values[3] := GetIniString('server', 'port', '', IniPath);
+    ServerPage.Values[2] := GetIniString('server', 'port', '', IniPath);
 
   if HasCommandLineSwitch('location') then
     ClientPage.Values[0] := ExpandConstant('{param:location|}')
@@ -348,11 +350,12 @@ begin
       StartupModePage.SelectedValueIndex := 0;
   end; 
   
-  PrintersExisting := ParseExistingPrinters(IniPath);
-  if (GetArrayLength(PrintersExisting) > 0) then begin
-    CreateMemoString(PrintersExisting, PrintersMemo);
+  if not IgnoreFile then begin 
+    PrintersExisting := ParseExistingPrinters(IniPath);
+    if (GetArrayLength(PrintersExisting) > 0) then begin
+      CreateMemoString(PrintersExisting, PrintersMemo);
+    end;
   end;
-  
 end;
 
 function NextButtonClick(CurPageID: Integer): Boolean;
