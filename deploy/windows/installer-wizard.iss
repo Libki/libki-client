@@ -158,7 +158,7 @@ begin
   InSection := False;
   SetArrayLength(Printers, 0);
   if LoadStringsFromFile(Name, Config) then begin
-    for i := 0 to GetArrayLengh(Config) - 1 do begin
+    for i := 0 to GetArrayLength(Config) - 1 do begin
       Line := Trim(Config[i])
       if CompareText(Line[0], '[') = 0 then
         InSection := False;
