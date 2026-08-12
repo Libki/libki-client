@@ -300,7 +300,7 @@ begin
   else if not IgnoreFile then
     ClientPage.Values[2] := GetIniString('node', 'onlyStopFor', '', IniPath);
     
-  if HasCommandLineSwtich('nodename') then
+  if HasCommandLineSwitch('nodename') then
     ClientPage.Values[3] := ExpandConstant('{param:nodename|}')
   else if not IgnoreFile then
     ClientPage.Values[3] := GetIniString('node', 'name', '', IniPath);
