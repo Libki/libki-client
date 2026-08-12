@@ -167,7 +167,7 @@ var
   i: Integer;
 begin
   Result := False
-  for i := 0 to GetArrayLength(Strings) - 1 do
+  for i := low(Strings) to high(Strings) do
   begin
     Memo.Lines.Append(Strings[i]);
   end;
@@ -185,7 +185,7 @@ begin
   InSection := False;
   SetArrayLength(Printers, 0);
   if LoadStringsFromFile(Name, Config) then begin
-    for i := 0 to GetArrayLength(Config) - 1 do
+    for i := low(Config) to high(Config) do
     begin
       Line := Trim(Config[i])
       if CompareText(Line[1], '[') = 0 then
