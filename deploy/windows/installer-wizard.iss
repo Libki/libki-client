@@ -155,9 +155,9 @@ begin
   Count := 0;
   for i := 0 to Length(Name) do
   begin
-    Inc(Count);
-    if CompareText(Name[Count], Sep) = 0 then
+    if CompareText(Name[Count + 1], Sep) = 0 then
       break;
+    Inc(Count);
   end;
   s := Copy(Name, 1, Count);
   Result := s;
