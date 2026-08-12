@@ -152,6 +152,7 @@ var
   Count, i: Integer;
   s: String;
 begin
+  Count := 0;
   for i := 0 to Length(Name) do
   begin
     Inc(Count);
