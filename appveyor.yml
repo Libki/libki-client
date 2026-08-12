@@ -1,6 +1,6 @@
 # Build worker image (VM template)
 image:
-  - Visual Studio 2013
+  - Visual Studio 2017
 
 # Do not build on tags (GitHub and BitBucket)
 skip_tags: true
@@ -12,7 +12,7 @@ branches:
 
 # scripts that run after cloning repository
 install:
-  - set QTDIR=C:\Qt\5.5\mingw492_32
+  - set QTDIR=C:\Qt\5.13.2\mingw73_32
   - set PATH=%PATH%;C:\MinGW\bin;%QTDIR%\bin;"C:\\Program Files (x86)\\Inno Setup 5"
 
 build_script:
