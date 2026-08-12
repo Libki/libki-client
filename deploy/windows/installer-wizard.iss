@@ -169,7 +169,7 @@ begin
   Result := False
   for i := 0 to GetArrayLength(Strings) - 1 do
   begin
-    Memo.Append(Strings[i]);
+    Memo.Lines.Append(Strings[i]);
   end;
   Result := True
 end;
