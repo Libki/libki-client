@@ -179,12 +179,12 @@ function ParseExistingPrinters(Name: string): TArrayOfString;
 var
   Line, A: String;
   Count, i: Integer;
-  Printers, Config: TArrayOfString;
+  Config: TArrayOfString;
   InSection: Boolean;
 begin
   Count := 0;
   InSection := False;
-  SetArrayLength(Printers, 0);
+  SetArrayLength(Result, 0);
   if LoadStringsFromFile(Name, Config) then begin
     for i := low(Config) to high(Config) do
     begin
@@ -198,8 +198,8 @@ begin
         A := FirstSubstring(Line, '=');
         if Trim(A) <> '' then
         begin
-          SetArrayLength(Printers, Count + 1);
-          Printers[Count] := Trim(A);
+          SetArrayLength(Result, Count + 1);
+          Result[Count] := Trim(A);
           Inc(Count);
         end;
       end;
