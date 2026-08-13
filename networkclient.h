@@ -67,6 +67,7 @@ class NetworkClient : public QObject {
   void clientOnline();
   void serverAccessWarning(QString);
   void internetAccessWarning(QString);
+  void unlockSession();
 
  public slots:
 

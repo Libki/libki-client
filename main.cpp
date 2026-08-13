@@ -179,6 +179,8 @@ int main(int argc, char *argv[]) {
   QObject::connect(networkClient, SIGNAL(allowClose(bool)), timerWindow,
                    SLOT(setAllowClose(bool)));
 
+  QObject::connect(networkClient,SIGNAL(unlockSession()),timerWindow, SLOT(unlockSession()));
+
   QObject::connect(networkClient, SIGNAL(serverAccessWarning(QString)), loginWindow,
                    SLOT(showServerAccessWarning(QString)));
   QObject::connect(networkClient, SIGNAL(internetAccessWarning(QString)), loginWindow,
