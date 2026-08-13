@@ -76,6 +76,7 @@ Filename: "{commonappdata}\Libki\Libki Kiosk Management System.ini"; Section: "s
 
 Filename: "{commonappdata}\Libki\Libki Kiosk Management System.ini"; Section: "windows"; Key: "EnableStartButton"; String: "1"
 Filename: "{commonappdata}\Libki\Libki Kiosk Management System.ini"; Section: "node"; Key: "start_user_shell"; String: "C:\Windows\explorer.exe"; Check: CheckShellReplacement
+Filename: "{commonappdata}\Libki\Libki Kiosk Management System.ini"; Section: "node"; Key: "startupAction"; String: "{code:GetStartupAction}"
 Filename: "{commonappdata}\Libki\Libki Kiosk Management System.ini"; Section: "node"; Key: "logoutAction"; String: "{code:GetLogoutAction}"
 ;logout, reboot, noaction
 Filename: "{commonappdata}\Libki\Libki Kiosk Management System.ini"; Section: "node"; Key: "onlyStopFor"; String: "{code:GetOnlyStopFor}"
@@ -94,9 +95,94 @@ var
   PasswordPage: TInputQueryWizardPage;
   PrintersPage: TWizardPage;
   PrintersMemo: TNewMemo;
+  IgnoreFile: boolean;
+  PrintersExisting: TArrayOfString;
+
+function FirstSubstring(const Name: String; const Sep: String): String;
+var
+  Count, i: Integer;
+  s: String;
+begin
+  Count := 0;
+  for i := 1 to Length(Name) do
+  begin
+    if CompareText(Name[i], Sep) = 0 then
+      break;
+    Inc(Count);
+  end;
+  s := Copy(Name, 1, Count);
+  Result := s;
+end;
+
+function HasCommandLineSwitch(const Name: String): Boolean;
+var
+  Comp: String;
+  I: Integer;
+begin
+  Result := False;
+  for I := 1 to ParamCount do
+  begin
+    Comp := FirstSubstring(ParamStr(I), '=');
+    if CompareText(Comp, '/' + Name) = 0 then
+    begin
+      Result := True;
+      Break;
+    end;
+  end;
+end;
+
+function CreateMemoString(const Strings: TArrayOfString; const Memo: TMemo): Boolean;
+var
+  i: Integer;
+begin
+  Result := False;
+  for i := low(Strings) to high(Strings) do
+  begin
+    Memo.Lines.Append(Strings[i]);
+  end;
+  Result := True;
+end;
+
+function ParseExistingPrinters(Name: string): TArrayOfString;
+var
+  Line, A: String;
+  Count, i: Integer;
+  Config: TArrayOfString;
+  InSection: Boolean;
+begin
+  Count := 0;
+  InSection := False;
+  SetArrayLength(Result, 0);
+  if LoadStringsFromFile(Name, Config) then begin
+    for i := low(Config) to high(Config) do
+    begin
+      Line := Trim(Config[i])
+      if Length(Line) = 0 then
+        continue;
+      if CompareText(Line[1], '[') = 0 then
+        InSection := False;
+      if InSection then
+      begin
+        A := FirstSubstring(Line, '=');
+        if Trim(A) <> '' then
+        begin
+          SetArrayLength(Result, Count + 1);
+          Result[Count] := Trim(A);
+          Inc(Count);
+        end;
+      end;
+      if CompareText(Line, '[printers]') = 0 then
+        InSection := True;
+    end;
+  end;
+end;
+  
 
 procedure InitializeWizard;
+var
+  IniPath: String;
 begin
+  IniPath := ExpandConstant('{commonappdata}\Libki\Libki Kiosk Management System.ini');
   { Create the pages }
   
   ServerPage := CreateInputQueryPage(wpWelcome,
@@ -121,7 +207,6 @@ begin
   StartupModePage.Add('Automatically start Libki client after normal user shell');
   StartupModePage.Add('Automatically start Libki instead of user shell (shell replacement)');
   StartupModePage.Add('Do not start Libki client automatically');
-  StartupModePage.SelectedValueIndex := 0;
 
   RebootActionPage := CreateInputOptionPage(StartupModePage.ID,
     'Logout Action', 'Specify action on logout?',
@@ -153,34 +238,91 @@ begin
   PrintersMemo.WantReturns := True;
 
   { Set default values, using settings that were stored last time if possible }
-
+  { Test if the ignore file param is present }
+  IgnoreFile := HasCommandLineSwitch('ignorefile');
 
   { Read command line parameters and set them as default values for installer UI pages. }
-  ServerPage.Values[0] := ExpandConstant('{param:scheme|}');
-  ServerPage.Values[1] := ExpandConstant('{param:host|}');
-  ServerPage.Values[2] := ExpandConstant('{param:port|}');
-  ClientPage.Values[0] := ExpandConstant('{param:location|}');
-  ClientPage.Values[1] := ExpandConstant('{param:runonly|}');
-  ClientPage.Values[2] := ExpandConstant('{param:stoponly|}');
-  ClientPage.Values[3] := ExpandConstant('{param:nodename|}');
-  PasswordPage.Values[0] := ExpandConstant('{param:password|}');
+  { Unless ignore file is present, read existing values from the ini. }
+  if HasCommandLineSwitch('scheme') then
+    ServerPage.Values[0] := ExpandConstant('{param:scheme}')
+  else if not IgnoreFile then
+    ServerPage.Values[0] := GetIniString('server', 'scheme', '', IniPath);
+
+  if HasCommandLineSwitch('host') then
+    ServerPage.Values[1] := ExpandConstant('{param:host}')
+  else if not IgnoreFile then
+    ServerPage.Values[1] := GetIniString('server', 'host', '', IniPath);
+
+  if HasCommandLineSwitch('port') then
+    ServerPage.Values[2] := ExpandConstant('{param:port}')
+  else if not IgnoreFile then
+    ServerPage.Values[2] := GetIniString('server', 'port', '', IniPath);
+
+  if HasCommandLineSwitch('location') then
+    ClientPage.Values[0] := ExpandConstant('{param:location}')
+  else if not IgnoreFile then
+    ClientPage.Values[0] := GetIniString('node', 'location', '', IniPath);
+
+  if HasCommandLineSwitch('runonly') then
+    ClientPage.Values[1] := ExpandConstant('{param:runonly}')
+  else if not IgnoreFile then
+    ClientPage.Values[1] := GetIniString('node', 'onlyRunFor', '', IniPath);
+    
+  if HasCommandLineSwitch('stoponly') then
+    ClientPage.Values[2] := ExpandConstant('{param:stoponly}')
+  else if not IgnoreFile then
+    ClientPage.Values[2] := GetIniString('node', 'onlyStopFor', '', IniPath);
+    
+  if HasCommandLineSwitch('nodename') then
+    ClientPage.Values[3] := ExpandConstant('{param:nodename}')
+  else if not IgnoreFile then
+    ClientPage.Values[3] := GetIniString('node', 'name', '', IniPath);
+  
+  if HasCommandLineSwitch('password') then
+    PasswordPage.Values[0] := ExpandConstant('{param:password}');
 
   { Parse RebootAction string. Can be one of 'reboot', 'logout', or 'none'. Defaults to 'reboot' }
-  if CompareText(ExpandConstant('{param:rebootaction}'), 'logout') = 0 then
-    RebootActionPage.SelectedValueIndex := 1
-  else if CompareText(ExpandConstant('{param:rebootaction}'), 'none') = 0 then
-    RebootActionPage.SelectedValueIndex := 2
-  else
-    RebootActionPage.SelectedValueIndex := 0;
+  if HasCommandLineSwitch('rebootaction') then begin
+    if CompareText(ExpandConstant('{param:rebootaction}'), 'logout') = 0 then
+      RebootActionPage.SelectedValueIndex := 1
+    else if CompareText(ExpandConstant('{param:rebootaction}'), 'none') = 0 then
+      RebootActionPage.SelectedValueIndex := 2
+    else
+      RebootActionPage.SelectedValueIndex := 0;
+  end
+  else if not IgnoreFile then begin
+    if CompareText(GetIniString('node', 'logoutAction', '', IniPath), 'logout') = 0 then
+      RebootActionPage.SelectedValueIndex := 1
+    else if CompareText(GetIniString('node', 'logoutAction', '', IniPath), 'none') = 0 then
+      RebootActionPage.SelectedValueIndex := 2
+    else
+      RebootActionPage.SelectedValueIndex := 0;
+  end;
 
   { Parse StartupMode string. Can be one of 'normal', 'shell', or 'none'. Defaults to 'normal' }
-  if CompareText(ExpandConstant('{param:startupmode}'), 'shell') = 0 then
-    StartupModePage.SelectedValueIndex := 1
-  else if CompareText(ExpandConstant('{param:startupmode}'), 'none') = 0 then
-    StartupModePage.SelectedValueIndex := 2
-  else
-    StartupModePage.SelectedValueIndex := 0;
-
+  if HasCommandLineSwitch('startupmode') then begin
+    if CompareText(ExpandConstant('{param:startupmode}'), 'shell') = 0 then
+      StartupModePage.SelectedValueIndex := 1
+    else if CompareText(ExpandConstant('{param:startupmode}'), 'none') = 0 then
+      StartupModePage.SelectedValueIndex := 2
+    else
+      StartupModePage.SelectedValueIndex := 0;
+  end
+  else if not IgnoreFile then begin
+    if CompareText(GetIniString('node', 'startupAction', '', IniPath), 'shell') = 0 then
+      StartupModePage.SelectedValueIndex := 1
+    else if CompareText(GetIniString('node', 'startupAction', '', IniPath), 'none') = 0 then
+      StartupModePage.SelectedValueIndex := 2
+    else
+      StartupModePage.SelectedValueIndex := 0;
+  end; 
+  
+  if not IgnoreFile then begin 
+    PrintersExisting := ParseExistingPrinters(IniPath);
+    if (GetArrayLength(PrintersExisting) > 0) then begin
+      CreateMemoString(PrintersExisting, PrintersMemo);
+    end;
+  end;
 end;
 
 function GetScheme(Param: String): String;
@@ -218,6 +360,15 @@ begin
   Result := ClientPage.Values[3];
 end;
 
+function GetStartupAction(Param: String): String;
+begin
+  case StartupModePage.SelectedValueIndex of
+    0: Result := 'normal';
+    1: Result := 'shell';
+    2: Result := 'none';
+  end;
+end;
+
 function GetLogoutAction(Param: String): String;
 begin
   case RebootActionPage.SelectedValueIndex of
@@ -228,8 +379,16 @@ begin
 end;
 
 function GetPassword(Param: String): String;
+var
+  IniPath, Original: String;
 begin
-  Result := GetMD5OfString( PasswordPage.Values[0] );
+  Result := '';
+  IniPath := ExpandConstant('{commonappdata}\Libki\Libki Kiosk Management System.ini');
+  Original := GetIniString('node', 'password', '', IniPath);
+  if Original <> '' then
+    Result := Original;
+  if PasswordPage.Values[0] <> '' then
+    Result := GetMD5OfString( PasswordPage.Values[0] );
 end;
 
 function CheckStartAfterShell(): Boolean;
