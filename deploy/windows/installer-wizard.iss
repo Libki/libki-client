@@ -307,7 +307,7 @@ begin
     else
       StartupModePage.SelectedValueIndex := 0;
   end
-  else
+  else begin
     StartupModePage.SelectedValueIndex := 0;
   end;
   
