@@ -306,7 +306,7 @@ begin
       StartupModePage.SelectedValueIndex := 2
     else
       StartupModePage.SelectedValueIndex := 0;
-  end
+  end;
   
   if not IgnoreFile then begin 
     PrintersExisting := ParseExistingPrinters(IniPath);
