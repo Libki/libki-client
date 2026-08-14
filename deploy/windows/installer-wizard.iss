@@ -76,7 +76,6 @@ Filename: "{commonappdata}\Libki\Libki Kiosk Management System.ini"; Section: "s
 
 Filename: "{commonappdata}\Libki\Libki Kiosk Management System.ini"; Section: "windows"; Key: "EnableStartButton"; String: "1"
 Filename: "{commonappdata}\Libki\Libki Kiosk Management System.ini"; Section: "node"; Key: "start_user_shell"; String: "C:\Windows\explorer.exe"; Check: CheckShellReplacement
-Filename: "{commonappdata}\Libki\Libki Kiosk Management System.ini"; Section: "node"; Key: "startupAction"; String: "{code:GetStartupAction}"
 Filename: "{commonappdata}\Libki\Libki Kiosk Management System.ini"; Section: "node"; Key: "logoutAction"; String: "{code:GetLogoutAction}"
 ;logout, reboot, noaction
 Filename: "{commonappdata}\Libki\Libki Kiosk Management System.ini"; Section: "node"; Key: "onlyStopFor"; String: "{code:GetOnlyStopFor}"
@@ -293,7 +292,7 @@ begin
   else if not IgnoreFile then begin
     if CompareText(GetIniString('node', 'logoutAction', '', IniPath), 'logout') = 0 then
       RebootActionPage.SelectedValueIndex := 1
-    else if CompareText(GetIniString('node', 'logoutAction', '', IniPath), 'none') = 0 then
+    else if CompareText(GetIniString('node', 'logoutAction', '', IniPath), 'no_action') = 0 then
       RebootActionPage.SelectedValueIndex := 2
     else
       RebootActionPage.SelectedValueIndex := 0;
@@ -308,14 +307,6 @@ begin
     else
       StartupModePage.SelectedValueIndex := 0;
   end
-  else if not IgnoreFile then begin
-    if CompareText(GetIniString('node', 'startupAction', '', IniPath), 'shell') = 0 then
-      StartupModePage.SelectedValueIndex := 1
-    else if CompareText(GetIniString('node', 'startupAction', '', IniPath), 'none') = 0 then
-      StartupModePage.SelectedValueIndex := 2
-    else
-      StartupModePage.SelectedValueIndex := 0;
-  end; 
   
   if not IgnoreFile then begin 
     PrintersExisting := ParseExistingPrinters(IniPath);
@@ -358,15 +349,6 @@ end;
 function GetNodeName(Param: String): String;
 begin
   Result := ClientPage.Values[3];
-end;
-
-function GetStartupAction(Param: String): String;
-begin
-  case StartupModePage.SelectedValueIndex of
-    0: Result := 'normal';
-    1: Result := 'shell';
-    2: Result := 'none';
-  end;
 end;
 
 function GetLogoutAction(Param: String): String;
