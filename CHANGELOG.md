@@ -4,6 +4,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.0]
+### Added
+- Print Dialog: intermediate screen to confirm printer, copies and pricing before submission to server; polling of directories no longer required.
+- support for custom HTTP headers in API requests
+- ability to process 'drop' command from Server (shutdown Libki, but not PC)
+- ability to process 'unlock' command from Server (end session locking)
+- configurable time remainining notification frequency
+- respect server-set showTimeRemaining settings
+- configurable logging levels
+- remote syslogging (RFC 5424) option
+- command-line install wizard options
+- install wizard reads previous .ini values
+
+### Changed
+- renamed 'unlock' to 'autologin' to more accurately reflect what it's doing
+- replace "Internet Kiosk" with Client name
+- remove auto-focus from logout buttons to prevent double-tap spaces from ending sessions early
+- updated Windows inactivity checking method
+
+### Fixed
+- Center Logo can now be unset
+- Show Guest Login button on first use
+
 ## [2.3.0]
 ### Added
 - automatic print driver configuration for ClawPDF (must be installed first)

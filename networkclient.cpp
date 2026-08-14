@@ -32,7 +32,7 @@
 #include <QSslError>
 #include <QUdpSocket>
 
-#define VERSION "2.3.0"
+#define VERSION "2.4.0"
 
 NetworkClient::NetworkClient(QApplication *app) : QObject() {
   qDebug("ENTER NetworkClient::NetworkClient");
