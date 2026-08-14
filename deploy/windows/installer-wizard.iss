@@ -306,6 +306,8 @@ begin
       StartupModePage.SelectedValueIndex := 2
     else
       StartupModePage.SelectedValueIndex := 0;
+  else
+    StartupModePage.SelectedValueIndex := 0;
   end;
   
   if not IgnoreFile then begin 
