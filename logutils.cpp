@@ -10,11 +10,15 @@
 #include <QTime>
 #include <iostream>
 
+#include "syslog.h"
+#include "utils.h"
+
 namespace LogUtils {
 static QString logFileName;
 static QString logFolderName;
 static QFile* logFile;
 static LogUtils::LogLevel currentLogLevel = LogUtils::DebugLevel;
+static Syslog *syslog;
 
 LogUtils::LogLevel logLevel()
 {
@@ -124,6 +128,61 @@ bool initLogging() {
   deleteOldLogs();    // delete old log files
   initLogFileName();  // create the logfile name
 
+  QString enable_syslog =
+      settings.value("logging/enable_syslog")
+        .toString()
+        .trimmed()
+        .toLower();
+
+  qDebug() << "ENABLE SYSLOG: " << enable_syslog;
+
+  if (enable_syslog == "yes") {
+    qDebug("Enabling syslog.");
+    QString syslog_server =
+      settings.value("logging/syslog_server", "localhost")
+        .toString()
+        .trimmed()
+        .toLower();
+
+    qDebug() << "SYSLOG SERVER: " << syslog_server;
+
+    bool okay = false;
+    quint16 syslog_port =
+      settings.value("logging/syslog_port", "514")
+        .toUInt(&okay);
+
+    qDebug() << "SYSLOG PORT: " << syslog_port;
+
+    QString syslog_facility =
+      settings.value("logging/syslog_facility", "local0")
+        .toString()
+        .trimmed()
+        .toLower();
+    qDebug() << "SYSLOG FACILITY: " << syslog_facility;
+
+    QString syslog_hostname =
+      settings.value("logging/syslog_hostname", getClientName())
+        .toString()
+        .trimmed()
+        .toLower();
+    qDebug() << "SYSLOG HOSTNAME: " << syslog_hostname;
+
+    QString syslog_appname =
+      settings.value("logging/syslog_appname", "libkiclient")
+        .toString()
+        .trimmed()
+        .toLower();
+    qDebug() << "SYSLOG APPNAME: " << syslog_appname;
+
+    if (!okay) {
+      qWarning("Couldn't parse syslog port.");
+    } else {
+      syslog = new Syslog(syslog_server, syslog_port, QStringToFacility(syslog_facility), syslog_hostname, syslog_appname, QCoreApplication::applicationPid());
+    }
+  } else {
+    syslog = NULL;
+  }
+
   logFile = new QFile(logFileName);
   if (logFile->open(QIODevice::WriteOnly | QIODevice::Append)) {
     qInstallMessageHandler(LogUtils::myMessageHandler);
@@ -174,6 +233,7 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext& context,
 #endif
   }
 
+  Severity syslog_severity = Debug;
   QString levelText;
   switch (type) {
     case QtDebugMsg:
@@ -181,15 +241,19 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext& context,
       break;
     case QtInfoMsg:
       levelText = "Info";
+      syslog_severity = Informational;
       break;
     case QtWarningMsg:
       levelText = "Warning";
+      syslog_severity = Warning;
       break;
     case QtCriticalMsg:
       levelText = "Critical";
+      syslog_severity = Critical;
       break;
     case QtFatalMsg:
       levelText = "Fatal";
+      syslog_severity = Critical;
       break;
   }
 
@@ -204,6 +268,14 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext& context,
   // Output to log file
   QTextStream ts(logFile);
   ts << text << endl;
+
+  //Output to syslog, if enabled
+  if (syslog != NULL) {
+    if (syslog->sendSyslog(syslog_severity, message)) {
+      QTextStream(stdout) << "Failed to write to syslog." << endl;
+      ts << "Failed to write to syslog." << endl;
+    }
+  }
 }
 
 }  // namespace LogUtils
