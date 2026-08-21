@@ -25,11 +25,14 @@
 #include <QWebView>
 
 #include "loginwindow.h"
+#include "log.h"
 #include "logutils.h"
 #include "networkclient.h"
 #include "timerwindow.h"
 
 int main(int argc, char *argv[]) {
+  ENTER_FUNC
+
   QApplication app(argc, argv);
 
   /* Apply the stylesheet */
@@ -54,60 +57,82 @@ int main(int argc, char *argv[]) {
   os_username = getenv("USER");
 #endif  // ifdef Q_OS_UNIX
 
-  qDebug() << "OS Username: " << os_username;
+  LOG_SETTING("USERNAME", os_username);
 
           // Translate the application if the locale is available
   QString locale = QLocale::system().name();
   QString filename = QString("languages/libkiclient_") + locale;
-  qDebug() << "LOCALE: " << locale;
-  qDebug() << "LOCALE FILE: " << filename;
+  LOG_SETTING("LOCALE", locale);
+  LOG_SETTING("LOCALE_FILE", filename);
+
   QTranslator translator;
 
   if (translator.load(filename, ":/")) {
     app.installTranslator(&translator);
-    qDebug() << "Translation file loaded" << filename;
+    log::debug(QString("Translation file loaded: %1").arg(filename));
   } else
-    qDebug() << "Translation file not found:" << filename;
+    log::debug(QString("Translation file not found: %1").arg(filename));
 
   QSettings settings;
   settings.setIniCodec("UTF-8");
 
   QString startUserShell;
   startUserShell = settings.value("node/start_user_shell").toString();
-  qDebug() << "start_user_shell: " << startUserShell;
+  LOG_SETTING("node/start_user_shell", startUserShell);
 
   QString onlyRunFor;
   onlyRunFor = settings.value("node/onlyRunFor").toString();
-  qDebug() << "onlyRunFor: " << onlyRunFor;
+  LOG_SETTING("node/onlyRunFor", onlyRunFor);
 
   if (!onlyRunFor.isEmpty()) {
     QStringList usernames = onlyRunFor.split(",");
-    if ( ! usernames.contains(os_username) ) {
-      qDebug() << "onlyRunFor does not match OS username";
+    bool allowed = usernames.contains(os_username);
+    if ( ! allowed ) {
+      log::debug("onlyRunFor does not match OS username",
+        ONLYRUNFOR_ID,
+        SData::new_usermatch(os_username, onlyRunFor, allowed));
       if (!startUserShell.isEmpty()) {
-        qDebug() << "running user shell " << startUserShell;
+        log::debug(
+          QString("Running user shell %1").arg(startUserShell),
+          STARTSHELL_ID,
+          SData::new_shell(startUserShell));
+        //qDebug() << "running user shell " << startUserShell
         QProcess::startDetached('"' + startUserShell + '"');
       }
-      qDebug() << "exiting.";
+      log::debug("Exiting.");
       exit(1);
+    } else {
+      log::debug("onlyRunFor matched OS username",
+        ONLYRUNFOR_ID,
+        SData::new_usermatch(os_username, onlyRunFor, allowed));
     }
   }
 
   QString onlyStopFor;
   onlyStopFor = settings.value("node/onlyStopFor").toString();
-  qDebug() << "onlyStopFor: " << onlyStopFor;
+  LOG_SETTING("node/onlyStopFor", onlyStopFor);
 
   if (!onlyStopFor.isEmpty()) {
       QStringList usernames = onlyStopFor.split(",");
-      if ( usernames.contains(os_username) ) {
-          qDebug() << "onlyStopFor matches OS username: " << os_username;
+      bool allowed = !usernames.contains(os_username);
+      if ( ! allowed ) {
+          log::debug("onlyStopFor matched OS username",
+            ONLYSTOPFOR_ID,
+            SData::new_usermatch(os_username, onlyStopFor, allowed));
           if (!startUserShell.isEmpty()) {
-              qDebug() << "running user shell " << startUserShell;
+              log::debug(
+                QString("Running user shell %1").arg(startUserShell),
+                STARTSHELL_ID,
+                SData::new_shell(startUserShell));
+
               QProcess::startDetached('"' + startUserShell + '"');
           }
-          qDebug() << "exiting.";
+          log::debug("Exiting.");
           exit(1);
       }
+
+      log::debug("onlyStopFor does not match OS username", ONLYSTOPFOR_ID,
+                 SData::new_usermatch(os_username, onlyStopFor, allowed));
   }
 
 #ifdef Q_OS_WIN
@@ -189,4 +214,6 @@ int main(int argc, char *argv[]) {
   loginWindow->show();
 
   return app.exec();
+
+  LEAVE_FUNC
 }
