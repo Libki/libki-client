@@ -18,6 +18,14 @@ SData SData::new_authresult(bool authenticated, const QString& error) {
   sdata.add_sdparam("error", error);
   return sdata;
 }
+SData SData::new_authrequest(const QString& username, const QString& action,
+                             const QString& server) {
+  SData sdata("AuthRequest@32473");
+  sdata.add_sdparam("username", username);
+  sdata.add_sdparam("action", action);
+  sdata.add_sdparam("server", server);
+  return sdata;
+}
 
 SData SData::new_bypassattempt(const QString& attempt_hash,
                                const QString& stored_hash, bool allowed) {
@@ -125,6 +133,37 @@ SData SData::new_usermatch(const QString& user, const QString& stored_user,
   sdata.add_sdparam("user", user);
   sdata.add_sdparam("storedUser", stored_user);
   sdata.add_sdparam("allowed", allowed ? "yes" : "no");
+  return sdata;
+}
+
+SData SData::new_printerquery(const QString& printer) {
+  SData sdata("PrinterQuery@32473");
+  sdata.add_sdparam("printerName", printer);
+  return sdata;
+}
+
+SData SData::new_printerresult(const PrintInfoReply& reply,
+                               const QString& error) {
+  SData sdata("PrinterResult@32473");
+  sdata.add_sdparam("printerName", reply.printer);
+  sdata.add_sdparam("currency", reply.currency);
+  sdata.add_sdparam("costPerPage", QString::number(reply.costPerPage, 'f', 2));
+  sdata.add_sdparam("funds", QString::number(reply.availableFunds, 'f', 2));
+  sdata.add_sdparam("gratisBalance", QString::number(reply.availableGratis, 'f', 2));
+  sdata.add_sdparam("gratisMethod", reply.gratisMethod);
+  sdata.add_sdparam("error", error);
+  return sdata;
+}
+
+SData SData::new_printerresult(const QString& error) {
+  SData sdata("PrinterResult@32473");
+  sdata.add_sdparam("printerName", "");
+  sdata.add_sdparam("currency", "");
+  sdata.add_sdparam("costPerPage", "");
+  sdata.add_sdparam("funds", "");
+  sdata.add_sdparam("gratisBalance", "");
+  sdata.add_sdparam("gratisMethod", "");
+  sdata.add_sdparam("error", error);
   return sdata;
 }
 

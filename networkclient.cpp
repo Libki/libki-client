@@ -154,7 +154,10 @@ void NetworkClient::attemptLogin(QString aUsername, QString aPassword,
   url.setQuery(query);
 
   LOG_SETTING("Login URL", url.toString());
-  // qDebug() << "NetworkClient::attemptLogin";
+
+  log::info("Attempting login",
+    LOGIN_ID,
+    SData::new_authrequest(username, "login", url.host()));
 
   QNetworkAccessManager *nam;
   nam = new QNetworkAccessManager(this);
@@ -232,6 +235,10 @@ void NetworkClient::attemptLogout() {
   query.addQueryItem("password", password);
   url.setQuery(query);
 
+  log::info("Attempting logout",
+    LOGOUT_ID,
+    SData::new_authrequest(username, "logout", url.host()));
+
   /*QNetworkReply* reply =*/nam->get(buildRequest(url));
 
   LEAVE_FUNC
@@ -250,8 +257,12 @@ void NetworkClient::processAttemptLogoutReply(QNetworkReply *reply) {
   sc = engine.evaluate("(" + QString(result) + ")");
 
   if (sc.property("logged_out").toBoolean() == true) {
+    log::info("Logged out successfully.", AUTHRESULT_ID,
+      SData::new_authresult(true, ""));
     doLogoutTasks();
   } else {
+    log::warn("Logout failed.", AUTHRESULT_ID,
+      SData::new_authresult(false, reply->errorString()));
     emit logoutFailed();
   }
 
@@ -280,6 +291,10 @@ void NetworkClient::getUserDataUpdate() {
   query.addQueryItem("password", password);
   url.setQuery(query);
 
+  log::debug("Requesting user data",
+    QUERYUSER_ID,
+    SData::new_authrequest(username, "get_user_data", url.host()));
+
   /*QNetworkReply* reply =*/nam->get(buildRequest(url));
 
   LEAVE_FUNC
@@ -293,7 +308,14 @@ void NetworkClient::processGetUserDataUpdateReply(QNetworkReply *reply) {
   QByteArray result;
   result = reply->readAll();
 
-  qDebug() << "Server Result: " << result;
+  bool success = reply->error() == QNetworkReply::NetworkError::NoError;
+
+  log::debug("Received user data",
+    AUTHRESULT_ID,
+    SData::new_authresult(success, success ? "" : reply->errorString()));
+
+  // I've found this one line to be pretty big
+  //qDebug() << "Server Result: " << result;
 
   QJsonDocument jd = QJsonDocument::fromJson(result);
 
@@ -325,11 +347,14 @@ void NetworkClient::processGetUserDataUpdateReply(QNetworkReply *reply) {
       emit timeUpdatedFromServer(units);
 
       if (units < 1) {
+        log::info("Logged out due to insufficient units.", NODELOCK_ID);
         doLogoutTasks();
       }
     } else if (status == "Logged out") {
+      log::info("Logged out due to server request.", NODELOCK_ID);
       doLogoutTasks();
     } else if (status == "Kicked") {
+      log::info("Kicked from session.", NODELOCK_ID);
       doLogoutTasks();
     }
   }
@@ -582,9 +607,9 @@ void NetworkClient::registerNode() {
   url.setQuery(query);
 
   log::info(
-    QString("Registering Node to %1").arg(serviceURL.toString()),
+    QString("Registering Node to %1").arg(serviceURL.host()),
     REGISTERNODE_ID,
-    SData::new_node(serviceURL.toString(), nodeName, VERSION, nodeAgeLimit));
+    SData::new_node(serviceURL.host(), nodeName, VERSION, nodeAgeLimit));
 
   /*QNetworkReply* reply =*/nam->get(buildRequest(url));
 
@@ -1096,8 +1121,7 @@ QNetworkRequest NetworkClient::buildRequest(const QUrl &url) const {
 void NetworkClient::handleNetworkReplyErrors(QNetworkReply *reply) {
   if (reply->error() != QNetworkReply::NoError) {
     QString e = QString::number(reply->error());
-    qWarning() << "ERROR: Server Access Warning: " << e
-               << " :: " << reply->errorString();
+    log::warn(QString("ERROR: Server Access Warning: %1 :: %2").arg(e, reply->errorString()));
 
     QString s = e + ": " + reply->errorString();
     serverAccessWarning(s);
@@ -1108,7 +1132,7 @@ void NetworkClient::handleNetworkReplyErrors(QNetworkReply *reply) {
 
 void NetworkClient::handlePrintRequest(const SubmitPrintRequest &request) {
   if (username.isEmpty()) {
-    qWarning() << "Ignoring print request because no user is logged in.";
+    log::warn("Print request occurred while no user was logged in.");
     return;
   }
 
@@ -1152,7 +1176,9 @@ void NetworkClient::processPrintPriceCheckReply() {
   QNetworkReply *networkReply = qobject_cast<QNetworkReply *>(sender());
 
   if (!networkReply) {
-    qWarning("No network reply");
+    log::warn("No network reply",
+      QUERYPRINTERRESULT_ID,
+      SData::new_printerresult("no reply"));
     return;
   }
   PendingPrintInfoRequest context = pendingPrintInfoReplies.take(networkReply);
@@ -1162,7 +1188,9 @@ void NetworkClient::processPrintPriceCheckReply() {
   if (networkReply->error() != QNetworkReply::NoError) {
     reply.success = false;
     reply.error = networkReply->errorString();
-    qWarning() << "Network reply error: " << reply.error;
+    log::warn("Network error",
+      QUERYPRINTERRESULT_ID,
+      SData::new_printerresult(networkReply->errorString()));
 
     printServer->sendPrintInfoReply(context.socket, reply);
 
@@ -1178,7 +1206,9 @@ void NetworkClient::processPrintPriceCheckReply() {
   if (parseError.error != QJsonParseError::NoError || !doc.isObject()) {
     reply.success = false;
     reply.error = tr("Invalid JSON returned by server.");
-    qWarning() << "JSON parsing error";
+    log::warn("Invalid JSON from server.",
+      QUERYPRINTERRESULT_ID,
+      SData::new_printerresult(parseError.errorString()));
 
     printServer->sendPrintInfoReply(context.socket, reply);
 
@@ -1219,8 +1249,13 @@ void NetworkClient::processPrintPriceCheckReply() {
       reply.remainingGratisBalance = 0;
     }
   } else {
-    qWarning() << "Invalid gratis method: " << reply.gratisMethod;
+    log::warn("Invalid gratis method",
+      QUERYPRINTERRESULT_ID,
+      SData::new_printerresult(reply, "Invalid gratis method"));
   }
+
+  log::info("Printer query success", QUERYPRINTERRESULT_ID,
+    SData::new_printerresult(reply, ""));
 
   reply.remainingFundsBalance = reply.availableFunds - reply.estimatedCost;
 

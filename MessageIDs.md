@@ -31,6 +31,18 @@ A short list of the logging message IDs
 - **SData Format**: FuncFrame
 - **Description**: Logged at the debug level at the end of a function. Typically fired by the _LEAVE_FUNC_ macro.
 
+### LOGIN
+- **SData Format**: AuthRequest
+- **Description**: Someone attempted to log in to Libki.
+
+### LOGOUT
+- **SData Format**: AuthRequest
+- **Description**: Someone attempted to log out of Libki. 
+
+### NODELOCK
+- **SData Format**: Nil
+- **Description**: Libki is locking the computer
+
 ### NODEPOWER
 - **SData Format**: NodePower
 - **Description**: Node is changing the power state of the computer (e.g. shutdown, suspend)
@@ -79,13 +91,32 @@ A short list of the logging message IDs
 - **SData Format**: Shell
 - **Description**: Libki has started the user's shell after login
 
+### QUERYUSER
+- **SData Fomrat**: AuthRequest
+- **Description**: Libki has requested this user's data
+
+### QUERYPRINTER
+- **SData Format**: PrinterQuery
+- **Description**: Libki has requested a printer's data
+
+### QUERYPRINTERRESULT
+- **SData Format**: PrinterResult
+- **Description**: Libki has received a response on a printer's data
+
 ## SData Formats
 
 ### AuthResult
 - **SD-ID**: AuthResult@32473
 - **Parameters**:
-  - _authenticated_ - "yes" if the client authenticated, "no" if it didn't
+  - _authenticated_ - "yes" if the client authentication action succeeded, "no" if it didn't
   - _error_ - The error message of a failed auth, "-" if there was a successful auth.
+
+### AuthRequest
+- **SD-ID**: AuthRequest@32473
+- **Paramters**:
+  - _username_ - The username of the person attempting an authentication action
+  - _action_ - The action the user is attempting to do (e.g. login)
+  - _server_ - The URL that Libki sent the action request to
 
 ### BypassAttempt
 - **SD-ID**: BypassAttempt@32473
@@ -122,6 +153,22 @@ A short list of the logging message IDs
 - **Parameters**:
   - _printerName_ - The name of the printer
   - _printerPath_ - The folder this printer's jobs are sent to
+
+### PrinterQuery
+- **SD-ID**: PrinterQuery@32473
+- **Parameters**:
+  - _printerName_ - The name of the printer
+
+### PrinterResult
+- **SD-ID**: PrinterResult@32473
+- **Parameters**:
+  - _printerName_ - The name of the printer
+  - _currency_ - The currency the printer accepts
+  - _costPerPage_ - How much it costs to print a page
+  - _funds_ - How much money the user has for funds
+  - _gratisBalance_ - How much the user can print for free
+  - _gratisMethod_ - How the free pages is calculated
+  - _error_ - If there were any errors getting the result
 
 ### PrintJob
 - **SD-ID**: PrintJob@32473
