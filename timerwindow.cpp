@@ -216,6 +216,9 @@ void TimerWindow::updateClock() {
 
       QPainter painter(&pixmap);
       QFont font = painter.font() ;
+
+      timeSplash->hide(); // hide the splash while we do the work of updating it, to prevent flashes of unfinished content
+
       font.setBold(true);
       font.setPointSize(30);
       painter.setFont(font);
