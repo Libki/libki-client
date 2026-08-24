@@ -196,6 +196,11 @@ void PrintDialog::updateTotals() {
 
     estimatedCostValue->setText(money(info.estimatedCost));
     remainingFundsValue->setText( money(info.remainingFundsBalance));
+    if (info.gratisMethod == "pages") {
+       remainingGratisValue->setText(QString::number(info.remainingGratisBalance) + tr(" pages"));
+    } else {
+       remainingGratisValue->setText( money(info.remainingGratisBalance));
+    }
 
     QPushButton *ok =
         buttonBox->button(QDialogButtonBox::Ok);
