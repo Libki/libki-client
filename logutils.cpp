@@ -18,12 +18,9 @@ static QString logFileName;
 static QString logFolderName;
 static QFile* logFile;
 static LogUtils::LogLevel currentLogLevel = LogUtils::DebugLevel;
-static Syslog *syslog;
+static Syslog* syslog;
 
-LogUtils::LogLevel logLevel()
-{
-  return currentLogLevel;
-}
+LogUtils::LogLevel logLevel() { return currentLogLevel; }
 
 void initLogFileName() {
   qDebug("ENTER LogUtils::iniLogFileName");
@@ -33,21 +30,23 @@ void initLogFileName() {
   qDebug() << "LOGS ENV VAR: " << path;
 
   // Next, check the user level registry ( on Windows )
-  if ( path.isEmpty() ) {
-      QSettings settings("HKEY_CURRENT_USER\\Software\\Libki", QSettings::NativeFormat);
-      path = settings.value("logs_dir").toString();
-      qDebug() << "HKCU LOGS DIR: " << path;
+  if (path.isEmpty()) {
+    QSettings settings("HKEY_CURRENT_USER\\Software\\Libki",
+                       QSettings::NativeFormat);
+    path = settings.value("logs_dir").toString();
+    qDebug() << "HKCU LOGS DIR: " << path;
   }
 
   // Next, check the machine level registry ( on Windows )
-  if ( path.isEmpty() ) {
-      QSettings settings("HKEY_LOCAL_MACHINE\\Software\\Libki", QSettings::NativeFormat);
-      path = settings.value("logs_dir").toString();
-      qDebug() << "HKLM LOGS DIR: " << path;
+  if (path.isEmpty()) {
+    QSettings settings("HKEY_LOCAL_MACHINE\\Software\\Libki",
+                       QSettings::NativeFormat);
+    path = settings.value("logs_dir").toString();
+    qDebug() << "HKLM LOGS DIR: " << path;
   }
 
   // Finally, default to AppDataLocation
-  if ( path.isEmpty() ) {
+  if (path.isEmpty()) {
     path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     qDebug() << "LOGS APP DATA LOCATION: " << path;
   }
@@ -99,10 +98,7 @@ bool initLogging() {
   QSettings settings;
 
   QString level =
-      settings.value("logging/level", "debug")
-          .toString()
-          .trimmed()
-          .toLower();
+      settings.value("logging/level", "debug").toString().trimmed().toLower();
 
   if (level == "debug")
     currentLogLevel = DebugLevel;
@@ -115,9 +111,7 @@ bool initLogging() {
   else
     currentLogLevel = DebugLevel;
 
-  fprintf(stderr,
-          "Configured log level = %d\n",
-          (int)currentLogLevel);
+  fprintf(stderr, "Configured log level = %d\n", (int)currentLogLevel);
 
   // Create folder for logfiles if not exists
   if (!QDir(logFolderName).exists()) {
@@ -129,55 +123,52 @@ bool initLogging() {
   initLogFileName();  // create the logfile name
 
   QString enable_syslog =
-      settings.value("logging/enable_syslog")
-        .toString()
-        .trimmed()
-        .toLower();
+      settings.value("logging/enable_syslog").toString().trimmed().toLower();
 
   qDebug() << "ENABLE SYSLOG: " << enable_syslog;
 
   if (enable_syslog == "yes") {
     qDebug("Enabling syslog.");
-    QString syslog_server =
-      settings.value("logging/syslog_server", "localhost")
-        .toString()
-        .trimmed()
-        .toLower();
+    QString syslog_server = settings.value("logging/syslog_server", "localhost")
+                                .toString()
+                                .trimmed()
+                                .toLower();
 
     qDebug() << "SYSLOG SERVER: " << syslog_server;
 
     bool okay = false;
     quint16 syslog_port =
-      settings.value("logging/syslog_port", "514")
-        .toUInt(&okay);
+        settings.value("logging/syslog_port", "514").toUInt(&okay);
 
     qDebug() << "SYSLOG PORT: " << syslog_port;
 
     QString syslog_facility =
-      settings.value("logging/syslog_facility", "local0")
-        .toString()
-        .trimmed()
-        .toLower();
+        settings.value("logging/syslog_facility", "local0")
+            .toString()
+            .trimmed()
+            .toLower();
     qDebug() << "SYSLOG FACILITY: " << syslog_facility;
 
     QString syslog_hostname =
-      settings.value("logging/syslog_hostname", getClientName())
-        .toString()
-        .trimmed()
-        .toLower();
+        settings.value("logging/syslog_hostname", getClientName())
+            .toString()
+            .trimmed()
+            .toLower();
     qDebug() << "SYSLOG HOSTNAME: " << syslog_hostname;
 
     QString syslog_appname =
-      settings.value("logging/syslog_appname", "libkiclient")
-        .toString()
-        .trimmed()
-        .toLower();
+        settings.value("logging/syslog_appname", "libkiclient")
+            .toString()
+            .trimmed()
+            .toLower();
     qDebug() << "SYSLOG APPNAME: " << syslog_appname;
 
     if (!okay) {
       qWarning("Couldn't parse syslog port.");
     } else {
-      syslog = new Syslog(syslog_server, syslog_port, QStringToFacility(syslog_facility), syslog_hostname, syslog_appname, QCoreApplication::applicationPid());
+      syslog = new Syslog(syslog_server, syslog_port,
+                          QStringToFacility(syslog_facility), syslog_hostname,
+                          syslog_appname, QCoreApplication::applicationPid());
     }
   } else {
     syslog = NULL;
@@ -208,28 +199,24 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext& context,
 
   switch (type) {
     case QtDebugMsg:
-      if (currentLogLevel > DebugLevel)
-        return;
+      if (currentLogLevel > DebugLevel) return;
       break;
 
     case QtWarningMsg:
-      if (currentLogLevel > WarningLevel)
-        return;
+      if (currentLogLevel > WarningLevel) return;
       break;
 
     case QtCriticalMsg:
-      if (currentLogLevel > ErrorLevel)
-        return;
+      if (currentLogLevel > ErrorLevel) return;
       break;
 
     case QtFatalMsg:
       break;
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
-      case QtInfoMsg:
-        if (currentLogLevel > DebugLevel)
-          return;
-        break;
+    case QtInfoMsg:
+      if (currentLogLevel > DebugLevel) return;
+      break;
 #endif
   }
 
@@ -269,7 +256,7 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext& context,
   QTextStream ts(logFile);
   ts << text << endl;
 
-  //Output to syslog, if enabled
+  // Output to syslog, if enabled
   if (syslog != NULL) {
     if (syslog->sendSyslog(syslog_severity, message)) {
       QTextStream(stdout) << "Failed to write to syslog." << endl;

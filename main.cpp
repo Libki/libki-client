@@ -24,8 +24,8 @@
 #include <QSettings>
 #include <QWebView>
 
-#include "loginwindow.h"
 #include "log.h"
+#include "loginwindow.h"
 #include "logutils.h"
 #include "networkclient.h"
 #include "timerwindow.h"
@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
 
   LOG_SETTING("USERNAME", os_username);
 
-          // Translate the application if the locale is available
+  // Translate the application if the locale is available
   QString locale = QLocale::system().name();
   QString filename = QString("languages/libkiclient_") + locale;
   LOG_SETTING("LOCALE", locale);
@@ -87,24 +87,20 @@ int main(int argc, char *argv[]) {
   if (!onlyRunFor.isEmpty()) {
     QStringList usernames = onlyRunFor.split(",");
     bool allowed = usernames.contains(os_username);
-    if ( ! allowed ) {
-      log::debug("onlyRunFor does not match OS username",
-        ONLYRUNFOR_ID,
-        SData::new_usermatch(os_username, onlyRunFor, allowed));
+    if (!allowed) {
+      log::debug("onlyRunFor does not match OS username", ONLYRUNFOR_ID,
+                 SData::new_usermatch(os_username, onlyRunFor, allowed));
       if (!startUserShell.isEmpty()) {
-        log::debug(
-          QString("Running user shell %1").arg(startUserShell),
-          STARTSHELL_ID,
-          SData::new_shell(startUserShell));
-        //qDebug() << "running user shell " << startUserShell
+        log::debug(QString("Running user shell %1").arg(startUserShell),
+                   STARTSHELL_ID, SData::new_shell(startUserShell));
+        // qDebug() << "running user shell " << startUserShell
         QProcess::startDetached('"' + startUserShell + '"');
       }
       log::debug("Exiting.");
       exit(1);
     } else {
-      log::debug("onlyRunFor matched OS username",
-        ONLYRUNFOR_ID,
-        SData::new_usermatch(os_username, onlyRunFor, allowed));
+      log::debug("onlyRunFor matched OS username", ONLYRUNFOR_ID,
+                 SData::new_usermatch(os_username, onlyRunFor, allowed));
     }
   }
 
@@ -113,26 +109,23 @@ int main(int argc, char *argv[]) {
   LOG_SETTING("node/onlyStopFor", onlyStopFor);
 
   if (!onlyStopFor.isEmpty()) {
-      QStringList usernames = onlyStopFor.split(",");
-      bool allowed = !usernames.contains(os_username);
-      if ( ! allowed ) {
-          log::debug("onlyStopFor matched OS username",
-            ONLYSTOPFOR_ID,
-            SData::new_usermatch(os_username, onlyStopFor, allowed));
-          if (!startUserShell.isEmpty()) {
-              log::debug(
-                QString("Running user shell %1").arg(startUserShell),
-                STARTSHELL_ID,
-                SData::new_shell(startUserShell));
-
-              QProcess::startDetached('"' + startUserShell + '"');
-          }
-          log::debug("Exiting.");
-          exit(1);
-      }
-
-      log::debug("onlyStopFor does not match OS username", ONLYSTOPFOR_ID,
+    QStringList usernames = onlyStopFor.split(",");
+    bool allowed = !usernames.contains(os_username);
+    if (!allowed) {
+      log::debug("onlyStopFor matched OS username", ONLYSTOPFOR_ID,
                  SData::new_usermatch(os_username, onlyStopFor, allowed));
+      if (!startUserShell.isEmpty()) {
+        log::debug(QString("Running user shell %1").arg(startUserShell),
+                   STARTSHELL_ID, SData::new_shell(startUserShell));
+
+        QProcess::startDetached('"' + startUserShell + '"');
+      }
+      log::debug("Exiting.");
+      exit(1);
+    }
+
+    log::debug("onlyStopFor does not match OS username", ONLYSTOPFOR_ID,
+               SData::new_usermatch(os_username, onlyStopFor, allowed));
   }
 
 #ifdef Q_OS_WIN
@@ -151,7 +144,7 @@ int main(int argc, char *argv[]) {
 
   LoginWindow *loginWindow = new LoginWindow();
   TimerWindow *timerWindow = new TimerWindow();
-  NetworkClient *networkClient = new NetworkClient( &app );
+  NetworkClient *networkClient = new NetworkClient(&app);
 
   QObject::connect(
       loginWindow,
@@ -168,8 +161,10 @@ int main(int argc, char *argv[]) {
                    SLOT(displayLoginWindow()));
 
   QObject::connect(
-      loginWindow, SIGNAL(attemptLogin(const QString &, const QString &, const bool &)),
-      networkClient, SLOT(attemptLogin(const QString &, const QString &, const bool &)));
+      loginWindow,
+      SIGNAL(attemptLogin(const QString &, const QString &, const bool &)),
+      networkClient,
+      SLOT(attemptLogin(const QString &, const QString &, const bool &)));
 
   QObject::connect(
       networkClient, SIGNAL(loginSucceeded(QString, QString, int, int)),
@@ -204,12 +199,13 @@ int main(int argc, char *argv[]) {
   QObject::connect(networkClient, SIGNAL(allowClose(bool)), timerWindow,
                    SLOT(setAllowClose(bool)));
 
-  QObject::connect(networkClient,SIGNAL(unlockSession()),timerWindow, SLOT(unlockSession()));
+  QObject::connect(networkClient, SIGNAL(unlockSession()), timerWindow,
+                   SLOT(unlockSession()));
 
-  QObject::connect(networkClient, SIGNAL(serverAccessWarning(QString)), loginWindow,
-                   SLOT(showServerAccessWarning(QString)));
-  QObject::connect(networkClient, SIGNAL(internetAccessWarning(QString)), loginWindow,
-                   SLOT(showInternetAccessWarning(QString)));
+  QObject::connect(networkClient, SIGNAL(serverAccessWarning(QString)),
+                   loginWindow, SLOT(showServerAccessWarning(QString)));
+  QObject::connect(networkClient, SIGNAL(internetAccessWarning(QString)),
+                   loginWindow, SLOT(showInternetAccessWarning(QString)));
 
   loginWindow->show();
 

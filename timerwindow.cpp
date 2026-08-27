@@ -20,25 +20,27 @@
 #include "timerwindow.h"
 
 #include <QtWidgets/qdesktopwidget.h>
+
+#include <QIcon>
 #include <QPainter>
 #include <QPixmap>
-#include <QIcon>
 #include <QScreen>
 
+#include "log.h"
 #include "sessionlockedwindow.h"
-#include "utils.h"
 #include "timesplash.h"
+#include "utils.h"
 
 #ifdef Q_OS_WINDOWS
-  #include <windows.h>
-  #include <winuser.h>
-  #include <sysinfoapi.h>
+#include <sysinfoapi.h>
+#include <windows.h>
+#include <winuser.h>
 #endif
 
 #define INACTIVITY_CHECK_INTERVAL 10
 
 TimerWindow::TimerWindow(QWidget *parent) : QMainWindow(parent) {
-  qDebug("ENTER TimerWindow::TimerWindow");
+  ENTER_FUNC
 
   setAllowClose(false);
 
@@ -64,7 +66,7 @@ TimerWindow::TimerWindow(QWidget *parent) : QMainWindow(parent) {
 
   // Set up the timer splash
   QPixmap pixmap(":/images/images/time_splash_background.png");
-  timeSplash = new TimeSplash( this, pixmap, Qt::WindowStaysOnTopHint );
+  timeSplash = new TimeSplash(this, pixmap, Qt::WindowStaysOnTopHint);
 
   trayIconPopupTimer = new QTimer(this);
   connect(trayIconPopupTimer, SIGNAL(timeout()), this,
@@ -78,14 +80,14 @@ TimerWindow::TimerWindow(QWidget *parent) : QMainWindow(parent) {
 
   this->hide();
 
-  qDebug("LEAVE TimerWindow::TimerWindow");
+  LEAVE_FUNC
 }
 
 TimerWindow::~TimerWindow() {}
 
 void TimerWindow::startTimer(QString newUsername, QString newPassword,
                              int minutes, int hold_items_count) {
-  qDebug("ENTER TimerWindow::startTimer");
+  ENTER_FUNC
 
   username = newUsername;
   password = newPassword;
@@ -130,11 +132,11 @@ void TimerWindow::startTimer(QString newUsername, QString newPassword,
     qApp->processEvents();
   }
 
-  qDebug("LEAVE TimerWindow::startTimer");
+  LEAVE_FUNC
 }
 
 void TimerWindow::stopTimer() {
-  qDebug("ENTER TimerWindow::stopTimer");
+  ENTER_FUNC
 
   inactivityTimer->stop();
 
@@ -150,11 +152,11 @@ void TimerWindow::stopTimer() {
 
   emit timerStopped();
 
-  qDebug("LEAVE TimerWindow::stopTimer");
+  LEAVE_FUNC
 }
 
 void TimerWindow::updateClock() {
-  qDebug("ENTER TimerWindow::updateClock");
+  ENTER_FUNC
 
   QSettings settings;
   settings.setIniCodec("UTF-8");
@@ -175,67 +177,76 @@ void TimerWindow::updateClock() {
 
   QString minutesString = QString::number(minutesRemaining);
 
-  trayIcon->setToolTip( minutesString + " " +
-                       tr("Minutes Left"));
+  trayIcon->setToolTip(minutesString + " " + tr("Minutes Left"));
 
   this->setWindowTitle("Libki " + time);
-  if ( settings.value("node/showTimeRemainingInTray").toInt() == 1 || settings.value("session/ShowTimeRemainingInTray").toInt() == 1 ) {
-      // Update the system tray icon
-      QPixmap libkiIcon = QPixmap(":/images/images/tray.png");
-      QPainter painter(&libkiIcon);
-      QFont font = painter.font() ;
-      font.setBold(true);
-      if ( minutesRemaining < 10 ) {
-        font.setPointSize(14);
-      } else if ( minutesRemaining < 100 ) {
-        font.setPointSize(11);
-      } else {
-        font.setPointSize(9);
-      }
-      painter.setFont(font);
+  if (settings.value("node/showTimeRemainingInTray").toInt() == 1 ||
+      settings.value("session/ShowTimeRemainingInTray").toInt() == 1) {
+    // Update the system tray icon
+    QPixmap libkiIcon = QPixmap(":/images/images/tray.png");
+    QPainter painter(&libkiIcon);
+    QFont font = painter.font();
+    font.setBold(true);
+    if (minutesRemaining < 10) {
+      font.setPointSize(14);
+    } else if (minutesRemaining < 100) {
+      font.setPointSize(11);
+    } else {
+      font.setPointSize(9);
+    }
+    painter.setFont(font);
 
-      if ( this->swapColors ) {
-          painter.setPen(QColor(Qt::black));
-      } else {
-          painter.setPen(QColor(Qt::white));
-      }
-      this->swapColors = !this->swapColors;
-      painter.drawText(libkiIcon.rect(), Qt::AlignCenter, minutesString);
+    if (this->swapColors) {
+      painter.setPen(QColor(Qt::black));
+    } else {
+      painter.setPen(QColor(Qt::white));
+    }
+    this->swapColors = !this->swapColors;
+    painter.drawText(libkiIcon.rect(), Qt::AlignCenter, minutesString);
 
-      trayIcon->setIcon(libkiIcon);
+    trayIcon->setIcon(libkiIcon);
   }
 
-  bool showSplash = settings.value("node/showTimeRemainingInSplash").toInt() == 1 || settings.value("session/ShowTimeRemainingInSplash").toInt() == 1;
-  if ( sessionLockedWindow && sessionLockedWindow->isVisible() ) showSplash = false;
-  if ( showSplash ) {
-      // Update the time splash
-      QScreen* screen = QGuiApplication::screens()[0];
-      QRect screenrect = screen->availableGeometry();
+  bool showSplash =
+      settings.value("node/showTimeRemainingInSplash").toInt() == 1 ||
+      settings.value("session/ShowTimeRemainingInSplash").toInt() == 1;
+  if (sessionLockedWindow && sessionLockedWindow->isVisible())
+    showSplash = false;
+  if (showSplash) {
+    // Update the time splash
+    QScreen *screen = QGuiApplication::screens()[0];
+    QRect screenrect = screen->availableGeometry();
 
-      QPixmap pixmap(":/images/images/time_splash_background.png");
+    QPixmap pixmap(":/images/images/time_splash_background.png");
 
-      QPainter painter(&pixmap);
-      QFont font = painter.font() ;
-      font.setBold(true);
-      font.setPointSize(30);
-      painter.setFont(font);
-      painter.drawText(pixmap.rect(), Qt::AlignCenter, minutesString);
+    QPainter painter(&pixmap);
+    QFont font = painter.font();
+    font.setBold(true);
+    font.setPointSize(30);
+    painter.setFont(font);
+    painter.drawText(pixmap.rect(), Qt::AlignCenter, minutesString);
 
-      timeSplash->setPixmap(pixmap);
-      timeSplash->move(screenrect.right() -  timeSplash->width(), screenrect.bottom() - timeSplash->height());
-      timeSplash->show();
-      timeSplash->raise(); // Some X11 window managers do not support the "stays on top" flag. A solution is to set up a timer that periodically calls raise() on the splash screen to simulate the "stays on top" effect.
+    timeSplash->setPixmap(pixmap);
+    timeSplash->move(screenrect.right() - timeSplash->width(),
+                     screenrect.bottom() - timeSplash->height());
+    timeSplash->show();
+    timeSplash->raise();  // Some X11 window managers do not support the "stays
+                          // on top" flag. A solution is to set up a timer that
+                          // periodically calls raise() on the splash screen to
+                          // simulate the "stays on top" effect.
 
-      QCoreApplication::processEvents();
+    QCoreApplication::processEvents();
   } else {
-      timeSplash->hide();
+    timeSplash->hide();
   }
 
-  qDebug("LEAVE TimerWindow::updateClock");
+  LEAVE_FUNC
 }
 
 void TimerWindow::updateTimeLeft(int minutes) {
-  qDebug() << QString("ENTER TimerWindow::updateTimeLeft(%1)").arg(minutes);
+  log::debug(QString("ENTER TimerWindow::updateTimeLeft(%1)").arg(minutes),
+    ENTERFUNC_ID,
+    SData::new_funcframe(__PRETTY_FUNCTION__));
 
   minutesRemaining = minutes;
   updateClock();
@@ -244,11 +255,13 @@ void TimerWindow::updateTimeLeft(int minutes) {
     emit requestLogout();
   }
 
-  qDebug() << QString("LEAVE TimerWindow::updateTimeLeft(%1)").arg(minutes);
+  log::debug(QString("LEAVE TimerWindow::updateTimeLeft(%1)").arg(minutes),
+    LEAVEFUNC_ID,
+    SData::new_funcframe(__PRETTY_FUNCTION__));
 }
 
 void TimerWindow::doLogoutDialog() {
-  qDebug("ENTER TimerWindow::doLogoutDialog");
+  ENTER_FUNC
 
   QMessageBox msgBox;
 
@@ -274,11 +287,11 @@ void TimerWindow::doLogoutDialog() {
       break;
   }
 
-  qDebug("LEAVE TimerWindow::doLogoutDialog");
+  LEAVE_FUNC
 }
 
 void TimerWindow::setupActions() {
-  qDebug("ENTER TimerWindow::setupActions");
+  ENTER_FUNC
 
   connect(logoutButton, SIGNAL(clicked()), this, SLOT(doLogoutDialog()));
 
@@ -288,11 +301,11 @@ void TimerWindow::setupActions() {
   logoutButton->setFocusPolicy(Qt::NoFocus);
   lockSessionButton->setFocusPolicy(Qt::NoFocus);
 
-  qDebug("LEAVE TimerWindow::setupActions");
+  LEAVE_FUNC
 }
 
 void TimerWindow::setupTrayIcon() {
-  qDebug("ENTER TimerWindow::setupTrayIcon");
+  ENTER_FUNC
 
   trayIconMenu = new QMenu(this);
 
@@ -312,11 +325,11 @@ void TimerWindow::setupTrayIcon() {
   connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this,
           SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
 
-  qDebug("LEAVE TimerWindow::setupTrayIcon");
+  ENTER_FUNC
 }
 
 void TimerWindow::iconActivated(QSystemTrayIcon::ActivationReason reason) {
-  qDebug("ENTER TimerWindow::iconActivated");
+  ENTER_FUNC
 
   switch (reason) {
     case QSystemTrayIcon::Trigger:
@@ -338,11 +351,11 @@ void TimerWindow::iconActivated(QSystemTrayIcon::ActivationReason reason) {
       break;
   }
 
-  qDebug("LEAVE TimerWindow::iconActivated");
+  LEAVE_FUNC
 }
 
 void TimerWindow::restoreTimerWindow() {
-  qDebug("ENTER TimerWindow::restoreTimerWindow");
+  ENTER_FUNC
 
   // TODO: TimerWindow will not come to front if behind other windows. Needed
   // for showMessage().
@@ -351,31 +364,44 @@ void TimerWindow::restoreTimerWindow() {
   this->raise();
   this->showNormal();
 
-  qDebug("LEAVE TimerWindow::restoreTimerWindow");
+  LEAVE_FUNC
 }
 
 void TimerWindow::showSystemTrayIconTimeLeftMessage() {
-  qDebug("ENTER TimerWindow::showSystemTrayIconTimeLeftMessage");
+  ENTER_FUNC
 
   QSettings settings;
   settings.setIniCodec("UTF-8");
 
   int clientTimeNotificationFrequency = 5;
-  if (!settings.value("session/ClientTimeNotificationFrequency").toString().isEmpty()) {
-    clientTimeNotificationFrequency = settings.value("session/ClientTimeNotificationFrequency").toInt();
-    clientTimeNotificationFrequency = clientTimeNotificationFrequency > 0 ? clientTimeNotificationFrequency : 5;
+  if (!settings.value("session/ClientTimeNotificationFrequency")
+           .toString()
+           .isEmpty()) {
+    clientTimeNotificationFrequency =
+        settings.value("session/ClientTimeNotificationFrequency").toInt();
+    clientTimeNotificationFrequency = clientTimeNotificationFrequency > 0
+                                          ? clientTimeNotificationFrequency
+                                          : 5;
   }
 
   int clientTimeWarningThreshold = 5;
-  if (!settings.value("session/ClientTimeWarningThreshold").toString().isEmpty()) {
-    clientTimeWarningThreshold = settings.value("session/ClientTimeWarningThreshold").toInt();
-    clientTimeWarningThreshold = clientTimeWarningThreshold > 0 ? clientTimeWarningThreshold : 5;
+  if (!settings.value("session/ClientTimeWarningThreshold")
+           .toString()
+           .isEmpty()) {
+    clientTimeWarningThreshold =
+        settings.value("session/ClientTimeWarningThreshold").toInt();
+    clientTimeWarningThreshold =
+        clientTimeWarningThreshold > 0 ? clientTimeWarningThreshold : 5;
   }
 
   int clientTimeWarningFrequency = 1;
-  if (!settings.value("session/ClientTimeWarningFrequency").toString().isEmpty()) {
-    clientTimeWarningFrequency = settings.value("session/ClientTimeWarningFrequency").toInt();
-    clientTimeWarningFrequency = clientTimeWarningFrequency > 0 ? clientTimeWarningFrequency : 1;
+  if (!settings.value("session/ClientTimeWarningFrequency")
+           .toString()
+           .isEmpty()) {
+    clientTimeWarningFrequency =
+        settings.value("session/ClientTimeWarningFrequency").toInt();
+    clientTimeWarningFrequency =
+        clientTimeWarningFrequency > 0 ? clientTimeWarningFrequency : 1;
   }
 
   QString title = tr("Time Remaining");
@@ -385,16 +411,17 @@ void TimerWindow::showSystemTrayIconTimeLeftMessage() {
   if (!(minutesRemaining % clientTimeNotificationFrequency)) {
     trayIcon->showMessage(title, message, QSystemTrayIcon::Information, 1000);
     qApp->processEvents();
-  } else if (minutesRemaining <= clientTimeWarningThreshold && !(minutesRemaining % clientTimeWarningFrequency)) {
+  } else if (minutesRemaining <= clientTimeWarningThreshold &&
+             !(minutesRemaining % clientTimeWarningFrequency)) {
     trayIcon->showMessage(title, message, QSystemTrayIcon::Warning, 1000);
     qApp->processEvents();
   }
 
-  qDebug("LEAVE TimerWindow::showSystemTrayIconTimeLeftMessage");
+  LEAVE_FUNC
 }
 
 void TimerWindow::checkForInactivity() {
-  qDebug("ENTER TimerWindow::checkForInactivity");
+  ENTER_FUNC
 
   // TODO: keep one object level instance of settings for each of TimerWindow
   // and NetworkClient
@@ -407,7 +434,7 @@ void TimerWindow::checkForInactivity() {
   } else if (!settings.value("session/inactivityLogout").toString().isEmpty()) {
     inactivityLogout = settings.value("session/inactivityLogout").toInt();
   }
-  qDebug() << "INACTIVIY LOGOUT: " << inactivityLogout;
+  LOG_SETTING("node/inactivityLogout", QString::number(inactivityLogout));
 
   int inactivityWarning = 5;
   if (!settings.value("node/inactivityWarning").toString().isEmpty()) {
@@ -417,13 +444,10 @@ void TimerWindow::checkForInactivity() {
                   .isEmpty()) {
     inactivityWarning = settings.value("session/inactivityWarning").toInt();
   }
-
-  qDebug() << "INACTIVIY WARNING: " << inactivityWarning;
-
+  LOG_SETTING("node/inactivityWarning", QString::number(inactivityWarning));
 
   if (inactivityLogout > 0) {
-
-    #ifdef Q_OS_WIN
+#ifdef Q_OS_WIN
 
     LASTINPUTINFO lii;
     lii.cbSize = sizeof(lii);
@@ -432,30 +456,30 @@ void TimerWindow::checkForInactivity() {
       DWORD idleMS = GetTickCount() - lii.dwTime;
       secondsSinceLastActivity = idleMS / 1000;
     } else {
-      qWarning() << "GetLastInputInfo failed.";
+      log::warn("GetLastInputInfo failed.");
     }
 
-    #else
-/**
-      QPoint pos = QCursor::pos();
-      int x = pos.x();
-      int y = pos.y();
+#else
+    /**
+          QPoint pos = QCursor::pos();
+          int x = pos.x();
+          int y = pos.y();
 
-      // TODO: Implement ranges to account for mouse wobble?
-      if (prevMousePosX == x && prevMousePosY == y) {
+          // TODO: Implement ranges to account for mouse wobble?
+          if (prevMousePosX == x && prevMousePosY == y) {
 
-        userIdle = true;
+            userIdle = true;
 
-      } else {
+          } else {
 
-        userIdle = false;
+            userIdle = false;
 
-      }
+          }
 
-      prevMousePosX = x;
-      prevMousePosY = y;
-**/
-    #endif
+          prevMousePosX = x;
+          prevMousePosY = y;
+    **/
+#endif
 
     if (secondsSinceLastActivity >= inactivityWarning * 60) {
       QString title = tr("Inactivity detected");
@@ -481,15 +505,15 @@ void TimerWindow::checkForInactivity() {
     if (secondsSinceLastActivity >= inactivityLogout * 60) {
       emit requestLogout();
     }
-
-
   }
 
-  qDebug("LEAVE TimerWindow::checkForInactivity");
+  LEAVE_FUNC
 }
 
 void TimerWindow::showMessage(QString message) {
-  qDebug() << QString("ENTER TimerWindow::showMessage(%1)").arg(message);
+  log::debug(QString("ENTER TimerWindow::showMessage(%1)").arg(message),
+    ENTERFUNC_ID,
+    SData::new_funcframe(__PRETTY_FUNCTION__));
 
   QMessageBox msgBox;
   msgBox.setWindowIcon(libkiIcon);
@@ -500,44 +524,46 @@ void TimerWindow::showMessage(QString message) {
   this->restoreTimerWindow();
   msgBox.exec();
 
-  qDebug() << QString("LEAVE TimerWindow::showMessage(%1)").arg(message);
+  log::debug(QString("LEAVE TimerWindow::showMessage(%1)").arg(message),
+    LEAVEFUNC_ID,
+    SData::new_funcframe(__PRETTY_FUNCTION__));
 }
 
 void TimerWindow::lockSession() {
-  qDebug("ENTER TimerWindow::lockSession()");
+  ENTER_FUNC
 
   QProcess::startDetached("windows/on_startup.exe");
   this->hide();
   timeSplash->hide();
   sessionLockedWindow->show();
 
-  qDebug("LEAVE TimerWindow::lockSession()");
+  LEAVE_FUNC
 }
 
 void TimerWindow::unlockSession() {
-  qDebug("ENTER TimerWindow::unlockSession");
+  ENTER_FUNC
 
   QProcess::startDetached("windows/on_login.exe");
 
   sessionLockedWindow->hide();
   this->show();
 
-  qDebug("LEAVE TimerWindow::unlockSession");
+  LEAVE_FUNC
 }
 
 void TimerWindow::getSettings() {}
 
 void TimerWindow::setAllowClose(bool close) {
-  qDebug("ENTER TimerWindow::setAllowClose");
+  ENTER_FUNC
 
   allowClose = close;
 
-  qDebug("LEAVE TimerWindow::setAllowClose");
+  LEAVE_FUNC
 }
 
 /* Reimplemented closeEvent to prevent application from being closed. */
 void TimerWindow::closeEvent(QCloseEvent *event) {
-  qDebug("ENTER TimerWindow::closeEvent");
+  ENTER_FUNC
 
   if (allowClose) {
     event->accept();
@@ -545,5 +571,5 @@ void TimerWindow::closeEvent(QCloseEvent *event) {
     event->ignore();
   }
 
-  qDebug("LEAVE TimerWindow::closeEvent");
+  LEAVE_FUNC
 }

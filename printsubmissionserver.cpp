@@ -23,118 +23,95 @@
 #include <QDebug>
 #include <QLocalSocket>
 
+#include "log.h"
 #include "printprotocol.h"
 
-PrintSubmissionServer::PrintSubmissionServer(QObject *parent) : QObject(parent) {
-    server = new QLocalServer(this);
+PrintSubmissionServer::PrintSubmissionServer(QObject *parent)
+    : QObject(parent) {
+  server = new QLocalServer(this);
 
-    connect(server,
-            SIGNAL(newConnection()),
-            this,
-            SLOT(newConnection()));
+  connect(server, SIGNAL(newConnection()), this, SLOT(newConnection()));
 }
 
 bool PrintSubmissionServer::start() {
-    QLocalServer::removeServer(LIBKI_PRINT_SERVER_NAME);
+  QLocalServer::removeServer(LIBKI_PRINT_SERVER_NAME);
 
-    if (!server->listen(LIBKI_PRINT_SERVER_NAME)) {
-        qWarning() << "Unable to start PrintSubmissionServer:"
-                   << server->errorString();
-        return false;
-    }
+  if (!server->listen(LIBKI_PRINT_SERVER_NAME)) {
+    log::error(QString("Unable to start PrintSubmissionServer: %1").arg(server->errorString()));
+    return false;
+  }
 
-    qDebug() << "PrintSubmissionServer listening on"
-             << LIBKI_PRINT_SERVER_NAME;
+  log::debug(QString("PrintSubmissionServer listening on %1").arg(LIBKI_PRINT_SERVER_NAME));
 
-    return true;
+  return true;
 }
-void PrintSubmissionServer::newConnection()
-{
+void PrintSubmissionServer::newConnection() {
   while (server->hasPendingConnections()) {
+    QLocalSocket *socket = server->nextPendingConnection();
 
-    QLocalSocket *socket =
-        server->nextPendingConnection();
+    connect(socket, SIGNAL(readyRead()), this, SLOT(socketReadyRead()));
 
-    connect(socket,
-            SIGNAL(readyRead()),
-            this,
-            SLOT(socketReadyRead()));
-
-    connect(socket,
-            SIGNAL(disconnected()),
-            socket,
-            SLOT(deleteLater()));
+    connect(socket, SIGNAL(disconnected()), socket, SLOT(deleteLater()));
   }
 }
 
-void PrintSubmissionServer::socketReadyRead()
-{
-  QLocalSocket *socket =
-      qobject_cast<QLocalSocket *>(sender());
+void PrintSubmissionServer::socketReadyRead() {
+  QLocalSocket *socket = qobject_cast<QLocalSocket *>(sender());
 
-  if (!socket)
-    return;
+  if (!socket) return;
 
   QString error;
 
-  bool finished =
-      processSocket(socket, error);
+  bool finished = processSocket(socket, error);
 
-  if (!error.isEmpty())
-    qWarning() << error;
+  if (!error.isEmpty()) log::warn(error);
 
-  if (finished &&
-      socket->state() == QLocalSocket::ConnectedState)
-  {
+  if (finished && socket->state() == QLocalSocket::ConnectedState) {
     socket->disconnectFromServer();
   }
 }
 
-bool PrintSubmissionServer::processSocket(QLocalSocket *socket, QString &error) {
-    if (!socket)
-      return true;
+bool PrintSubmissionServer::processSocket(QLocalSocket *socket,
+                                          QString &error) {
+  if (!socket) return true;
 
-    if (socket->bytesAvailable() < sizeof(quint32) * 2)
-      return false;
+  if (socket->bytesAvailable() < sizeof(quint32) * 2) return false;
 
-    QDataStream stream(socket);
-    stream.setVersion(QDataStream::Qt_5_5);
+  QDataStream stream(socket);
+  stream.setVersion(QDataStream::Qt_5_5);
 
-    quint32 version;
-    quint32 message;
+  quint32 version;
+  quint32 message;
 
-    stream >> version;
-    stream >> message;
+  stream >> version;
+  stream >> message;
 
-    if (version != LIBKI_PRINT_PROTOCOL_VERSION) {
-      error = tr("Protocol version mismatch.");
+  if (version != LIBKI_PRINT_PROTOCOL_VERSION) {
+    error = tr("Protocol version mismatch.");
+    return true;
+  }
+
+  switch (message) {
+    case PrintMessage_SubmitPrintRequest: {
+      SubmitPrintRequest request;
+
+      stream >> request;
+
+      emit submitPrintRequested(request);
+
+      QDataStream out(socket);
+      out.setVersion(QDataStream::Qt_5_5);
+
+      out << (quint32)LIBKI_PRINT_PROTOCOL_VERSION;
+      out << (quint32)PrintStatus_Ok;
+      out << QString("OK");
+
+      socket->flush();
+      socket->waitForBytesWritten(1000);
+
       return true;
     }
-
-    switch (message) {
-
-      case PrintMessage_SubmitPrintRequest:
-      {
-        SubmitPrintRequest request;
-
-        stream >> request;
-
-        emit submitPrintRequested(request);
-
-        QDataStream out(socket);
-        out.setVersion(QDataStream::Qt_5_5);
-
-        out << (quint32)LIBKI_PRINT_PROTOCOL_VERSION;
-        out << (quint32)PrintStatus_Ok;
-        out << QString("OK");
-
-        socket->flush();
-        socket->waitForBytesWritten(1000);
-
-        return true;
-      }
-    case PrintMessage_GetPrintInfoRequest:
-    {
+    case PrintMessage_GetPrintInfoRequest: {
       PrintInfoRequest request;
 
       stream >> request;
@@ -145,29 +122,27 @@ bool PrintSubmissionServer::processSocket(QLocalSocket *socket, QString &error) 
     }
 
     default:
-        qWarning()
-            << "Unknown IPC message";
-        return true;
-    }
+      log::warn("Unknown IPC message");
+      return true;
+  }
 
-    QDataStream out(socket);
-    out.setVersion(QDataStream::Qt_5_5);
+  QDataStream out(socket);
+  out.setVersion(QDataStream::Qt_5_5);
 
-    out << (quint32)LIBKI_PRINT_PROTOCOL_VERSION;
-    out << (quint32)PrintStatus_Ok;
-    out << QString("OK");
+  out << (quint32)LIBKI_PRINT_PROTOCOL_VERSION;
+  out << (quint32)PrintStatus_Ok;
+  out << QString("OK");
 
-    socket->flush();
-    socket->waitForBytesWritten(1000);
+  socket->flush();
+  socket->waitForBytesWritten(1000);
 
-    socket->disconnectFromServer();
-    return true;
+  socket->disconnectFromServer();
+  return true;
 }
 
-void PrintSubmissionServer::sendPrintInfoReply(QLocalSocket *socket, const PrintInfoReply &reply)
-{
-  if (!socket)
-    return;
+void PrintSubmissionServer::sendPrintInfoReply(QLocalSocket *socket,
+                                               const PrintInfoReply &reply) {
+  if (!socket) return;
 
   QDataStream stream(socket);
 

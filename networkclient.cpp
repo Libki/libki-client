@@ -155,9 +155,8 @@ void NetworkClient::attemptLogin(QString aUsername, QString aPassword,
 
   LOG_SETTING("Login URL", url.toString());
 
-  log::info("Attempting login",
-    LOGIN_ID,
-    SData::new_authrequest(username, "login", url.host()));
+  log::info("Attempting login", LOGIN_ID,
+            SData::new_authrequest(username, "login", url.host()));
 
   QNetworkAccessManager *nam;
   nam = new QNetworkAccessManager(this);
@@ -235,9 +234,8 @@ void NetworkClient::attemptLogout() {
   query.addQueryItem("password", password);
   url.setQuery(query);
 
-  log::info("Attempting logout",
-    LOGOUT_ID,
-    SData::new_authrequest(username, "logout", url.host()));
+  log::info("Attempting logout", LOGOUT_ID,
+            SData::new_authrequest(username, "logout", url.host()));
 
   /*QNetworkReply* reply =*/nam->get(buildRequest(url));
 
@@ -258,11 +256,11 @@ void NetworkClient::processAttemptLogoutReply(QNetworkReply *reply) {
 
   if (sc.property("logged_out").toBoolean() == true) {
     log::info("Logged out successfully.", AUTHRESULT_ID,
-      SData::new_authresult(true, ""));
+              SData::new_authresult(true, ""));
     doLogoutTasks();
   } else {
     log::warn("Logout failed.", AUTHRESULT_ID,
-      SData::new_authresult(false, reply->errorString()));
+              SData::new_authresult(false, reply->errorString()));
     emit logoutFailed();
   }
 
@@ -291,9 +289,8 @@ void NetworkClient::getUserDataUpdate() {
   query.addQueryItem("password", password);
   url.setQuery(query);
 
-  log::debug("Requesting user data",
-    QUERYUSER_ID,
-    SData::new_authrequest(username, "get_user_data", url.host()));
+  log::debug("Requesting user data", QUERYUSER_ID,
+             SData::new_authrequest(username, "get_user_data", url.host()));
 
   /*QNetworkReply* reply =*/nam->get(buildRequest(url));
 
@@ -310,12 +307,12 @@ void NetworkClient::processGetUserDataUpdateReply(QNetworkReply *reply) {
 
   bool success = reply->error() == QNetworkReply::NetworkError::NoError;
 
-  log::debug("Received user data",
-    AUTHRESULT_ID,
-    SData::new_authresult(success, success ? "" : reply->errorString()));
+  log::debug(
+      "Received user data", AUTHRESULT_ID,
+      SData::new_authresult(success, success ? "" : reply->errorString()));
 
   // I've found this one line to be pretty big
-  //qDebug() << "Server Result: " << result;
+  // qDebug() << "Server Result: " << result;
 
   QJsonDocument jd = QJsonDocument::fromJson(result);
 
@@ -459,7 +456,7 @@ void NetworkClient::uploadPrintJob(const SubmitPrintRequest &request) {
   bool renamed = file->rename(request.filename, newAbsoluteFilePath);
   if (!renamed) {
     log::warn(QString("Rename from %1 to %1 failed.")
-      .arg(request.filename, newAbsoluteFilePath));
+                  .arg(request.filename, newAbsoluteFilePath));
   }
 
   QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
@@ -536,31 +533,27 @@ void NetworkClient::uploadPrintJob(const SubmitPrintRequest &request) {
 }
 
 void NetworkClient::handleUploadProgress(qint64 bytesSent, qint64 bytesTotal) {
-  log::debug(QString("Uploaded %1 of %2.")
-    .arg(bytesSent)
-    .arg(bytesTotal));
+  log::debug(QString("Uploaded %1 of %2.").arg(bytesSent).arg(bytesTotal));
 }
 
-// TODO: It would be really neat if we could tie the reply to the original print job.
-// It would make logging the lifecycle of a print a lot easier.
+// TODO: It would be really neat if we could tie the reply to the original print
+// job. It would make logging the lifecycle of a print a lot easier.
 void NetworkClient::uploadPrintJobReply(QNetworkReply *reply) {
   ENTER_FUNC
 
   handleNetworkReplyErrors(reply);
 
   if (reply->error() == QNetworkReply::NoError) {
-    log::info("Print successfully uploaded.",
-      PRINTJOBRESULT_ID,
-      SData::new_serverreply(*reply));
+    log::info("Print successfully uploaded.", PRINTJOBRESULT_ID,
+              SData::new_serverreply(*reply));
 
     reply->abort();
     reply->deleteLater();
     reply->manager()->deleteLater();
   } else {
     log::warn(
-      QString("Print upload failed: %1. Retrying.").arg(reply->errorString()),
-      PRINTJOBRESULT_ID,
-      SData::new_serverreply(*reply));
+        QString("Print upload failed: %1. Retrying.").arg(reply->errorString()),
+        PRINTJOBRESULT_ID, SData::new_serverreply(*reply));
 
     QNetworkRequest request = reply->request();
 
@@ -607,9 +600,8 @@ void NetworkClient::registerNode() {
   url.setQuery(query);
 
   log::info(
-    QString("Registering Node to %1").arg(serviceURL.host()),
-    REGISTERNODE_ID,
-    SData::new_node(serviceURL.host(), nodeName, VERSION, nodeAgeLimit));
+      QString("Registering Node to %1").arg(serviceURL.host()), REGISTERNODE_ID,
+      SData::new_node(serviceURL.host(), nodeName, VERSION, nodeAgeLimit));
 
   /*QNetworkReply* reply =*/nam->get(buildRequest(url));
 
@@ -636,13 +628,11 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
   sc = engine.evaluate("(" + QString(result) + ")");
 
   if (!sc.property("registered").toBoolean()) {
-    log::warn("Node registration failed.",
-      REGISTERNODEREPLY_ID,
-      SData::new_serverreply(*reply));
+    log::warn("Node registration failed.", REGISTERNODEREPLY_ID,
+              SData::new_serverreply(*reply));
   } else {
-    log::info("Node registration successful.",
-      REGISTERNODEREPLY_ID,
-      SData::new_serverreply(*reply));
+    log::info("Node registration successful.", REGISTERNODEREPLY_ID,
+              SData::new_serverreply(*reply));
   }
 
   // session unlocking
@@ -654,16 +644,15 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
   // auto guest creation (formerly 'unlock')
   if (sc.property("autologin").toBoolean()) {
     username = sc.property("username").toString();
-    log::info(
-      QString("Automatically logging in %1 due to server request.").arg(username),
-      NODEUNLOCK_ID);
+    log::info(QString("Automatically logging in %1 due to server request.")
+                  .arg(username),
+              NODEUNLOCK_ID);
     doLoginTasks(sc.property("minutes").toInteger(), 0);
   }
 
   if (sc.property("shutdown").toBoolean()) {
-    log::info("Received shutdown message from server.",
-      NODEPOWER_ID,
-      SData::new_nodepower("shutdown"));
+    log::info("Received shutdown message from server.", NODEPOWER_ID,
+              SData::new_nodepower("shutdown"));
     emit allowClose(true);
 
 #ifdef Q_OS_WIN
@@ -679,9 +668,8 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
   }
 
   if (sc.property("suspend").toBoolean()) {
-    log::info("Received suspend message from server.",
-      NODEPOWER_ID,
-      SData::new_nodepower("suspend"));
+    log::info("Received suspend message from server.", NODEPOWER_ID,
+              SData::new_nodepower("suspend"));
 #ifdef Q_OS_WIN
     QProcess::startDetached("rundll32.exe powrprof.dll,SetSuspendState 0,1,0");
 #endif  // ifdef Q_OS_WIN
@@ -692,9 +680,8 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
   }
 
   if (sc.property("restart").toBoolean()) {
-    log::info("Received restart message from server.",
-      NODEPOWER_ID,
-      SData::new_nodepower("restart"));
+    log::info("Received restart message from server.", NODEPOWER_ID,
+              SData::new_nodepower("restart"));
     emit allowClose(true);
 
 #ifdef Q_OS_WIN
@@ -710,9 +697,8 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
   }
 
   if (sc.property("wakeup").toBoolean()) {
-    log::info("Received wakeup message from server.",
-      NODEPOWER_ID,
-      SData::new_nodepower("wakeup"));
+    log::info("Received wakeup message from server.", NODEPOWER_ID,
+              SData::new_nodepower("wakeup"));
     QStringList MAC_addresses = sc.engine()->fromScriptValue<QStringList>(
         sc.property("wol_mac_addresses"));
     wakeOnLan(MAC_addresses, sc.property("wol_host").toString(),
@@ -720,9 +706,8 @@ void NetworkClient::processRegisterNodeReply(QNetworkReply *reply) {
   }
 
   if (sc.property("drop").toBoolean()) {
-    log::info("Received bypass message from server.",
-      BYPASS_ID,
-      SData::new_bypassattempt("-", "-", true));
+    log::info("Received bypass message from server.", BYPASS_ID,
+              SData::new_bypassattempt("-", "-", true));
 #ifdef Q_OS_WIN
     QProcess::startDetached("c:/windows/explorer.exe");
     QProcess::startDetached("windows/on_login.exe");
@@ -851,10 +836,8 @@ void NetworkClient::checkForInternetConnectivity() {
     // Select a URL from the list at random to test connectivity
     QString url = list.at(qrand() % list.size());
 
-    log::debug(
-      QString("Checking URL: %1").arg(url),
-      CHECKINTERNET_ID,
-      SData::new_checkinternet(url));
+    log::debug(QString("Checking URL: %1").arg(url), CHECKINTERNET_ID,
+               SData::new_checkinternet(url));
 
     QNetworkAccessManager *nam;
     nam = new QNetworkAccessManager(this);
@@ -876,15 +859,12 @@ void NetworkClient::processCheckForInternetConnectivityReply(
   ENTER_FUNC
 
   if (reply->error() != QNetworkReply::NoError) {
-    log::warn(
-      QString("Internet check failed: %1").arg(reply->errorString()),
-      CHECKINTERNETREPLY_ID,
-      SData::new_serverreply(*reply));
+    log::warn(QString("Internet check failed: %1").arg(reply->errorString()),
+              CHECKINTERNETREPLY_ID, SData::new_serverreply(*reply));
     emit internetAccessWarning(reply->errorString());
   } else {
-    log::debug("Internet check succeeded.",
-      CHECKINTERNETREPLY_ID,
-      SData::new_serverreply(*reply));
+    log::debug("Internet check succeeded.", CHECKINTERNETREPLY_ID,
+               SData::new_serverreply(*reply));
     emit internetAccessWarning("");
   }
 
@@ -932,10 +912,8 @@ void NetworkClient::acknowledgeReservation(QString reserved_for) {
   query.addQueryItem("reserved_for", reserved_for);
   url.setQuery(query);
 
-  log::info(
-    QString("Acknowledging reservation for %1.").arg(reserved_for),
-    RESERVATIONACK_ID,
-    SData::new_reservation(reserved_for));
+  log::info(QString("Acknowledging reservation for %1.").arg(reserved_for),
+            RESERVATIONACK_ID, SData::new_reservation(reserved_for));
 
   nam->get(buildRequest(url));
 
@@ -1028,15 +1006,13 @@ void NetworkClient::doLogoutTasks() {
   QProcess::startDetached("windows/on_logout.exe");
 
   if (actionOnLogout == LogoutAction::Logout) {
-    log::info("Logging out due to actionOnLogout.",
-      NODEPOWER_ID,
-      SData::new_nodepower("logout"));
+    log::info("Logging out due to actionOnLogout.", NODEPOWER_ID,
+              SData::new_nodepower("logout"));
     emit allowClose(true);
     QProcess::startDetached("shutdown -l -f");
   } else if (actionOnLogout == LogoutAction::Reboot) {
-    log::info("Restarting due to actionOnLogout.",
-      NODEPOWER_ID,
-      SData::new_nodepower("restart"));
+    log::info("Restarting due to actionOnLogout.", NODEPOWER_ID,
+              SData::new_nodepower("restart"));
     emit allowClose(true);
     QProcess::startDetached("shutdown -r -f -t 0");
   }
@@ -1121,7 +1097,8 @@ QNetworkRequest NetworkClient::buildRequest(const QUrl &url) const {
 void NetworkClient::handleNetworkReplyErrors(QNetworkReply *reply) {
   if (reply->error() != QNetworkReply::NoError) {
     QString e = QString::number(reply->error());
-    log::warn(QString("ERROR: Server Access Warning: %1 :: %2").arg(e, reply->errorString()));
+    log::warn(QString("ERROR: Server Access Warning: %1 :: %2")
+                  .arg(e, reply->errorString()));
 
     QString s = e + ": " + reply->errorString();
     serverAccessWarning(s);
@@ -1176,9 +1153,8 @@ void NetworkClient::processPrintPriceCheckReply() {
   QNetworkReply *networkReply = qobject_cast<QNetworkReply *>(sender());
 
   if (!networkReply) {
-    log::warn("No network reply",
-      QUERYPRINTERRESULT_ID,
-      SData::new_printerresult("no reply"));
+    log::warn("No network reply", QUERYPRINTERRESULT_ID,
+              SData::new_printerresult("no reply"));
     return;
   }
   PendingPrintInfoRequest context = pendingPrintInfoReplies.take(networkReply);
@@ -1188,9 +1164,8 @@ void NetworkClient::processPrintPriceCheckReply() {
   if (networkReply->error() != QNetworkReply::NoError) {
     reply.success = false;
     reply.error = networkReply->errorString();
-    log::warn("Network error",
-      QUERYPRINTERRESULT_ID,
-      SData::new_printerresult(networkReply->errorString()));
+    log::warn("Network error", QUERYPRINTERRESULT_ID,
+              SData::new_printerresult(networkReply->errorString()));
 
     printServer->sendPrintInfoReply(context.socket, reply);
 
@@ -1206,9 +1181,8 @@ void NetworkClient::processPrintPriceCheckReply() {
   if (parseError.error != QJsonParseError::NoError || !doc.isObject()) {
     reply.success = false;
     reply.error = tr("Invalid JSON returned by server.");
-    log::warn("Invalid JSON from server.",
-      QUERYPRINTERRESULT_ID,
-      SData::new_printerresult(parseError.errorString()));
+    log::warn("Invalid JSON from server.", QUERYPRINTERRESULT_ID,
+              SData::new_printerresult(parseError.errorString()));
 
     printServer->sendPrintInfoReply(context.socket, reply);
 
@@ -1249,13 +1223,12 @@ void NetworkClient::processPrintPriceCheckReply() {
       reply.remainingGratisBalance = 0;
     }
   } else {
-    log::warn("Invalid gratis method",
-      QUERYPRINTERRESULT_ID,
-      SData::new_printerresult(reply, "Invalid gratis method"));
+    log::warn("Invalid gratis method", QUERYPRINTERRESULT_ID,
+              SData::new_printerresult(reply, "Invalid gratis method"));
   }
 
   log::info("Printer query success", QUERYPRINTERRESULT_ID,
-    SData::new_printerresult(reply, ""));
+            SData::new_printerresult(reply, ""));
 
   reply.remainingFundsBalance = reply.availableFunds - reply.estimatedCost;
 

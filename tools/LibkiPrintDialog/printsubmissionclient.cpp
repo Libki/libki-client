@@ -23,140 +23,125 @@
 #include <QDebug>
 #include <QLocalSocket>
 
-PrintSubmissionClient::PrintSubmissionClient()
-{
-    socket = new QLocalSocket();
+PrintSubmissionClient::PrintSubmissionClient() { socket = new QLocalSocket(); }
+
+PrintSubmissionClient::~PrintSubmissionClient() {
+  if (socket->state() == QLocalSocket::ConnectedState)
+    socket->disconnectFromServer();
+
+  delete socket;
 }
 
-PrintSubmissionClient::~PrintSubmissionClient()
-{
-    if (socket->state() == QLocalSocket::ConnectedState)
-        socket->disconnectFromServer();
+bool PrintSubmissionClient::connectToServer(int timeout) {
+  errorString.clear();
 
-    delete socket;
+  if (socket->state() == QLocalSocket::ConnectedState) return true;
+
+  socket->connectToServer(LIBKI_PRINT_SERVER_NAME);
+
+  if (!socket->waitForConnected(timeout)) {
+    errorString = socket->errorString();
+    return false;
+  }
+
+  return true;
 }
 
-bool PrintSubmissionClient::connectToServer(int timeout)
-{
-    errorString.clear();
+bool PrintSubmissionClient::submitPrint(const SubmitPrintRequest &request) {
+  if (!connectToServer()) return false;
 
-    if (socket->state() == QLocalSocket::ConnectedState)
-        return true;
+  QDataStream out(socket);
+  out.setVersion(QDataStream::Qt_5_5);
 
-    socket->connectToServer(LIBKI_PRINT_SERVER_NAME);
+  out << (quint32)LIBKI_PRINT_PROTOCOL_VERSION;
+  out << (quint32)PrintMessage_SubmitPrintRequest;
+  out << request;
 
-    if (!socket->waitForConnected(timeout)) {
-        errorString = socket->errorString();
-        return false;
-    }
+  socket->flush();
 
-    return true;
+  return waitForReply();
 }
 
-bool PrintSubmissionClient::submitPrint(const SubmitPrintRequest &request)
-{
-    if (!connectToServer())
-        return false;
+bool PrintSubmissionClient::getPrintInfo(const PrintInfoRequest &request,
+                                         PrintInfoReply &reply) {
+  if (!connectToServer()) return false;
 
-    QDataStream out(socket);
-    out.setVersion(QDataStream::Qt_5_5);
+  QDataStream out(socket);
+  out.setVersion(QDataStream::Qt_5_5);
 
-    out << (quint32)LIBKI_PRINT_PROTOCOL_VERSION;
-    out << (quint32)PrintMessage_SubmitPrintRequest;
-    out << request;
+  out << (quint32)LIBKI_PRINT_PROTOCOL_VERSION;
+  out << (quint32)PrintMessage_GetPrintInfoRequest;
+  out << request;
 
-    socket->flush();
+  socket->flush();
 
-    return waitForReply();
+  if (!socket->waitForReadyRead(3000)) {
+    errorString = socket->errorString();
+
+    //
+    // Don't immediately fail if the server closed the
+    // connection after writing.
+    //
+    if (socket->bytesAvailable() == 0) return false;
+  }
+
+  QDataStream in(socket);
+  in.setVersion(QDataStream::Qt_5_5);
+
+  quint32 version;
+  quint32 message;
+
+  in >> version;
+  in >> message;
+
+  if (version != LIBKI_PRINT_PROTOCOL_VERSION) {
+    errorString = "Protocol version mismatch.";
+    return false;
+  }
+
+  if (message != PrintMessage_GetPrintInfoReply) {
+    errorString = "Unexpected reply from server.";
+    return false;
+  }
+
+  in >> reply;
+
+  if (!reply.success) {
+    errorString = reply.error;
+    return false;
+  }
+
+  return true;
 }
 
-bool PrintSubmissionClient::getPrintInfo(const PrintInfoRequest &request, PrintInfoReply &reply)
-{
-    if (!connectToServer())
-        return false;
+bool PrintSubmissionClient::waitForReply() {
+  if (!socket->waitForReadyRead(3000)) {
+    errorString = socket->errorString();
+    return false;
+  }
 
-    QDataStream out(socket);
-    out.setVersion(QDataStream::Qt_5_5);
+  QDataStream in(socket);
+  in.setVersion(QDataStream::Qt_5_5);
 
-    out << (quint32)LIBKI_PRINT_PROTOCOL_VERSION;
-    out << (quint32)PrintMessage_GetPrintInfoRequest;
-    out << request;
+  quint32 version;
+  quint32 status;
+  QString message;
 
-    socket->flush();
+  in >> version;
+  in >> status;
+  in >> message;
 
-        if (!socket->waitForReadyRead(3000)) {
-        errorString = socket->errorString();
+  if (version != LIBKI_PRINT_PROTOCOL_VERSION) {
+    errorString = "Protocol version mismatch.";
+    return false;
+  }
 
-        //
-        // Don't immediately fail if the server closed the
-        // connection after writing.
-        //
-        if (socket->bytesAvailable() == 0)
-            return false;
-    }
+  if (status != 0) {
+    errorString = message;
+    return false;
+  }
 
-    QDataStream in(socket);
-    in.setVersion(QDataStream::Qt_5_5);
-
-    quint32 version;
-    quint32 message;
-
-    in >> version;
-    in >> message;
-
-    if (version != LIBKI_PRINT_PROTOCOL_VERSION) {
-        errorString = "Protocol version mismatch.";
-        return false;
-    }
-
-    if (message != PrintMessage_GetPrintInfoReply) {
-        errorString = "Unexpected reply from server.";
-        return false;
-    }
-
-    in >> reply;
-
-    if (!reply.success) {
-        errorString = reply.error;
-        return false;
-    }
-
-    return true;
+  return true;
 }
 
-
-bool PrintSubmissionClient::waitForReply()
-{
-    if (!socket->waitForReadyRead(3000)) {
-        errorString = socket->errorString();
-        return false;
-    }
-
-    QDataStream in(socket);
-    in.setVersion(QDataStream::Qt_5_5);
-
-    quint32 version;
-    quint32 status;
-    QString message;
-
-    in >> version;
-    in >> status;
-    in >> message;
-
-    if (version != LIBKI_PRINT_PROTOCOL_VERSION) {
-        errorString = "Protocol version mismatch.";
-        return false;
-    }
-
-    if (status != 0) {
-        errorString = message;
-        return false;
-    }
-
-    return true;
-}
-
-QString PrintSubmissionClient::lastError() const
-{
-    return errorString;
-}
+QString PrintSubmissionClient::lastError() const { return errorString; }

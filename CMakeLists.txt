@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 4.2)
-project (libki-client)
+project(libki-client)
 set(CAME_CXX_STANDARD 03)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 

@@ -21,12 +21,14 @@
 
 #include <QDebug>
 #include <QLocale>
-#include <QtNetwork/QHostInfo>
 #include <QNetworkInterface>
 #include <QSettings>
+#include <QtNetwork/QHostInfo>
+
+#include "log.h"
 
 QString getLabel(QString labelcode) {
-  qDebug("ENTER utils/getLabel");
+  ENTER_FUNC
 
   QSettings settings;
   settings.setIniCodec("UTF-8");
@@ -51,57 +53,55 @@ QString getLabel(QString labelcode) {
     label = settings.value("labels/" + labelcode).toString();
   }
 
-  qDebug("LEAVE utils/getLabel");
+  LEAVE_FUNC
   return label;
 }
 
 QString clientName = "";
 QString getClientName() {
-    qDebug("ENTER utils/getClientName");
+  ENTER_FUNC
 
-    if ( clientName.length() == 0 ) {
-        QSettings settings;
-        settings.setIniCodec("UTF-8");
+  if (clientName.length() == 0) {
+    QSettings settings;
+    settings.setIniCodec("UTF-8");
 
-
-        QString os_username;
+    QString os_username;
 #ifdef Q_OS_WIN
-        os_username = getenv("USERNAME");
+    os_username = getenv("USERNAME");
 #endif  // ifdef Q_OS_WIN
 #ifdef Q_OS_UNIX
-        os_username = getenv("USER");
+    os_username = getenv("USER");
 #endif  // ifdef Q_OS_UNIX
 
-        clientName = settings.value("node/name").toString();
+    clientName = settings.value("node/name").toString();
+    LOG_SETTING("Username", os_username);
+    LOG_SETTING("node/name", clientName);
 
-        qDebug() << "OS USERNAME: " << os_username;
-        qDebug() << "CONFIG NODE NAME: " << clientName;
-
-        if (clientName == "OS_USERNAME") {
-          clientName = os_username;
-        }
-
-        // Fail over to hostname if node name isn't defined.
-        if (clientName.isEmpty()) {
-          QHostInfo hostInfo;
-          hostInfo = QHostInfo::fromName(QHostInfo::localHostName());
-          clientName = QHostInfo::localHostName();
-        }
-        qDebug() << "NODE NAME: " << clientName;
+    if (clientName == "OS_USERNAME") {
+      clientName = os_username;
     }
 
-    qDebug("LEAVE utils/getClientName");
-    return clientName;
+    // Fail over to hostname if node name isn't defined.
+    if (clientName.isEmpty()) {
+      QHostInfo hostInfo;
+      hostInfo = QHostInfo::fromName(QHostInfo::localHostName());
+      clientName = QHostInfo::localHostName();
+    }
+    LOG_SETTING("Node name", clientName);
+  }
+
+  LEAVE_FUNC
+  return clientName;
 }
 
 QNetworkInterface getNetworkInterface() {
   QNetworkInterface netInterface;
 
-  foreach(QNetworkInterface ni, QNetworkInterface::allInterfaces()) {
+  foreach (QNetworkInterface ni, QNetworkInterface::allInterfaces()) {
     // Get the first non-loopback MAC Address which is up & running
-    if (ni.isValid() && !(ni.flags() & QNetworkInterface::IsLoopBack)
-            && ni.flags() & QNetworkInterface::IsRunning) {
-        netInterface = ni;
+    if (ni.isValid() && !(ni.flags() & QNetworkInterface::IsLoopBack) &&
+        ni.flags() & QNetworkInterface::IsRunning) {
+      netInterface = ni;
     }
   }
 
@@ -110,53 +110,50 @@ QNetworkInterface getNetworkInterface() {
 
 QString IPv4Address = "";
 QString getIPv4Address() {
-  qDebug("ENTER utils/getIPv4Address");
+  ENTER_FUNC
 
-  if ( IPv4Address.length() == 0 ) {
-      QNetworkInterface netInterface = getNetworkInterface();
-      if ( netInterface.isValid() ) {
-          foreach(QNetworkAddressEntry addressEntry, netInterface.addressEntries()) {
-             if ( addressEntry.ip().protocol() == QAbstractSocket::IPv4Protocol) {
-                 IPv4Address = addressEntry.ip().toString();
-             }
-          }
+  if (IPv4Address.length() == 0) {
+    QNetworkInterface netInterface = getNetworkInterface();
+    if (netInterface.isValid()) {
+      foreach (QNetworkAddressEntry addressEntry,
+               netInterface.addressEntries()) {
+        if (addressEntry.ip().protocol() == QAbstractSocket::IPv4Protocol) {
+          IPv4Address = addressEntry.ip().toString();
+        }
       }
+    }
   }
-  qDebug() << "IPv4 Address: " << IPv4Address;
+  LOG_SETTING("IPv4 Address", IPv4Address);
 
-  qDebug("LEAVE utils/getIPv4Address");
+  LEAVE_FUNC
   return IPv4Address;
 }
 
 QString MACAddress = "";
 QString getMACAddress() {
+  ENTER_FUNC
 
-  qDebug("ENTER utils/getMACAddress");
-
-  if ( MACAddress.length() == 0 ) {
-      QNetworkInterface netInterface = getNetworkInterface();
-      if ( netInterface.isValid() ) {
-          MACAddress = netInterface.hardwareAddress();
-      }
+  if (MACAddress.length() == 0) {
+    QNetworkInterface netInterface = getNetworkInterface();
+    if (netInterface.isValid()) {
+      MACAddress = netInterface.hardwareAddress();
+    }
   }
-  qDebug() << "MAC Address: " << MACAddress;
+  LOG_SETTING("MAC Address", MACAddress);
 
-  qDebug("LEAVE utils/getMACAddress");
+  LEAVE_FUNC
   return MACAddress;
-
 }
 
 QString hostname = "";
 QString getHostname() {
+  ENTER_FUNC
 
-  qDebug("ENTER utils/getHostname");
+  if (hostname.length() == 0) {
+    hostname = QHostInfo::localHostName();
+  }
+  LOG_SETTING("Hostname", hostname);
 
-  if ( hostname.length() == 0 ) {
-        hostname = QHostInfo::localHostName();
-    }
-  qDebug() << "Hostname: " << hostname;
-
-  qDebug("LEAVE utils/getHostname");
+  LEAVE_FUNC
   return hostname;
-
 }

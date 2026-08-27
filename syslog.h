@@ -30,7 +30,7 @@ typedef enum Severity {
 Facility QStringToFacility(QString& facility_str);
 
 class Syslog : public QObject {
-    Q_OBJECT
+  Q_OBJECT
  private:
   Facility facility;
   QString hostname;
@@ -41,7 +41,8 @@ class Syslog : public QObject {
   quint16 port;
 
  public:
-  Syslog(QString server, quint16 port, Facility facility, QString hostname, QString appname, int procid);
+  Syslog(QString server, quint16 port, Facility facility, QString hostname,
+         QString appname, int procid);
   bool sendSyslog(Severity severity, QString message);
 };
 

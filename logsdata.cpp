@@ -3,9 +3,7 @@
 //
 
 #include "logsdata.h"
-SData::SData(const QString& sdid) {
-  this->m_sdid = sdid;
-}
+SData::SData(const QString& sdid) { this->m_sdid = sdid; }
 
 SData SData::new_nil() {
   SData sdata("Nil@32473");
@@ -102,7 +100,8 @@ SData SData::new_serverreply(const QNetworkReply& reply) {
 
   // Since we got here, we should have an HTTP status code, but if that's not
   // OK then we should fill the message with the HTTP error code
-  int status_code = reply.attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+  int status_code =
+      reply.attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
   sdata.add_sdparam("statusCode", QString(status_code));
   if (status_code != 200) {
     sdata.add_sdparam("message", reply.errorString());
@@ -149,7 +148,8 @@ SData SData::new_printerresult(const PrintInfoReply& reply,
   sdata.add_sdparam("currency", reply.currency);
   sdata.add_sdparam("costPerPage", QString::number(reply.costPerPage, 'f', 2));
   sdata.add_sdparam("funds", QString::number(reply.availableFunds, 'f', 2));
-  sdata.add_sdparam("gratisBalance", QString::number(reply.availableGratis, 'f', 2));
+  sdata.add_sdparam("gratisBalance",
+                    QString::number(reply.availableGratis, 'f', 2));
   sdata.add_sdparam("gratisMethod", reply.gratisMethod);
   sdata.add_sdparam("error", error);
   return sdata;
@@ -182,7 +182,7 @@ QString SData::serialize_sdata() const {
   QString sdata = QString("[%1").arg(m_sdid);
 
   for (QMap<QString, QString>::const_iterator i = m_sdata.constBegin();
-    i != m_sdata.constEnd(); ++i) {
+       i != m_sdata.constEnd(); ++i) {
     sdata = QString("%1 %2=\"%3\"").arg(sdata, i.key(), i.value());
   }
 
@@ -190,5 +190,3 @@ QString SData::serialize_sdata() const {
 
   return sdata;
 }
-
-

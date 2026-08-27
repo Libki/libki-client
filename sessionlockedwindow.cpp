@@ -3,12 +3,13 @@
 #include <QCryptographicHash>
 #include <QMessageBox>
 
+#include "log.h"
 #include "utils.h"
 
 SessionLockedWindow::SessionLockedWindow(QWidget *parent, QString userUsername,
                                          QString userPassword)
     : QMainWindow(parent) {
-  qDebug("ENTER SessionLockedWindow::SessionLockedWindow");
+  ENTER_FUNC
 
   username = userUsername;
   password = userPassword;
@@ -46,25 +47,25 @@ SessionLockedWindow::SessionLockedWindow(QWidget *parent, QString userUsername,
   this->showMaximized();
   this->showFullScreen();
 
-  this->raise();  // for MacOS
-  this->activateWindow(); // for Windows
+  this->raise();           // for MacOS
+  this->activateWindow();  // for Windows
 
-  qDebug("LEAVE SessionLockedWindow::SessionLockedWindow");
+  LEAVE_FUNC
 }
 
 SessionLockedWindow::~SessionLockedWindow() {}
 
 void SessionLockedWindow::setAllowClose(bool close) {
-  qDebug("ENTER SessionLockedWindow::setAllowClose");
+  ENTER_FUNC
 
   allowClose = close;
 
-  qDebug("LEAVE SessionLockedWindow::setAllowClose");
+  LEAVE_FUNC
 }
 
 /* Reimplemented closeEvent to prevent application from being closed. */
 void SessionLockedWindow::closeEvent(QCloseEvent *event) {
-  qDebug("ENTER SessionLockedWindow::closeEvent");
+  ENTER_FUNC
 
   if (allowClose) {
     event->accept();
@@ -72,11 +73,11 @@ void SessionLockedWindow::closeEvent(QCloseEvent *event) {
     event->ignore();
   }
 
-  qDebug("LEAVE SessionLockedWindow::closeEvent");
+  LEAVE_FUNC
 }
 
 void SessionLockedWindow::getSettings() {
-  qDebug("ENTER SessionLockedWindow::getSettings");
+  ENTER_FUNC
 
   /* Set Labels */
   QSettings settings;
@@ -94,7 +95,7 @@ void SessionLockedWindow::getSettings() {
     palette.setBrush(QPalette::Base, Qt::transparent);
 
     QString logoUrl = settings.value("images/logo").toString();
-    qDebug() << "Logo URL: " << logoUrl;
+    LOG_SETTING("images/logo", logoUrl);
 
     if (!logoUrl.isEmpty()) {
       int logoWidth = settings.value("images/logo_width").toInt();
@@ -114,11 +115,11 @@ void SessionLockedWindow::getSettings() {
     logoWebView->hide();
   }
 
-  qDebug("LEAVE SessionLockedWindow::getSettings");
+  LEAVE_FUNC
 }
 
 void SessionLockedWindow::attemptUnlock() {
-  qDebug("ENTER SessionLockedWindow::attemptUnlock");
+  ENTER_FUNC
 
   QString passwordEntered = passwordField->text();
 
@@ -130,16 +131,16 @@ void SessionLockedWindow::attemptUnlock() {
     passwordField->clear();
   }
 
-  qDebug("LEAVE SessionLockedWindow::attemptUnlock");
+  LEAVE_FUNC
 }
 
 void SessionLockedWindow::setupActions() {
-  qDebug("ENTER SessionLockedWindow::setupActions");
+  ENTER_FUNC
 
   connect(resumeButton, SIGNAL(clicked()), this, SLOT(attemptUnlock()));
 
   //  connect(cancelButton, SIGNAL(clicked()),
   //          this, SLOT(resetSessionLockedScreen()));
 
-  qDebug("LEAVE SessionLockedWindow::setupActions");
+  LEAVE_FUNC
 }

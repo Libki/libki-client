@@ -7,8 +7,6 @@
 namespace log {
 
 void log(Severity severity, const QString& msgid, const SData& sdata,
-  const QString& message) {
+         const QString& message) {}
 
-}
-
-} // log
+}  // namespace log
