@@ -37,11 +37,13 @@ bool PrintSubmissionServer::start() {
   QLocalServer::removeServer(LIBKI_PRINT_SERVER_NAME);
 
   if (!server->listen(LIBKI_PRINT_SERVER_NAME)) {
-    log::error(QString("Unable to start PrintSubmissionServer: %1").arg(server->errorString()));
+    log::error(QString("Unable to start PrintSubmissionServer: %1")
+                   .arg(server->errorString()));
     return false;
   }
 
-  log::debug(QString("PrintSubmissionServer listening on %1").arg(LIBKI_PRINT_SERVER_NAME));
+  log::debug(QString("PrintSubmissionServer listening on %1")
+                 .arg(LIBKI_PRINT_SERVER_NAME));
 
   return true;
 }

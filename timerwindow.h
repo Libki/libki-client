@@ -30,8 +30,8 @@
 
 #include "networkclient.h"
 #include "sessionlockedwindow.h"
-#include "ui_timerwindow.h"
 #include "timesplash.h"
+#include "ui_timerwindow.h"
 
 class TimerWindow : public QMainWindow, public Ui::TimerWindow {
   Q_OBJECT
@@ -83,11 +83,11 @@ class TimerWindow : public QMainWindow, public Ui::TimerWindow {
   int minutesRemaining;
   int minutesAtStart;
 
-  #ifdef Q_OS_WIN
-    DWORD lastInputTick;
-    DWORD systemTickRangeStart;
-    DWORD systemTickRangeEnd;
-  #endif
+#ifdef Q_OS_WIN
+  DWORD lastInputTick;
+  DWORD systemTickRangeStart;
+  DWORD systemTickRangeEnd;
+#endif
 
   bool userIdle;
   int secondsSinceLastActivity;

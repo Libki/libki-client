@@ -17,66 +17,54 @@
  * along with Libki. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #include <QApplication>
+#include <QDebug>
 #include <QMessageBox>
 #include <QStringList>
-#include <QDebug>
 
 #include "printdialog.h"
 #include "printsubmissionclient.h"
 
-static void usage(const QString &program)
-{
-    qCritical()
-        << "Usage:"
-        << program
-        << "<printer> <copies> <pages> <filename>";
+static void usage(const QString &program) {
+  qCritical() << "Usage:" << program << "<printer> <copies> <pages> <filename>";
 }
 
 int main(int argc, char *argv[]) {
-    QApplication app(argc, argv);
+  QApplication app(argc, argv);
 
-    SubmitPrintRequest request;
-    QString error;
+  SubmitPrintRequest request;
+  QString error;
 
-    if (!SubmitPrintRequest::fromArguments(app.arguments(), request, error)) {
-        QMessageBox::critical(
-            nullptr,
-            QObject::tr("Invalid Arguments"),
-            error);
-        return 1;
-    }
+  if (!SubmitPrintRequest::fromArguments(app.arguments(), request, error)) {
+    QMessageBox::critical(nullptr, QObject::tr("Invalid Arguments"), error);
+    return 1;
+  }
 
-    PrintSubmissionClient client;
+  PrintSubmissionClient client;
 
-    PrintInfoRequest infoRequest;
-    infoRequest.printer = request.printer;
-    infoRequest.pageCount = request.pageCount;
-    infoRequest.copies = request.copies;
+  PrintInfoRequest infoRequest;
+  infoRequest.printer = request.printer;
+  infoRequest.pageCount = request.pageCount;
+  infoRequest.copies = request.copies;
 
-    PrintInfoReply info;
+  PrintInfoReply info;
 
-    if (!client.getPrintInfo(infoRequest, info)) {
-        QMessageBox::critical(
-            nullptr,
-            QObject::tr("Unable to retrieve print pricing"),
-            client.lastError());
-        return 1;
-    }
+  if (!client.getPrintInfo(infoRequest, info)) {
+    QMessageBox::critical(nullptr,
+                          QObject::tr("Unable to retrieve print pricing"),
+                          client.lastError());
+    return 1;
+  }
 
-    PrintDialog dialog(request, info);
+  PrintDialog dialog(request, info);
 
-    if (dialog.exec() != QDialog::Accepted)
-        return 0;
+  if (dialog.exec() != QDialog::Accepted) return 0;
 
-    if (!client.submitPrint(request)) {
-        QMessageBox::critical(
-            nullptr,
-            QObject::tr("Print Failed"),
-            client.lastError());
-        return 1;
-    }
+  if (!client.submitPrint(request)) {
+    QMessageBox::critical(nullptr, QObject::tr("Print Failed"),
+                          client.lastError());
+    return 1;
+  }
 
-    return 0;
+  return 0;
 }

@@ -20,8 +20,9 @@
 #ifndef PRINTSUBMISSIONSERVER_H
 #define PRINTSUBMISSIONSERVER_H
 
-#include <QObject>
 #include <QLocalServer>
+#include <QObject>
+
 #include "printprotocol.h"
 
 class QLocalSocket;
@@ -29,23 +30,23 @@ class QLocalSocket;
 class PrintSubmissionServer : public QObject {
   Q_OBJECT
 
-  public:
-    explicit PrintSubmissionServer(QObject *parent = 0);
-    bool start();
-    void sendPrintInfoReply(QLocalSocket *socket, const PrintInfoReply &reply);
+ public:
+  explicit PrintSubmissionServer(QObject *parent = 0);
+  bool start();
+  void sendPrintInfoReply(QLocalSocket *socket, const PrintInfoReply &reply);
 
-  signals:
-    void submitPrintRequested(const SubmitPrintRequest &request);
-   void printInfoRequested(PrintInfoRequest request, QLocalSocket *socket);
+ signals:
+  void submitPrintRequested(const SubmitPrintRequest &request);
+  void printInfoRequested(PrintInfoRequest request, QLocalSocket *socket);
 
-   private slots:
-    void newConnection();
-    void socketReadyRead();
+ private slots:
+  void newConnection();
+  void socketReadyRead();
 
-  private:
-    bool processSocket(QLocalSocket *socket, QString &errorMessage);
+ private:
+  bool processSocket(QLocalSocket *socket, QString &errorMessage);
 
-    QLocalServer *server;
+  QLocalServer *server;
 };
 
 #endif

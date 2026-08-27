@@ -17,7 +17,6 @@
  * along with Libki. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #ifndef PRINTDIALOG_H
 #define PRINTDIALOG_H
 
@@ -31,38 +30,38 @@ class QSpinBox;
 class QPushButton;
 class QDialogButtonBox;
 
-class PrintDialog : public QDialog
-{
-    Q_OBJECT
+class PrintDialog : public QDialog {
+  Q_OBJECT
 
-public:
-    explicit PrintDialog(SubmitPrintRequest &request, PrintInfoReply &info, QWidget *parent = 0);
+ public:
+  explicit PrintDialog(SubmitPrintRequest &request, PrintInfoReply &info,
+                       QWidget *parent = 0);
 
-private slots:
-    void accept();
-    void updateTotals();
+ private slots:
+  void accept();
+  void updateTotals();
 
-private:
-    SubmitPrintRequest &request;
-    PrintInfoReply &info;
+ private:
+  SubmitPrintRequest &request;
+  PrintInfoReply &info;
 
-    QString money(double value) const;
+  QString money(double value) const;
 
-    QLabel *documentValue;
-    QLabel *pagesValue;
-    QLabel *costPerPageValue;
-    QLabel *estimatedCostValue;
-    QLabel *availableFundsValue;
-    QLabel *availableGratisValue;
-    QLabel *remainingFundsValue;
-    QLabel *remainingGratisValue;
-    QLabel *statusLabel;
-    QLabel *gratisLabel;
+  QLabel *documentValue;
+  QLabel *pagesValue;
+  QLabel *costPerPageValue;
+  QLabel *estimatedCostValue;
+  QLabel *availableFundsValue;
+  QLabel *availableGratisValue;
+  QLabel *remainingFundsValue;
+  QLabel *remainingGratisValue;
+  QLabel *statusLabel;
+  QLabel *gratisLabel;
 
-    QComboBox *printerCombo;
-    QSpinBox *copiesSpin;
+  QComboBox *printerCombo;
+  QSpinBox *copiesSpin;
 
-    QDialogButtonBox *buttonBox;
+  QDialogButtonBox *buttonBox;
 };
 
-#endif // PRINTDIALOG_H
+#endif  // PRINTDIALOG_H

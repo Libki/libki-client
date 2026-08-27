@@ -36,17 +36,16 @@
 #define QUERYPRINTER_ID "QUERYPRINTER"
 #define QUERYPRINTERRESULT_ID "QUERYPRINTERRESULT"
 
-#define ENTER_FUNC log::debug(QString("ENTER %1").arg(__PRETTY_FUNCTION__), \
-  ENTERFUNC_ID, \
-  SData::new_funcframe(__PRETTY_FUNCTION__));
+#define ENTER_FUNC                                                       \
+  log::debug(QString("ENTER %1").arg(__PRETTY_FUNCTION__), ENTERFUNC_ID, \
+             SData::new_funcframe(__PRETTY_FUNCTION__));
 
-#define LEAVE_FUNC log::debug(QString("LEAVE %1").arg(__PRETTY_FUNCTION__), \
-  LEAVEFUNC_ID, \
-  SData::new_funcframe(__PRETTY_FUNCTION__));
+#define LEAVE_FUNC                                                       \
+  log::debug(QString("LEAVE %1").arg(__PRETTY_FUNCTION__), LEAVEFUNC_ID, \
+             SData::new_funcframe(__PRETTY_FUNCTION__));
 
-#define LOG_SETTING(key, value) log::debug("", \
-  SETTING_ID, \
-  SData::new_settingvalue((key), (value)))
+#define LOG_SETTING(key, value) \
+  log::debug("", SETTING_ID, SData::new_settingvalue((key), (value)))
 
 namespace log {
 
@@ -62,53 +61,46 @@ typedef enum Severity {
 } Severity;
 
 void log(Severity severity, const QString& msgid, const SData& sdata,
-  const QString& message);
+         const QString& message);
 
-inline void debug(const QString& message = "",
-  const QString& msgid = NIL_ID,
-  const SData& sdata = SData::new_nil()) {
+inline void debug(const QString& message = "", const QString& msgid = NIL_ID,
+                  const SData& sdata = SData::new_nil()) {
   log(Debug, msgid, sdata, message);
 }
 
-inline void info(const QString& message = "",
-  const QString& msgid = NIL_ID,
-  const SData& sdata = SData::new_nil()) {
+inline void info(const QString& message = "", const QString& msgid = NIL_ID,
+                 const SData& sdata = SData::new_nil()) {
   log(Informational, msgid, sdata, message);
 }
 
-inline void notice(const QString& message = "",
-  const QString& msgid = NIL_ID,
-  const SData& sdata = SData::new_nil()) {
+inline void notice(const QString& message = "", const QString& msgid = NIL_ID,
+                   const SData& sdata = SData::new_nil()) {
   log(Notice, msgid, sdata, message);
 }
 
-inline void warn(const QString& message = "",
-  const QString& msgid = NIL_ID,
-  const SData& sdata = SData::new_nil()) {
+inline void warn(const QString& message = "", const QString& msgid = NIL_ID,
+                 const SData& sdata = SData::new_nil()) {
   log(Warning, msgid, sdata, message);
 }
 
-inline void error(const QString& message = "",
-  const QString& msgid = NIL_ID,
-  const SData& sdata = SData::new_nil()) {
+inline void error(const QString& message = "", const QString& msgid = NIL_ID,
+                  const SData& sdata = SData::new_nil()) {
   log(Error, msgid, sdata, message);
 }
 
-inline void critical(const QString& message = "",
-  const QString& msgid = NIL_ID,
-  const SData& sdata = SData::new_nil()) {
+inline void critical(const QString& message = "", const QString& msgid = NIL_ID,
+                     const SData& sdata = SData::new_nil()) {
   log(Critical, msgid, sdata, message);
 }
 
-inline void alert(const QString& message,
-  const QString& msgid = NIL_ID,
-  const SData& sdata = SData::new_nil()) {
+inline void alert(const QString& message, const QString& msgid = NIL_ID,
+                  const SData& sdata = SData::new_nil()) {
   log(Alert, msgid, sdata, message);
 }
 
 inline void emergency(const QString& message = "",
-  const QString& msgid = NIL_ID,
-  const SData& sdata = SData::new_nil()) {
+                      const QString& msgid = NIL_ID,
+                      const SData& sdata = SData::new_nil()) {
   log(Emergency, msgid, sdata, message);
 }
 

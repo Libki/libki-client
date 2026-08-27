@@ -12,17 +12,11 @@
 
 namespace LogUtils {
 
-enum LogLevel {
-  DebugLevel,
-  WarningLevel,
-  ErrorLevel,
-  OffLevel
-};
+enum LogLevel { DebugLevel, WarningLevel, ErrorLevel, OffLevel };
 
 bool initLogging();
 
-void myMessageHandler(QtMsgType type,
-                      const QMessageLogContext &context,
+void myMessageHandler(QtMsgType type, const QMessageLogContext &context,
                       const QString &msg);
 
 LogLevel logLevel();

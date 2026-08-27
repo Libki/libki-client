@@ -245,8 +245,7 @@ void TimerWindow::updateClock() {
 
 void TimerWindow::updateTimeLeft(int minutes) {
   log::debug(QString("ENTER TimerWindow::updateTimeLeft(%1)").arg(minutes),
-    ENTERFUNC_ID,
-    SData::new_funcframe(__PRETTY_FUNCTION__));
+             ENTERFUNC_ID, SData::new_funcframe(__PRETTY_FUNCTION__));
 
   minutesRemaining = minutes;
   updateClock();
@@ -256,8 +255,7 @@ void TimerWindow::updateTimeLeft(int minutes) {
   }
 
   log::debug(QString("LEAVE TimerWindow::updateTimeLeft(%1)").arg(minutes),
-    LEAVEFUNC_ID,
-    SData::new_funcframe(__PRETTY_FUNCTION__));
+             LEAVEFUNC_ID, SData::new_funcframe(__PRETTY_FUNCTION__));
 }
 
 void TimerWindow::doLogoutDialog() {
@@ -512,8 +510,7 @@ void TimerWindow::checkForInactivity() {
 
 void TimerWindow::showMessage(QString message) {
   log::debug(QString("ENTER TimerWindow::showMessage(%1)").arg(message),
-    ENTERFUNC_ID,
-    SData::new_funcframe(__PRETTY_FUNCTION__));
+             ENTERFUNC_ID, SData::new_funcframe(__PRETTY_FUNCTION__));
 
   QMessageBox msgBox;
   msgBox.setWindowIcon(libkiIcon);
@@ -525,8 +522,7 @@ void TimerWindow::showMessage(QString message) {
   msgBox.exec();
 
   log::debug(QString("LEAVE TimerWindow::showMessage(%1)").arg(message),
-    LEAVEFUNC_ID,
-    SData::new_funcframe(__PRETTY_FUNCTION__));
+             LEAVEFUNC_ID, SData::new_funcframe(__PRETTY_FUNCTION__));
 }
 
 void TimerWindow::lockSession() {

@@ -32,11 +32,12 @@
 #include <QUrl>
 #include <QUrlQuery>
 #include <QtNetwork/QNetworkAccessManager>
+#include <QtNetwork/QNetworkInterface>
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QNetworkRequest>
-#include <QtNetwork/QNetworkInterface>
 #include <QtScript/QScriptEngine>
 #include <QtScript/QScriptValue>
+
 #include "printprotocol.h"
 
 class PrintSubmissionServer;
@@ -102,7 +103,7 @@ class NetworkClient : public QObject {
   void handleNetworkReplyErrors(QNetworkReply *reply);
 
   void handlePrintRequest(const SubmitPrintRequest &request);
-  void uploadPrintJob( const SubmitPrintRequest &request);
+  void uploadPrintJob(const SubmitPrintRequest &request);
 
   void handlePrintInfoRequest(PrintInfoRequest request, QLocalSocket *socket);
   void processPrintPriceCheckReply();
@@ -147,8 +148,7 @@ class NetworkClient : public QObject {
 
   void wakeOnLan(QStringList MAC_addresses, QString host, qint64 port);
 
-  struct PendingPrintInfoRequest
-  {
+  struct PendingPrintInfoRequest {
     QLocalSocket *socket;
 
     PrintInfoRequest request;

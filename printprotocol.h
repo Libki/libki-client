@@ -20,34 +20,29 @@
 #ifndef PRINTPROTOCOL_H
 #define PRINTPROTOCOL_H
 
+#include <QDataStream>
 #include <QString>
 #include <QStringList>
-#include <QDataStream>
 
 static const quint32 LIBKI_PRINT_PROTOCOL_VERSION = 1;
 static const char LIBKI_PRINT_SERVER_NAME[] = "LibkiPrintServer";
 
 enum PrintMessage {
   PrintMessage_GetPrintInfoRequest = 1,
-  PrintMessage_GetPrintInfoReply   = 2,
-  PrintMessage_SubmitPrintRequest  = 3,
-  PrintMessage_SubmitPrintReply    = 4
+  PrintMessage_GetPrintInfoReply = 2,
+  PrintMessage_SubmitPrintRequest = 3,
+  PrintMessage_SubmitPrintReply = 4
 };
 
-enum PrintStatus {
-  PrintStatus_Ok = 0,
-  PrintStatus_Error = 1
-};
+enum PrintStatus { PrintStatus_Ok = 0, PrintStatus_Error = 1 };
 
-struct PrintInfoRequest
-{
+struct PrintInfoRequest {
   QString printer;
   int pageCount;
   int copies;
 };
 
-struct PrintInfoReply
-{
+struct PrintInfoReply {
   bool success;
   QString printer;
   QString currency;
@@ -66,13 +61,8 @@ struct PrintInfoReply
   QString error;
 };
 
-struct SubmitPrintRequest
-{
-  SubmitPrintRequest()
-      : copies(1),
-        pageCount(0)
-  {
-  }
+struct SubmitPrintRequest {
+  SubmitPrintRequest() : copies(1), pageCount(0) {}
 
   QString filename;
   QString printer;
@@ -80,25 +70,18 @@ struct SubmitPrintRequest
   int pageCount;
 
   static bool fromArguments(const QStringList &arguments,
-                            SubmitPrintRequest &request,
-                            QString &error);
+                            SubmitPrintRequest &request, QString &error);
 
   static QString usage(const QString &programName);
 };
 
-inline QDataStream &operator<<(QDataStream &out,
-                               const SubmitPrintRequest &r)
-{
-  out << r.filename
-      << r.printer
-      << qint32(r.copies)
-      << qint32(r.pageCount);
+inline QDataStream &operator<<(QDataStream &out, const SubmitPrintRequest &r) {
+  out << r.filename << r.printer << qint32(r.copies) << qint32(r.pageCount);
 
   return out;
 }
 
-inline QDataStream &operator>>(QDataStream &in, SubmitPrintRequest &r)
-{
+inline QDataStream &operator>>(QDataStream &in, SubmitPrintRequest &r) {
   qint32 copies;
   qint32 pages;
 
@@ -114,26 +97,21 @@ inline QDataStream &operator>>(QDataStream &in, SubmitPrintRequest &r)
 }
 
 inline QDataStream &operator<<(QDataStream &out,
-                               const PrintInfoRequest &request)
-{
+                               const PrintInfoRequest &request) {
   out << request.printer;
   out << request.pageCount;
   out << request.copies;
   return out;
 }
 
-inline QDataStream &operator>>(QDataStream &in,
-                               PrintInfoRequest &request)
-{
+inline QDataStream &operator>>(QDataStream &in, PrintInfoRequest &request) {
   in >> request.printer;
   in >> request.pageCount;
   in >> request.copies;
   return in;
 }
 
-inline QDataStream &operator<<(QDataStream &out,
-                               const PrintInfoReply &reply)
-{
+inline QDataStream &operator<<(QDataStream &out, const PrintInfoReply &reply) {
   out << reply.success;
   out << reply.printer;
   out << reply.currency;
@@ -149,9 +127,7 @@ inline QDataStream &operator<<(QDataStream &out,
   return out;
 }
 
-inline QDataStream &operator>>(QDataStream &in,
-                               PrintInfoReply &reply)
-{
+inline QDataStream &operator>>(QDataStream &in, PrintInfoReply &reply) {
   in >> reply.success;
   in >> reply.printer;
   in >> reply.currency;
@@ -167,24 +143,20 @@ inline QDataStream &operator>>(QDataStream &in,
   return in;
 }
 
-inline QString SubmitPrintRequest::usage(const QString &programName)
-{
-  return QString("%1 <printer> <copies> <pages> <filename>")
-      .arg(programName);
+inline QString SubmitPrintRequest::usage(const QString &programName) {
+  return QString("%1 <printer> <copies> <pages> <filename>").arg(programName);
 }
 
-inline bool SubmitPrintRequest::fromArguments(
-    const QStringList &arguments,
-    SubmitPrintRequest &request,
-    QString &error)
-{
+inline bool SubmitPrintRequest::fromArguments(const QStringList &arguments,
+                                              SubmitPrintRequest &request,
+                                              QString &error) {
   if (arguments.size() != 5) {
-    error = QString("Usage: %1")
-                .arg(usage(arguments.value(0, "LibkiPrintDialog")));
+    error =
+        QString("Usage: %1").arg(usage(arguments.value(0, "LibkiPrintDialog")));
     return false;
   }
 
-  request.printer  = arguments[1];
+  request.printer = arguments[1];
 
   bool ok = false;
 
