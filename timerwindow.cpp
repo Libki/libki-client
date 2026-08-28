@@ -25,6 +25,7 @@
 #include <QIcon>
 #include <QScreen>
 
+#include "networkclient.h"
 #include "sessionlockedwindow.h"
 #include "utils.h"
 #include "timesplash.h"
