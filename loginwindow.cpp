@@ -149,7 +149,7 @@ void LoginWindow::getSettings() {
 
 // Hide username field
   if (
-    settings.value("node/no_usernames").toString().toInt()
+    settings.value("node/no_username").toString().toInt()
   ) {
     usernameLabel->hide();
     usernameField->hide();
