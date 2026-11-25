@@ -114,6 +114,11 @@ void LoginWindow::getSettings() {
     loginGuestButton->setText(label);
   }
 
+  label = getLabel("cancelButton");
+  if (!label.isEmpty()) {
+    cancelButton->setText(label);
+  }
+
   // Check for a local logo URL, then a server transmitted logo URL
   QString logoUrl = settings.value("images/logo").toString();
   int logoWidth = settings.value("images/logo_width").toInt();
