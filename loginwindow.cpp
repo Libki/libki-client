@@ -162,6 +162,13 @@ void LoginWindow::getSettings() {
     loginButton->hide();
   }
 
+// Hide cancel button
+  if (
+    settings.value("node/no_cancel_button").toString().toInt()
+  ) {
+    cancelButton->hide();
+  }
+
 // Enable/disable guest self registration and guest login button
   qDebug() << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX: " << settings.value("session/EnableGuestSelfRegistration").toString();
   if ( settings.value("session/EnableGuestSelfRegistration").toString() != "enabled" ) {
